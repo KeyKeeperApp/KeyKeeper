@@ -13,9 +13,15 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-        <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Button Content="Настройки" Command="{Binding OpenSettingsCommand}" 
-                Width="100" Height="30"/>
+    <Grid>
+    <TextBlock Text="{Binding Greeting}" 
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"/>
+    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+        <Button Content="Настройки" 
+                Command="{Binding OpenSettingsCommand}"
+                Width="100" 
+                Height="30"/>
     </StackPanel>
+</Grid>
 </Window>
