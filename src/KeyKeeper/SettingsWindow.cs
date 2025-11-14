@@ -5,18 +5,27 @@ using Avalonia.Media;
 namespace KeyKeeper.Views;
 public class SettingsWindow : Window
 {
+    private async void OpenAbout()
+    {
+        var AboutWindow = new AboutWindow();
+        await AboutWindow.ShowDialog(this);
+    }
+
     public SettingsWindow()
     {
         this.Title = "Настройки";
         this.Width = 400;
         this.Height = 300;
-        var textBlock = new TextBlock
+        var AboutButton = new Button
         {
-            Text = "Окно настроек",
+            Content = "О приложении",
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             FontSize = 16
         };
-        this.Content = textBlock;
+
+        AboutButton.Click += (sender, e) => OpenAbout();
+
+        this.Content = AboutButton;
     }
 }
