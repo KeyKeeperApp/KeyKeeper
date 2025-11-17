@@ -2,16 +2,18 @@
 using CommunityToolkit.Mvvm.Input;
 using KeyKeeper.Views;
 using Avalonia.Controls;
+using System.Threading.Tasks;
 
 namespace KeyKeeper.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    public string Greeting { get; } = "Welcome to KeyKeeper!";
+
     [RelayCommand]
-    private async void OpenSettings()
+    private async Task OpenSettings()
     {
         var settingsWindow = new SettingsWindow();
-        await settingsWindow.ShowDialog(GetMainWindow());
+        await settingsWindow.ShowDialog(GetMainWindow()!);
     }
     private static Window? GetMainWindow()
     {
