@@ -3,6 +3,7 @@
         xmlns:vm="using:KeyKeeper.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:KeyKeeper.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="KeyKeeper.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -23,5 +24,69 @@
                 Width="100" 
                 Height="30"/>
     </StackPanel>
+		
+		<Grid Margin="20">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<TextBlock Grid.Row="0"
+                   Text="KeyKeeper"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,30"/>
+
+		<StackPanel Grid.Row="1"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="15"
+                    Width="300">
+
+			<Button Content="Создать новое хранилище"
+                    Click="CreateNewVault_Click"
+                    Height="40"
+                    FontSize="14"/>
+
+			<Button Content="Открыть существующее хранилище"
+                    Click="OpenExistingVault_Click"
+                    Height="40"
+                    FontSize="14"/>
+
+			<Border Height="1" Margin="0,10" Background="Transparent">
+				<Grid>
+					<Rectangle Height="1"
+							   Fill="LightGray"
+							   HorizontalAlignment="Left"
+							   Width="65"/>
+					<Rectangle Height="1"
+							   Fill="LightGray"
+							   HorizontalAlignment="Right"
+							   Width="65"/>
+				</Grid>
+			</Border>
+
+			<TextBlock Text="Недавно открытые:"
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,5"/>
+
+			<ListBox x:Name="RecentVaultsList"
+                     Height="120"
+                     Background="Transparent"
+                     BorderThickness="1"
+                     BorderBrush="LightGray">
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="local:RecentVault">
+						<TextBlock Text="{Binding DisplayPath}"
+                                   Margin="5"/>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+		</StackPanel>
+
+	</Grid>
 </Grid>
 </Window>
