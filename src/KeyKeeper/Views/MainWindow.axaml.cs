@@ -1,4 +1,4 @@
-using Avalonia;
+п»їusing Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -37,7 +37,7 @@ namespace KeyKeeper.Views
 
             var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Создать новое хранилище паролей",
+                Title = "РЎРѕР·РґР°С‚СЊ РЅРѕРІРѕРµ С…СЂР°РЅРёР»РёС‰Рµ РїР°СЂРѕР»РµР№",
                 SuggestedFileName = "passwords.kdbx",
                 DefaultExtension = "kdbx",
                 FileTypeChoices = new[]
@@ -51,8 +51,8 @@ namespace KeyKeeper.Views
 
             if (file != null)
             {
-                // Здесь будет логика создания нового хранилища
-                ShowMessage($"Создание нового хранилища: {file.Name}");
+                // Р—РґРµСЃСЊ Р±СѓРґРµС‚ Р»РѕРіРёРєР° СЃРѕР·РґР°РЅРёСЏ РЅРѕРІРѕРіРѕ С…СЂР°РЅРёР»РёС‰Р°
+                ShowMessage($"РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕРіРѕ С…СЂР°РЅРёР»РёС‰Р°: {file.Name}");
             }
         }
 
@@ -61,10 +61,10 @@ namespace KeyKeeper.Views
             var topLevel = TopLevel.GetTopLevel(this);
             if (topLevel == null) return;
 
-            // Открываем диалог выбора файла
+            // РћС‚РєСЂС‹РІР°РµРј РґРёР°Р»РѕРі РІС‹Р±РѕСЂР° С„Р°Р№Р»Р°
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Открыть хранилище паролей",
+                Title = "РћС‚РєСЂС‹С‚СЊ С…СЂР°РЅРёР»РёС‰Рµ РїР°СЂРѕР»РµР№",
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
@@ -86,13 +86,13 @@ namespace KeyKeeper.Views
             if (files.Count > 0)
             {
                 var file = files[0];
-                ShowMessage($"Открытие хранилища: {file.Name}");
+                ShowMessage($"РћС‚РєСЂС‹С‚РёРµ С…СЂР°РЅРёР»РёС‰Р°: {file.Name}");
             }
         }
 
         private void ShowMessage(string message)
         {
-            // Временное решение для показа сообщений
+            // Р’СЂРµРјРµРЅРЅРѕРµ СЂРµС€РµРЅРёРµ РґР»СЏ РїРѕРєР°Р·Р° СЃРѕРѕР±С‰РµРЅРёР№
             var messageBox = new Window
             {
                 Title = "KeyKeeper",
