@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:KeyKeeper.ViewModels"
+        xmlns:m="using:KeyKeeper.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:KeyKeeper.Views"
@@ -15,15 +16,15 @@
     </Design.DataContext>
 
     <Grid>
-    <TextBlock Text="{Binding Greeting}" 
-               HorizontalAlignment="Center" 
-               VerticalAlignment="Center"/>
-    <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
-        <Button Content="Настройки" 
-                Command="{Binding OpenSettingsCommand}"
-                Width="100" 
-                Height="30"/>
-    </StackPanel>
+        <TextBlock Text="{Binding Greeting}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
+            <Button Content="Настройки"
+                    Command="{Binding OpenSettingsCommand}"
+                    Width="100"
+                    Height="30"/>
+        </StackPanel>
 		
 		<Grid Margin="20">
 		<Grid.RowDefinitions>
@@ -76,9 +77,10 @@
                      Height="120"
                      Background="Transparent"
                      BorderThickness="1"
-                     BorderBrush="LightGray">
+                     BorderBrush="LightGray"
+                     ItemsSource="{Binding RecentFiles}">
 				<ListBox.ItemTemplate>
-					<DataTemplate x:DataType="local:RecentVault">
+					<DataTemplate x:DataType="m:RecentFile">
 						<TextBlock Text="{Binding DisplayPath}"
                                    Margin="5"/>
 					</DataTemplate>

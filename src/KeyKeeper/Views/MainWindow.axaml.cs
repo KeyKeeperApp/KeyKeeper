@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using KeyKeeper.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,68 +16,48 @@ namespace KeyKeeper.Views
         public MainWindow()
         {
             InitializeComponent();
-
-            LoadRecentVaults();
-        }
-
-        private void LoadRecentVaults()
-        {
-            var recentFiles = new List<RecentVault>
-            {
-                new RecentVault { Path = "C:\\Users\\User\\Documents\\passwords.kdbx", LastOpened = DateTime.Now.AddDays(-1) },
-                new RecentVault { Path = "C:\\Users\\User\\Desktop\\work_passwords.kdbx", LastOpened = DateTime.Now.AddDays(-3) }
-            };
-
-            RecentVaultsList.ItemsSource = recentFiles;
         }
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
         {
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel == null) return;
-
-            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Создать новое хранилище паролей",
-                SuggestedFileName = "passwords.kdbx",
-                DefaultExtension = "kdbx",
+                SuggestedFileName = "passwords.kkp",
+                DefaultExtension = "kkp",
                 FileTypeChoices = new[]
                 {
-                    new FilePickerFileType("KeyKeeper Database")
+                    new FilePickerFileType("Хранилище KeyKeeper")
                     {
-                        Patterns = new[] { "*.kdbx" }
+                        Patterns = new[] { "*.kkp" }
                     }
                 }
             });
 
             if (file != null)
             {
-                // Здесь будет логика создания нового хранилища
-                ShowMessage($"Создание нового хранилища: {file.Name}");
+                if (file.TryGetLocalPath() is string path)
+                {
+                    ShowMessage($"Создание нового хранилища: {path}");
+                    (DataContext as MainWindowViewModel)!.CreateVault(path);
+                }
             }
         }
 
         private async void OpenExistingVault_Click(object sender, RoutedEventArgs e)
         {
-            var topLevel = TopLevel.GetTopLevel(this);
-            if (topLevel == null) return;
-
             // Открываем диалог выбора файла
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Открыть хранилище паролей",
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("KeyKeeper Database")
+                    new FilePickerFileType("Хранилище KeyKeeper")
                     {
-                        Patterns = new[] { "*.kdbx", "*.kkdb" }
+                        Patterns = new[] { "*.kkp" }
                     },
-                    new FilePickerFileType("KeePass Database")
-                    {
-                        Patterns = new[] { "*.kdbx" }
-                    },
-                    new FilePickerFileType("All Files")
+                    new FilePickerFileType("Все файлы")
                     {
                         Patterns = new[] { "*.*" }
                     }
@@ -86,7 +67,11 @@ namespace KeyKeeper.Views
             if (files.Count > 0)
             {
                 var file = files[0];
-                ShowMessage($"Открытие хранилища: {file.Name}");
+                if (file.TryGetLocalPath() is string path)
+                {
+                    ShowMessage($"Открытие хранилища: {path}");
+                    (DataContext as MainWindowViewModel)!.OpenVault(path);
+                }
             }
         }
 
@@ -101,19 +86,6 @@ namespace KeyKeeper.Views
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             messageBox.ShowDialog(this);
-        }
-    }
-
-    public class RecentVault
-    {
-        public string Path { get; set; } = string.Empty;
-        public DateTime LastOpened { get; set; }
-
-        public string DisplayPath => System.IO.Path.GetFileName(Path);
-
-        public override string ToString()
-        {
-            return DisplayPath;
         }
     }
 }
