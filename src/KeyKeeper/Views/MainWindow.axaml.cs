@@ -61,6 +61,7 @@ namespace KeyKeeper.Views
             var topLevel = TopLevel.GetTopLevel(this);
             if (topLevel == null) return;
 
+            // Открываем диалог выбора файла
             var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Открыть хранилище паролей",
@@ -100,6 +101,19 @@ namespace KeyKeeper.Views
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             messageBox.ShowDialog(this);
+        }
+    }
+
+    public class RecentVault
+    {
+        public string Path { get; set; } = string.Empty;
+        public DateTime LastOpened { get; set; }
+
+        public string DisplayPath => System.IO.Path.GetFileName(Path);
+
+        public override string ToString()
+        {
+            return DisplayPath;
         }
     }
 }
