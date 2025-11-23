@@ -1,6 +1,6 @@
 namespace KeyKeeper.PasswordStore;
 
-interface IPassStore
+public interface IPassStore
 {
     IPassStoreDirectory GetRootDirectory();
     int GetTotalEntryCount();

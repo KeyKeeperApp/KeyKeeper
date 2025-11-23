@@ -2,7 +2,7 @@ using System;
 
 namespace KeyKeeper.PasswordStore;
 
-interface IPassStoreEntry
+public interface IPassStoreEntry
 {
     string Name { get; set; }
     PassStoreEntryType Type { get; set; }

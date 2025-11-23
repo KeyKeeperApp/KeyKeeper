@@ -1,6 +1,6 @@
 namespace KeyKeeper.PasswordStore;
 
-enum PassStoreEntryType
+public enum PassStoreEntryType
 {
     Password,
     Directory,
