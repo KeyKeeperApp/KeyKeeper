@@ -2,10 +2,9 @@ using System;
 using System.Buffers.Binary;
 using System.IO;
 using System.Security.Cryptography;
-using KeyKeeper.PasswordStore;
 using static KeyKeeper.PasswordStore.FileFormatConstants;
 
-namespace KeyKeeper.Crypto;
+namespace KeyKeeper.PasswordStore.Crypto;
 
 /// <summary>
 /// Класс, представляющий собой обертку над content chunkом, считанным из файла
