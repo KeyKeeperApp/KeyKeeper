@@ -18,73 +18,53 @@ public static class OuterEncryptionUtil
     public static void CheckOuterEncryptionHeader(FileStream f)
     {
         BinaryReader rd = new(f);
-        byte masterSaltLen;
         try
         {
-            masterSaltLen = rd.ReadByte();
-        }
-        catch (EndOfStreamException)
-        {
-            throw PassStoreFileException.UnexpectedEndOfFile;
-        }
-        if (masterSaltLen < MIN_MASTER_SALT_LEN || masterSaltLen > MAX_MASTER_SALT_LEN)
-        {
-            throw PassStoreFileException.InvalidCryptoHeader;
-        }
+            byte masterSaltLen = rd.ReadByte();
 
-        f.Seek(masterSaltLen, SeekOrigin.Current);
-
-        byte encryptAlgo;
-        try
-        {
-            encryptAlgo = rd.ReadByte();
-        }
-        catch (EndOfStreamException)
-        {
-            throw PassStoreFileException.UnexpectedEndOfFile;
-        }
-
-        if (encryptAlgo == ENCRYPT_ALGO_AES)
-        {
-            // пропустить 16 байт вектора инициализации AES
-            f.Seek(16, SeekOrigin.Current);
-        }
-        else
-        {
-            throw PassStoreFileException.InvalidCryptoHeader;
-        }
-
-        byte keyDerivationFunctionType;
-        try
-        {
-            keyDerivationFunctionType = rd.ReadByte();
-        }
-        catch (EndOfStreamException)
-        {
-            throw PassStoreFileException.UnexpectedEndOfFile;
-        }
-
-        if (keyDerivationFunctionType == KDF_TYPE_AESKDF)
-        {
-            int nRounds;
-            try
-            {
-                nRounds = rd.Read7BitEncodedInt();
-            }
-            catch (EndOfStreamException)
-            {
-                throw PassStoreFileException.UnexpectedEndOfFile;
-            }
-            catch (FormatException)
+            if (masterSaltLen < MIN_MASTER_SALT_LEN || masterSaltLen > MAX_MASTER_SALT_LEN)
             {
                 throw PassStoreFileException.InvalidCryptoHeader;
             }
-            if (nRounds < MIN_AESKDF_ROUNDS || nRounds > MAX_AESKDF_ROUNDS)
+
+            f.Seek(masterSaltLen, SeekOrigin.Current);
+
+            byte encryptAlgo = rd.ReadByte();
+
+            if (encryptAlgo == ENCRYPT_ALGO_AES)
+            {
+                // пропустить 16 байт вектора инициализации AES
+                f.Seek(16, SeekOrigin.Current);
+            }
+            else
             {
                 throw PassStoreFileException.InvalidCryptoHeader;
             }
-            // пропустить 32 байта сида AES-KDF
-            f.Seek(32, SeekOrigin.Current);
+
+            byte keyDerivationFunctionType = rd.ReadByte();
+
+            if (keyDerivationFunctionType == KDF_TYPE_AESKDF)
+            {
+                int nRounds;
+                try
+                {
+                    nRounds = rd.Read7BitEncodedInt();
+                }
+                catch (FormatException)
+                {
+                    throw PassStoreFileException.InvalidCryptoHeader;
+                }
+                if (nRounds < MIN_AESKDF_ROUNDS || nRounds > MAX_AESKDF_ROUNDS)
+                {
+                    throw PassStoreFileException.InvalidCryptoHeader;
+                }
+                // пропустить 32 байта сида AES-KDF
+                f.Seek(32, SeekOrigin.Current);
+            }
+        }
+        catch (EndOfStreamException)
+        {
+            throw PassStoreFileException.UnexpectedEndOfFile;
         }
     }
 }
