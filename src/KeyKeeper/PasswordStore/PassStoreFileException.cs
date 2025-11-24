@@ -8,6 +8,7 @@ public class PassStoreFileException : Exception
     public static readonly PassStoreFileException IncorrectMagicNumber = new("incorrect signature (magic number)");
     public static readonly PassStoreFileException UnsupportedVersion = new("unsupported format version");
     public static readonly PassStoreFileException InvalidCryptoHeader = new("invalid encryption header");
+    public static readonly PassStoreFileException ContentHMACMismatch = new("content HMAC mismatch");
     public string Description { get; }
 
     public PassStoreFileException(string description)
