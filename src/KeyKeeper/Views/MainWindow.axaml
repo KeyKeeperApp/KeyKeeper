@@ -17,77 +17,43 @@
 
 	<Grid ColumnDefinitions="1.3*, 3*">
 
-		<!-- LEFT BLUE PANEL -->
 		<Border Background="#2328C4" Grid.Column="0">
 			<Grid RowDefinitions="Auto,*,Auto" Margin="30">
 
-				<!-- LOGO -->
-				<StackPanel Spacing="10" Margin="0,20,0,40">
-					<StackPanel Orientation="Horizontal" Spacing="15">
-						<!-- ICON (простая замена — можно вставить PNG/SVG) -->
-						<Path Fill="White"
-                              Data="M12 2L4 6V14L12 18L20 14V6L12 2Z"
-                              Width="40" Height="40"/>
-						<StackPanel>
-							<TextBlock Text="KeyKeeper"
-                                       FontSize="30"
-                                       FontWeight="Bold"
-                                       Foreground="White"/>
-							<TextBlock Text="password manager"
-                                       FontSize="16"
-                                       Foreground="White"/>
-						</StackPanel>
-					</StackPanel>
-				</StackPanel>
+					<Svg Path="/Assets/logo_en.svg" Width="340" Height="340"/>
 
-				<!-- BUTTONS -->
-				<StackPanel Grid.Row="1" Spacing="25" VerticalAlignment="Top">
+				<StackPanel Grid.Row="1" Spacing="5" VerticalAlignment="Top">
 					<Button Content="New Database"
-                            HorizontalAlignment="Left"
-                            Width="200"
-                            Height="40"
-                            Background="White"
-                            Foreground="#2328C4"
-                            Click="CreateNewVault_Click"/>
+							Foreground="White"
+							Background="Transparent"
+							BorderThickness="0"
+							FontSize="28"
+							Cursor="Hand"
+							Click="CreateNewVault_Click"/>
 
 					<Button Content="Open Database"
-                            HorizontalAlignment="Left"
-                            Width="200"
-                            Height="40"
-                            Background="White"
-                            Foreground="#2328C4"
-                            Click="OpenExistingVault_Click"/>
+                            Foreground="White"
+							Background="Transparent"
+							BorderThickness="0"
+							FontSize="28"
+							Cursor="Hand"
+							Click="CreateNewVault_Click"/>
 				</StackPanel>
 
-				<!-- FOOTER ICONS -->
 				<StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
-					<!-- SETTINGS ICON -->
-					<Path Data="M12 8A4 4 0 1 0 12 16A4 4 0 1 0 12 8Z"
-                          Fill="White" Width="28" Height="28"/>
-					<!-- INFO ICON -->
-					<Ellipse Width="28" Height="28" Stroke="White" StrokeThickness="2">
-						<Ellipse.OpacityMask>
-							<VisualBrush>
-								<VisualBrush.Visual>
-									<TextBlock Text="i"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               FontSize="20" Foreground="White"/>
-								</VisualBrush.Visual>
-							</VisualBrush>
-						</Ellipse.OpacityMask>
-					</Ellipse>
+					<Svg Path="/Assets/settings.svg" Width="61" Height="61"/>
+					<Button Command="{Binding OpenSettingsCommand}">
+						<Svg Path="/Assets/about.svg" Width="61" Height="61"/>
+					</Button>
 				</StackPanel>
 
 			</Grid>
 		</Border>
 
 
-		<!-- RIGHT CONTENT -->
 		<Grid Grid.Column="1" VerticalAlignment="Center">
 			<Grid RowDefinitions="Auto,Auto">
 
-				<!-- Заголовок строго над таблицей -->
 				<TextBlock Text="Recent Database"
 						   FontSize="38"
 						   Foreground="#2328C4"
@@ -95,7 +61,6 @@
 						   HorizontalAlignment="Center"
 						   Margin="0,40,0,30"/>
 
-				<!-- Таблица из 4 линий -->
 				<Border Grid.Row="1"
 						Width="700"
 						Height="260"
@@ -107,31 +72,26 @@
 
 					<Grid RowDefinitions="Auto,*,*,*,*">
 
-						<!-- Текст сверху -->
 						<TextBlock Text="There is no data yet..."
 								   FontSize="20"
 								   Foreground="#777"
 								   Margin="0,0,0,0"/>
 
-						<!-- Линия 1 -->
 						<Rectangle Grid.Row="1"
 								   Height="1"
 								   Fill="#D0D0D0"
 								   VerticalAlignment="Center"/>
 
-						<!-- Линия 2 -->
 						<Rectangle Grid.Row="2"
 								   Height="1"
 								   Fill="#D0D0D0"
 								   VerticalAlignment="Center"/>
 
-						<!-- Линия 3 -->
 						<Rectangle Grid.Row="3"
 								   Height="1"
 								   Fill="#D0D0D0"
 								   VerticalAlignment="Center"/>
 
-						<!-- Линия 4 -->
 						<Rectangle Grid.Row="4"
 								   Height="1"
 								   Fill="#D0D0D0"
