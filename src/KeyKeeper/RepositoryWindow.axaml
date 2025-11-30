@@ -1,9 +1,35 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="KeyKeeper.RepositoryWindow"
-        Title="Window1">
-  KeyKeeper
+        Title="KeyKeeper - Хранилище паролей"
+        Width="800"
+        Height="600">
+    
+    <StackPanel Margin="20" HorizontalAlignment="Left">
+        <!-- Надпись KeyKeeper -->
+        <TextBlock Text="KeyKeeper" 
+                   FontSize="32" 
+                   FontWeight="Bold" 
+                   HorizontalAlignment="Left"
+                   Margin="0,0,0,20"/>
+        
+        <!-- Рамочка с кнопкой -->
+        <Border BorderBrush="Gray" 
+                BorderThickness="1" 
+                CornerRadius="5"
+                Padding="20"
+                Background="#F5F5F5"
+                HorizontalAlignment="Left">
+            
+            <StackPanel HorizontalAlignment="Left">
+                <Button Content="All Passwords" 
+                        Width="120"
+                        Height="30"
+                        Foreground="Black"
+                        HorizontalAlignment="Left"/>
+            </StackPanel>
+            
+        </Border>
+    </StackPanel>
+    
 </Window>
