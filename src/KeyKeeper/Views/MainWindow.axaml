@@ -37,7 +37,7 @@
 							BorderThickness="0"
 							FontSize="28"
 							Cursor="Hand"
-							Click="CreateNewVault_Click"/>
+							Click="OpenExistingVault_Click"/>
 				</StackPanel>
 
 				<StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
