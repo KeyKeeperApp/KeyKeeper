@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Buffers.Binary;
 using System.IO;
 using System.Security.Cryptography;
@@ -37,7 +38,7 @@ public class PassStoreContentChunk
         try
         {
             chunkLen = rd.ReadUInt16();
-            chunkLen = (chunkLen << 8) | rd.ReadByte();
+            chunkLen = chunkLen | (rd.ReadByte() << 16);
         }
         catch (EndOfStreamException)
         {
@@ -52,16 +53,28 @@ public class PassStoreContentChunk
         byte[] storedHmac = new byte[HMAC_SIZE];
         str.Read(storedHmac, 0, HMAC_SIZE);
 
-        HMACSHA3_512 hmac = new(key);
-        hmac.TransformBlock(chunk, (int)str.Position, Math.Min(chunkLen, chunk.Length - (int)str.Position), null, 0);
+        SHA3_512 hasher = SHA3_512.Create();
+        byte[] innerKey = key.Select(x => (byte)(x ^ 0x36)).ToArray();
+        byte[] outerKey = key.Select(x => (byte)(x ^ 0x5c)).ToArray();
+
+        hasher.TransformBlock(innerKey, 0, innerKey.Length, null, 0);
+        Array.Fill<byte>(innerKey, 0); // erase key after use
+
+        hasher.TransformBlock(chunk, (int)str.Position, chunk.Length - (int)str.Position, null, 0);
 
         byte[] encodedOrdinal = new byte[sizeof(int)];
         BinaryPrimitives.WriteInt32LittleEndian(new Span<byte>(encodedOrdinal), chunkOrdinal);
-        hmac.TransformBlock(encodedOrdinal, 0, encodedOrdinal.Length, null, 0);
-        
-        byte[] actualHmac = hmac.Hash!;
 
-        if (!storedHmac.Equals(actualHmac))
+        hasher.TransformFinalBlock(encodedOrdinal, 0, encodedOrdinal.Length);
+        byte[] innerHash = hasher.Hash!;
+
+        hasher = SHA3_512.Create();
+        hasher.TransformBlock(outerKey, 0, outerKey.Length, null, 0);
+        Array.Fill<byte>(outerKey, 0);
+        hasher.TransformFinalBlock(innerHash, 0, innerHash.Length);
+        byte[] actualHmac = hasher.Hash!;
+
+        if (!storedHmac.SequenceEqual(actualHmac))
         {
             throw PassStoreFileException.ContentHMACMismatch;
         }
