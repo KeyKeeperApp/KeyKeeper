@@ -3,7 +3,9 @@
         x:Class="KeyKeeper.RepositoryWindow"
         Title="KeyKeeper - Хранилище паролей"
         Width="800"
-        Height="600">
+        Height="600"
+        Background="White">
+
     <Grid>
         <!-- Синий левый край -->
         <Border Width="200" 
