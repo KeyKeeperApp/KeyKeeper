@@ -5,5 +5,5 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="KeyKeeper.RepositoryWindow"
         Title="Window1">
-  Welcome to Avalonia!
+  KeyKeeper
 </Window>
