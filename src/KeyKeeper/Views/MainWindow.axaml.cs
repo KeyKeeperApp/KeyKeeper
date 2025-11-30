@@ -40,6 +40,7 @@ namespace KeyKeeper.Views
                 {
                     ShowMessage($"Создание нового хранилища: {path}");
                     (DataContext as MainWindowViewModel)!.CreateVault(path);
+                    OpenRepositoryWindow();
                 }
             }
         }
@@ -71,6 +72,7 @@ namespace KeyKeeper.Views
                 {
                     ShowMessage($"Открытие хранилища: {path}");
                     (DataContext as MainWindowViewModel)!.OpenVault(path);
+                    OpenRepositoryWindow();
                 }
             }
         }
@@ -86,6 +88,17 @@ namespace KeyKeeper.Views
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             messageBox.ShowDialog(this);
+        }
+        private void OpenRepositoryWindow()
+        {
+            var repositoryWindow = new RepositoryWindow()
+            {
+                DataContext = this.DataContext,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            repositoryWindow.Closed += (s, e) => this.Show();
+            repositoryWindow.Show();
+            this.Hide();
         }
     }
 }
