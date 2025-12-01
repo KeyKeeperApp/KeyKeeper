@@ -4,7 +4,7 @@ using System.Text;
 
 namespace KeyKeeper.PasswordStore.Crypto;
 
-public struct CompositeKey
+public class CompositeKey
 {
     public string Password { get; }
     public byte[] Salt { get; }
