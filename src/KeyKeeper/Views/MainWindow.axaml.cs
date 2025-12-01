@@ -38,8 +38,8 @@ namespace KeyKeeper.Views
             {
                 if (file.TryGetLocalPath() is string path)
                 {
-                    ShowMessage($"Создание нового хранилища: {path}");
                     (DataContext as MainWindowViewModel)!.CreateVault(path);
+                    OpenRepositoryWindow();
                 }
             }
         }
@@ -69,23 +69,22 @@ namespace KeyKeeper.Views
                 var file = files[0];
                 if (file.TryGetLocalPath() is string path)
                 {
-                    ShowMessage($"Открытие хранилища: {path}");
                     (DataContext as MainWindowViewModel)!.OpenVault(path);
+                    OpenRepositoryWindow();
                 }
             }
         }
 
-        private void ShowMessage(string message)
+        private void OpenRepositoryWindow()
         {
-            // Временное решение для показа сообщений
-            var messageBox = new Window
+            var repositoryWindow = new RepositoryWindow()
             {
-                Title = "KeyKeeper",
-                Content = new TextBlock { Text = message, Margin = new Thickness(20) },
-                SizeToContent = SizeToContent.WidthAndHeight,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                DataContext = this.DataContext,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            messageBox.ShowDialog(this);
+            repositoryWindow.Closed += (s, e) => this.Show();
+            repositoryWindow.Show();
+            this.Hide();
         }
     }
 }
