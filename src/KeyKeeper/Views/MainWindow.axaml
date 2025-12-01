@@ -4,91 +4,94 @@
         xmlns:m="using:KeyKeeper.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:KeyKeeper.Views"
+        xmlns:local="clr-namespace:KeyKeeper.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="KeyKeeper.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
+        Background="#fff"
+        Icon="/Assets/icon.ico"
         Title="KeyKeeper">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid>
-        <TextBlock Text="{Binding Greeting}"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
-        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20">
-            <Button Content="Настройки"
-                    Command="{Binding OpenSettingsCommand}"
-                    Width="100"
-                    Height="30"/>
-        </StackPanel>
-		
-		<Grid Margin="20">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+    <Grid ColumnDefinitions="1.3*, 3*">
 
-		<TextBlock Grid.Row="0"
-                   Text="KeyKeeper"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,30"/>
+        <Border Background="#2328C4" Grid.Column="0">
+            <Grid RowDefinitions="Auto,*,Auto" Margin="30">
 
-		<StackPanel Grid.Row="1"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Center"
-                    Spacing="15"
-                    Width="300">
+                    <Svg Path="/Assets/logo_en.svg" Width="340" Height="340"/>
 
-			<Button Content="Создать новое хранилище"
-                    Click="CreateNewVault_Click"
-                    Height="40"
-                    FontSize="14"/>
+                <StackPanel Grid.Row="1" Spacing="5" VerticalAlignment="Top">
+                    <Button Content="New Database"
+                            Foreground="White"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="28"
+                            Cursor="Hand"
+                            Click="CreateNewVault_Click"/>
 
-			<Button Content="Открыть существующее хранилище"
-                    Click="OpenExistingVault_Click"
-                    Height="40"
-                    FontSize="14"/>
+                    <Button Content="Open Database"
+                            Foreground="White"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="28"
+                            Cursor="Hand"
+                            Click="OpenExistingVault_Click"/>
+                </StackPanel>
 
-			<Border Height="1" Margin="0,10" Background="Transparent">
-				<Grid>
-					<Rectangle Height="1"
-							   Fill="LightGray"
-							   HorizontalAlignment="Left"
-							   Width="65"/>
-					<Rectangle Height="1"
-							   Fill="LightGray"
-							   HorizontalAlignment="Right"
-							   Width="65"/>
-				</Grid>
-			</Border>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
+                    <Svg Path="/Assets/settings.svg" Width="61" Height="61"/>
+                    <Button Command="{Binding OpenSettingsCommand}">
+                        <Svg Path="/Assets/about.svg" Width="61" Height="61"/>
+                    </Button>
+                </StackPanel>
 
-			<TextBlock Text="Недавно открытые:"
-                       FontWeight="SemiBold"
-                       Margin="0,0,0,5"/>
+            </Grid>
+        </Border>
 
-			<ListBox x:Name="RecentVaultsList"
-                     Height="120"
-                     Background="Transparent"
-                     BorderThickness="1"
-                     BorderBrush="LightGray"
-                     ItemsSource="{Binding RecentFiles}">
-				<ListBox.ItemTemplate>
-					<DataTemplate x:DataType="m:RecentFile">
-						<TextBlock Text="{Binding DisplayPath}"
-                                   Margin="5"/>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
 
-		</StackPanel>
+        <Grid Grid.Column="1" VerticalAlignment="Center">
+            <Grid RowDefinitions="Auto,Auto">
 
-	</Grid>
-</Grid>
+                <TextBlock Text="Recent Database"
+                           FontSize="38"
+                           Foreground="#2328C4"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,40,0,30"/>
+
+                <Border Grid.Row="1"
+                        Width="700"
+                        Height="260"
+                        HorizontalAlignment="Center"
+                        BorderBrush="#D0D0D0"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="25">
+
+                    <ListBox x:Name="RecentVaultsList"
+                             Background="Transparent"
+                             ItemsSource="{Binding RecentFiles}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="m:RecentFile">
+                                <TextBlock Text="{Binding DisplayPath}"
+                                           Foreground="#000"
+                                           Margin="5"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.Styles>
+                            <Style Selector="ListBoxItem">
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="BorderBrush" Value="#D0D0D0"/>
+                            </Style>
+                        </ListBox.Styles>
+                    </ListBox>
+                </Border>
+            </Grid>
+        </Grid>
+
+
+    </Grid>
 </Window>
