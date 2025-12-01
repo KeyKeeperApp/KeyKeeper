@@ -14,6 +14,7 @@ namespace KeyKeeper.PasswordStore.Crypto;
 /// </summary>
 public class PassStoreContentChunk
 {
+    public bool IsLast { get; }
     private byte[] chunk;
     private int chunkLen;
 
@@ -44,6 +45,9 @@ public class PassStoreContentChunk
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
         }
+
+        IsLast = (chunkLen & (1 << 23)) != 0;
+        chunkLen &= ~(1 << 23);
 
         if (chunk.Length != chunkLen + 3 + HMAC_SIZE)
         {
@@ -104,6 +108,7 @@ public class PassStoreContentChunk
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
         }
+        chunkLen &= ~(1 << 23); // 23 бит имеет специальное значение
         byte[] chunk = new byte[3 + HMAC_SIZE + chunkLen];
         if (s.Read(chunk) < chunk.Length)
         {
