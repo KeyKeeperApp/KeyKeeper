@@ -23,7 +23,7 @@ public class OuterEncryptionReader : Stream
     public override long Position
     {
         get => position;
-        set => position = value;
+        set { throw new NotSupportedException(); }
     }
     public override long Length => throw new NotSupportedException();
 
@@ -42,7 +42,7 @@ public class OuterEncryptionReader : Stream
     /// <summary>
     /// Порядковый номер чанка, лежащего в <see cref="currentChunk"/>. 
     /// </summary>
-    private int currentChunkOrdinal = 0;
+    private int nextChunkOrdinal = 0;
     private bool isCurrentChunkLast;
     private long position = 0;
 
@@ -148,7 +148,8 @@ public class OuterEncryptionReader : Stream
     {
         if (isCurrentChunkLast)
             return;
-        var chunk = PassStoreContentChunk.GetFromStream(file, key, currentChunkOrdinal);
+        var chunk = PassStoreContentChunk.GetFromStream(file, key, nextChunkOrdinal);
+        nextChunkOrdinal += 1;
         isCurrentChunkLast = chunk.IsLast;
         var encryptedData = chunk.GetContent();
         EraseCurrentChunk();
