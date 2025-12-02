@@ -15,6 +15,8 @@ namespace KeyKeeper.PasswordStore.Crypto;
 public class PassStoreContentChunk
 {
     public bool IsLast { get; }
+    public byte[] Chunk { get { return chunk; } }
+
     private byte[] chunk;
     private int chunkLen;
 
@@ -57,31 +59,20 @@ public class PassStoreContentChunk
         byte[] storedHmac = new byte[HMAC_SIZE];
         str.Read(storedHmac, 0, HMAC_SIZE);
 
-        SHA3_512 hasher = SHA3_512.Create();
-        byte[] innerKey = key.Select(x => (byte)(x ^ 0x36)).ToArray();
-        byte[] outerKey = key.Select(x => (byte)(x ^ 0x5c)).ToArray();
-
-        hasher.TransformBlock(innerKey, 0, innerKey.Length, null, 0);
-        Array.Fill<byte>(innerKey, 0); // erase key after use
-
-        hasher.TransformBlock(chunk, (int)str.Position, chunk.Length - (int)str.Position, null, 0);
-
-        byte[] encodedOrdinal = new byte[sizeof(int)];
-        BinaryPrimitives.WriteInt32LittleEndian(new Span<byte>(encodedOrdinal), chunkOrdinal);
-
-        hasher.TransformFinalBlock(encodedOrdinal, 0, encodedOrdinal.Length);
-        byte[] innerHash = hasher.Hash!;
-
-        hasher = SHA3_512.Create();
-        hasher.TransformBlock(outerKey, 0, outerKey.Length, null, 0);
-        Array.Fill<byte>(outerKey, 0);
-        hasher.TransformFinalBlock(innerHash, 0, innerHash.Length);
-        byte[] actualHmac = hasher.Hash!;
-
+        byte[] dataToHash = chunk[(int)str.Position..];
+        byte[] actualHmac = ComputeHmac(dataToHash, key, chunkOrdinal);
+        
         if (!storedHmac.SequenceEqual(actualHmac))
         {
             throw PassStoreFileException.ContentHMACMismatch;
         }
+    }
+
+    private PassStoreContentChunk(byte[] chunk, bool isLast)
+    {
+        this.chunk = chunk;
+        this.chunkLen = chunk.Length;
+        this.IsLast = isLast;
     }
 
     /// <summary>
@@ -117,8 +108,47 @@ public class PassStoreContentChunk
         return new PassStoreContentChunk(chunk, key, chunkOrdinal);
     }
 
+    public static PassStoreContentChunk FromEncryptedContent(byte[] content, byte[] key, int chunkOrdinal, bool isLast)
+    {
+        int chunkLen = content.Length;
+        byte[] chunk = new byte[chunkLen + HMAC_SIZE + 3];
+        BinaryPrimitives.WriteUInt16LittleEndian(new Span<byte>(chunk, 0, 2), (ushort)(chunkLen & 0xffff));
+        chunk[2] = (byte)(chunkLen >> 16);
+        if (isLast) chunk[2] |= 1 << 7;
+        ComputeHmac(content, key, chunkOrdinal).CopyTo(chunk, 3);
+        content.CopyTo(chunk, 3 + HMAC_SIZE);
+        return new PassStoreContentChunk(chunk, isLast);
+    }
+
     public ReadOnlySpan<byte> GetContent()
     {
         return new ReadOnlySpan<byte>(chunk, 3 + HMAC_SIZE, chunkLen);
+    }
+
+    private static byte[] ComputeHmac(byte[] data, byte[] key, int chunkOrdinal)
+    {
+        SHA3_512 hasher = SHA3_512.Create();
+        byte[] innerKey = key.Select(x => (byte)(x ^ 0x36)).ToArray();
+        byte[] outerKey = key.Select(x => (byte)(x ^ 0x5c)).ToArray();
+
+        hasher.TransformBlock(innerKey, 0, innerKey.Length, null, 0);
+        Array.Fill<byte>(innerKey, 0); // erase key after use
+
+        hasher.TransformBlock(data, 0, data.Length, null, 0);
+
+        byte[] encodedOrdinal = new byte[sizeof(int)];
+        BinaryPrimitives.WriteInt32LittleEndian(new Span<byte>(encodedOrdinal), chunkOrdinal);
+
+        hasher.TransformFinalBlock(encodedOrdinal, 0, encodedOrdinal.Length);
+        byte[] innerHash = hasher.Hash!;
+        hasher.Clear();
+
+        hasher = SHA3_512.Create();
+        hasher.TransformBlock(outerKey, 0, outerKey.Length, null, 0);
+        Array.Fill<byte>(outerKey, 0);
+        hasher.TransformFinalBlock(innerHash, 0, innerHash.Length);
+        byte[] hmac = hasher.Hash!;
+        hasher.Clear();
+        return hmac;
     }
 }
