@@ -12,6 +12,8 @@ public class AboutWindow : Window
         this.Width = 600;
         this.Height = 400;
 
+        this.Background = new SolidColorBrush(Color.Parse("#2328c4"));
+
         var AboutKeyKeeper = new TextBlock
         {
             Text = "About Keykeeper",
@@ -22,7 +24,7 @@ public class AboutWindow : Window
 
         var AboutText = new TextBlock
         {
-            Text = "KeyKeeper is a personal password and key manager\nwhere you can save passwords and other login\ninformation, configure one-time code generation,\nand create encryption keys for personal use",
+            Text = "KeyKeeper - личный менеджер паролей и ключей,\nгде пользователь сможет сохранять свои логины, пароли, адреса электронной почты, ключи восстановления с различных веб-сайтов и\nиз приложений и управлять ими. Ключи и пароли\nбудут храниться исключительно локально на\nкомпьютере пользователя и всё хранилище\nцеликом можно будет защитить мастер-паролем.",
             HorizontalAlignment = HorizontalAlignment.Left,
             FontSize = 16,
             TextAlignment = TextAlignment.Left,

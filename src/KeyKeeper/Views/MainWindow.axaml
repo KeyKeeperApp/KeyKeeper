@@ -42,8 +42,10 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
-                    <Svg Path="/Assets/settings.svg" Width="61" Height="61"/>
-                    <Button Command="{Binding OpenSettingsCommand}">
+					<Button Command="{Binding OpenSettingsCommand}">
+                        <Svg Path="/Assets/settings.svg" Width="61" Height="61"/>
+					</Button>
+                    <Button Command="{Binding OpenAboutCommand}">
                         <Svg Path="/Assets/about.svg" Width="61" Height="61"/>
                     </Button>
                 </StackPanel>

@@ -36,6 +36,13 @@ public partial class MainWindowViewModel : ViewModelBase
         var settingsWindow = new SettingsWindow();
         await settingsWindow.ShowDialog(GetMainWindow()!);
     }
+
+    [RelayCommand]
+    private async Task OpenAbout()
+    {
+        var AboutWindow = new AboutWindow();
+        await AboutWindow.ShowDialog(GetMainWindow()!);
+    }
     private static Window? GetMainWindow()
     {
         return App.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
