@@ -145,12 +145,12 @@ public class PassStoreFileAccessor : IPassStore
         wr.Write(FILE_FIELD_CONFIG);
 
         wr.Write(FILE_FIELD_STORE);
-        WriteInitialStoreTree(cryptoWriter);
+        root = (IPassStoreDirectory) WriteInitialStoreTree(cryptoWriter);
         cryptoWriter.Flush();
         cryptoWriter.Dispose();
     }
 
-    private void WriteInitialStoreTree(OuterEncryptionWriter w)
+    private PassStoreEntry WriteInitialStoreTree(OuterEncryptionWriter w)
     {
         PassStoreEntry root =
             new PassStoreEntryGroup(
@@ -162,6 +162,7 @@ public class PassStoreFileAccessor : IPassStore
                 GROUP_TYPE_ROOT
             );
         root.WriteToStream(w);
+        return root;
     }
 
     record FileHeader (
