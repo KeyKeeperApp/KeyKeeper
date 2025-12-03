@@ -30,6 +30,37 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
         ChildEntries = children ?? new();
     }
 
+    public static PassStoreEntry ReadFromStream(Stream str, Guid id, DateTime createdAt, DateTime modifiedAt, Guid iconType, string name)
+    {
+        BinaryReader rd = new(str);
+        try
+        {
+            byte groupType = rd.ReadByte();
+            byte[] guidBuffer = new byte[8];
+            Guid? customGroupSubtype = null;
+            if (groupType == GROUP_TYPE_CUSTOM)
+            {
+                if (rd.Read(guidBuffer) < 16)
+                    throw PassStoreFileException.UnexpectedEndOfFile;
+                customGroupSubtype = new Guid(guidBuffer);
+            }
+
+            int entryCount = rd.Read7BitEncodedInt();
+            List<PassStoreEntry> children = new();
+            for (int i = 0; i < entryCount; i++)
+                children.Add(PassStoreEntry.ReadFromStream(str));
+            
+            return new PassStoreEntryGroup(
+                id, createdAt, modifiedAt,
+                iconType, name, groupType, children,
+                customGroupSubtype
+            );
+        } catch (EndOfStreamException)
+        {
+            throw PassStoreFileException.UnexpectedEndOfFile;
+        }
+    }
+
     IEnumerator<PassStoreEntry> IEnumerable<PassStoreEntry>.GetEnumerator()
     {
         return ChildEntries.GetEnumerator();
