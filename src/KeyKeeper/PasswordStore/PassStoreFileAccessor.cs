@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using KeyKeeper.PasswordStore.Crypto;
 using KeyKeeper.PasswordStore.Crypto.KeyDerivation;
@@ -36,11 +37,13 @@ public class PassStoreFileAccessor : IPassStore
 
     public bool Locked
     {
-        get { return key != null; }
+        get { return key == null; }
     }
 
     public IPassStoreDirectory GetRootDirectory()
     {
+        if (Locked)
+            throw new InvalidOperationException();
         return root!;
     }
 
@@ -52,6 +55,10 @@ public class PassStoreFileAccessor : IPassStore
     public void Unlock(CompositeKey key)
     {
         if (!Locked) return;
+
+        using FileStream file = new(filename, FileMode.Open, FileAccess.Read, FileShare.None);
+        FileHeader hdr = FileHeader.ReadFrom(file);
+        Console.WriteLine(hdr); // debug
     }
 
     public void Lock()
@@ -74,7 +81,7 @@ public class PassStoreFileAccessor : IPassStore
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
         }
-        if (magic != FORMAT_MAGIC)
+        if (!magic.SequenceEqual(FORMAT_MAGIC))
         {
             throw PassStoreFileException.IncorrectMagicNumber;
         }
@@ -125,9 +132,9 @@ public class PassStoreFileAccessor : IPassStore
             file.Write(randomPadding);
         }
 
-        byte[] masterKey = newHeader.KdfInfo.GetKdf().Derive(options.Key, 32);
+        key = newHeader.KdfInfo.GetKdf().Derive(options.Key, 32);
         // пока предполагаем что везде используется AES
-        OuterEncryptionWriter cryptoWriter = new(file, masterKey, ((OuterAesHeader)newHeader.OuterCryptoHeader).InitVector);
+        OuterEncryptionWriter cryptoWriter = new(file, key, ((OuterAesHeader)newHeader.OuterCryptoHeader).InitVector);
 
         BinaryWriter wr = new(cryptoWriter);
 
@@ -233,6 +240,70 @@ public class PassStoreFileAccessor : IPassStore
                 written += (int)(s.Position - pos);
             }
             return written;
+        }
+
+        public static FileHeader ReadFrom(Stream s)
+        {
+            BinaryReader rd = new(s);
+            {
+                byte[] magic = new byte[8];
+                if (rd.Read(magic, 0, 8) < 8)
+                    throw PassStoreFileException.UnexpectedEndOfFile;
+                if (!magic.SequenceEqual(FORMAT_MAGIC))
+                    throw PassStoreFileException.IncorrectMagicNumber;
+            }
+            try
+            {
+                ushort major, minor;
+                major = rd.ReadUInt16();
+                minor = rd.ReadUInt16();
+                if (major != FORMAT_VERSION_MAJOR || minor != FORMAT_VERSION_MINOR)
+                    throw PassStoreFileException.UnsupportedVersion;
+
+                byte saltLen = rd.ReadByte();
+                if (saltLen < MIN_MASTER_SALT_LEN || saltLen > MAX_MASTER_SALT_LEN)
+                    throw PassStoreFileException.InvalidCryptoHeader;
+
+                byte[] salt = new byte[saltLen];
+                if (rd.Read(salt) < saltLen)
+                    throw PassStoreFileException.UnexpectedEndOfFile;
+
+                byte typeDiscrim = rd.ReadByte();
+                OuterEncryptionHeader outerEncrHdr;
+                if (typeDiscrim == ENCRYPT_ALGO_AES)
+                {
+                    byte[] iv = new byte[16];
+                    if (rd.Read(iv) < 16)
+                        throw PassStoreFileException.UnexpectedEndOfFile;
+                    outerEncrHdr = new OuterAesHeader(iv);
+                } else
+                {
+                    throw PassStoreFileException.InvalidCryptoHeader;
+                }
+
+                typeDiscrim = rd.ReadByte();
+                KdfHeader kdfHdr;
+                if (typeDiscrim == KDF_TYPE_AESKDF)
+                {
+                    int rounds = rd.Read7BitEncodedInt();
+                    byte[] seed = new byte[32];
+                    if (rd.Read(seed) < 32)
+                        throw PassStoreFileException.UnexpectedEndOfFile;
+                    kdfHdr = new AesKdfHeader(rounds, seed);
+                } else
+                {
+                    throw PassStoreFileException.InvalidCryptoHeader;
+                }
+
+                return new FileHeader(
+                    major, minor, salt,
+                    outerEncrHdr, kdfHdr
+                );
+            }
+            catch (EndOfStreamException)
+            {
+                throw PassStoreFileException.UnexpectedEndOfFile;
+            }
         }
     };
 

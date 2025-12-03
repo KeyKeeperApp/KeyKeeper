@@ -30,5 +30,5 @@ static class FileFormatConstants
     public const byte GROUP_TYPE_FAVOURITES = 0x02;
     public const byte GROUP_TYPE_SIMPLE = 0x03;
     public const byte GROUP_TYPE_CUSTOM = 0xff; // пока не используется
-    public static readonly byte[] BEGIN_MARKER = [0x5f, 0x4f, 0xcf, 0x67, 0xc0, 0x90, 0xd0];
+    public static readonly byte[] BEGIN_MARKER = [0x5f, 0x4f, 0xcf, 0x67, 0xc0, 0x90, 0xd0, 0xe5];
 }

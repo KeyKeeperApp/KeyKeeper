@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using KeyKeeper.PasswordStore;
 using KeyKeeper.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,11 @@ namespace KeyKeeper.Views
                 if (file.TryGetLocalPath() is string path)
                 {
                     (DataContext as MainWindowViewModel)!.CreateVault(path);
-                    OpenRepositoryWindow();
+                    OpenRepositoryWindow(new PassStoreFileAccessor(path, true, new StoreCreationOptions()
+                    {
+                        Key = new PasswordStore.Crypto.CompositeKey("blablabla", null),
+                        LockTimeoutSeconds = 800,
+                    }));
                 }
             }
         }
@@ -70,16 +75,17 @@ namespace KeyKeeper.Views
                 if (file.TryGetLocalPath() is string path)
                 {
                     (DataContext as MainWindowViewModel)!.OpenVault(path);
-                    OpenRepositoryWindow();
+                    OpenRepositoryWindow(new PassStoreFileAccessor(path, false, null));
                 }
             }
         }
 
-        private void OpenRepositoryWindow()
+        private void OpenRepositoryWindow(IPassStore store)
         {
             var repositoryWindow = new RepositoryWindow()
             {
                 DataContext = this.DataContext,
+                PassStore = store,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             repositoryWindow.Closed += (s, e) => this.Show();

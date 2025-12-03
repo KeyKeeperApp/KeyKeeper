@@ -139,7 +139,7 @@ public class OuterEncryptionReader : Stream
             toRead -= n;
             chunkPosition += n;
             position += n;
-            Console.WriteLine(string.Format("read={} toread={} pos={}", read, toRead, chunkPosition));
+            Console.WriteLine(string.Format("read={0} toread={1} pos={2}", read, toRead, chunkPosition));
         }
         return read;
     }
