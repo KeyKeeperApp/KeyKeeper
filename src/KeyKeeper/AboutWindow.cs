@@ -16,7 +16,7 @@ public class AboutWindow : Window
 
         var AboutKeyKeeper = new TextBlock
         {
-            Text = "About Keykeeper",
+            Text = "About KeyKeeper",
             HorizontalAlignment = HorizontalAlignment.Left,
             FontSize = 50,
             TextAlignment = TextAlignment.Left
