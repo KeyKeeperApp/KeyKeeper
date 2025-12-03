@@ -85,19 +85,16 @@ public class OuterEncryptionWriter : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        Console.WriteLine("OE write " + buffer.Length);
         int written = 0;
         while (written < buffer.Length)
         {
             if (chunkPosition == currentChunk.Length)
                 EncryptAndStoreCurrentFullChunk();
             int n = Math.Min(buffer.Length, currentChunk.Length - chunkPosition);
-            Console.WriteLine("OEW: copy " + n + " bytes buffer+" + written + " -> chunk+" + chunkPosition);
             buffer.Slice(written, n).CopyTo(new Span<byte>(currentChunk, chunkPosition, n));
             written += n;
             chunkPosition += n;
             position += n;
-            Console.WriteLine(string.Format("written={} pos={}", written, chunkPosition));
         }
     }
 

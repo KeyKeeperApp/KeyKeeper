@@ -30,7 +30,7 @@ public class AesKdf : MasterKeyDerivationFunction
         byte[] key = source.Hash()[..SEED_LENGTH];
         byte[] nextKey = new byte[SEED_LENGTH];
         Aes cipher = Aes.Create();
-        cipher.KeySize = SEED_LENGTH;
+        cipher.KeySize = SEED_LENGTH * 8;
         for (int i = 0; i < rounds; ++i)
         {
             cipher.Key = key;

@@ -122,6 +122,7 @@ public class PassStoreFileAccessor : IPassStore
         {
             byte[] randomPadding = new byte[randomPaddingLen];
             RandomNumberGenerator.Fill(randomPadding);
+            file.Write(randomPadding);
         }
 
         byte[] masterKey = newHeader.KdfInfo.GetKdf().Derive(options.Key, 32);
@@ -196,7 +197,7 @@ public class PassStoreFileAccessor : IPassStore
                 ),
                 new AesKdfHeader
                 (
-                    MAX_AESKDF_ROUNDS,
+                    200000,
                     aesKdfSeed
                 )
             );

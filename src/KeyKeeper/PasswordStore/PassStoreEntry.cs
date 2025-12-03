@@ -23,7 +23,7 @@ public abstract class PassStoreEntry
         timestamp = (ulong) new DateTimeOffset(ModificationDate.ToUniversalTime()).ToUnixTimeSeconds();
         FileFormatUtil.WriteVarUint16(tmp, timestamp);
         wr.Write(IconType.ToByteArray());
-        FileFormatUtil.WriteU8TaggedString(tmp, Name);
+        FileFormatUtil.WriteU16TaggedString(tmp, Name);
         wr.Write(InnerSerialize());
         byte[] serializedEntry = tmp.ToArray();
         tmp.Dispose();
