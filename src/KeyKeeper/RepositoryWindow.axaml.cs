@@ -7,8 +7,6 @@ namespace KeyKeeper;
 
 public partial class RepositoryWindow: Window
 {
-    public IPassStore? PassStore { private get; init; }
-
     public RepositoryWindow()
     {
         InitializeComponent();
@@ -17,7 +15,5 @@ public partial class RepositoryWindow: Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        if (PassStore!.Locked)
-            PassStore.Unlock(new CompositeKey("blablabla", null));
     }
 }
