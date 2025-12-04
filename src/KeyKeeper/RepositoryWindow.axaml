@@ -56,10 +56,12 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
                     <TextBox x:Name="UnlockPasswordEdit"
+                             Text="{Binding UnlockPassword, Mode=TwoWay}"
                              PasswordChar="*"
                              Width="450" />
 
                     <Button x:Name="UnlockButton"
+                            Command="{Binding TryUnlock}"
                             HorizontalAlignment="Center"
                             Foreground="Black"
                             Content="Unlock!" />

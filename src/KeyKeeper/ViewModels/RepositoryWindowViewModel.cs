@@ -1,8 +1,11 @@
+using System;
+using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.Input;
 using KeyKeeper.PasswordStore;
 
 namespace KeyKeeper.ViewModels;
 
-public class RepositoryWindowViewModel : ViewModelBase
+public partial class RepositoryWindowViewModel : ViewModelBase
 {
     private object currentPage;
     private IPassStore passStore;
@@ -19,7 +22,7 @@ public class RepositoryWindowViewModel : ViewModelBase
         UpdateLockStatus();
     }
 
-    private void UpdateLockStatus()
+    public void UpdateLockStatus()
     {
         if ((currentPage == null || currentPage is LockedRepositoryViewModel) && !passStore.Locked)
             SwitchToUnlocked();
@@ -29,11 +32,11 @@ public class RepositoryWindowViewModel : ViewModelBase
 
     private void SwitchToUnlocked()
     {
-        currentPage = new UnlockedRepositoryViewModel(passStore);
+        CurrentPage = new UnlockedRepositoryViewModel(passStore);
     }
 
     private void SwitchToLocked()
     {
-        currentPage = new LockedRepositoryViewModel(passStore);
+        CurrentPage = new LockedRepositoryViewModel(passStore, this);
     }
 }
