@@ -1,49 +1,60 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:KeyKeeper.ViewModels"
         x:Class="KeyKeeper.RepositoryWindow"
         Title="KeyKeeper - Хранилище паролей"
         Width="800"
         Height="600"
-        Background="White">
+        Background="White"
+        x:DataType="vm:RepositoryWindowViewModel">
 
-    <Grid>
-        <!-- Синий левый край -->
-        <Border Width="200" 
-                Background="Blue" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Stretch"/>
-    <StackPanel Margin="20" HorizontalAlignment="Left">
-        <!-- Надпись KeyKeeper -->
-        <TextBlock Text="KeyKeeper" 
-                   FontSize="32" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Left"
-                   Margin="0,0,0,20"/>
-        
-        <!-- Рамочка  -->
-        <Border BorderBrush="Gray" 
-                BorderThickness="1" 
-                CornerRadius="5"
-                Padding="20"
-                Background="#F5F5F5"
-                HorizontalAlignment="Left">
-            
-            <StackPanel HorizontalAlignment="Left">
-                <Button Content="All Passwords" 
-                        Width="120"
-                        Height="30"
-                        Foreground="Black"
-                        HorizontalAlignment="Left"/>
-            </StackPanel>
-            
-        </Border>
-        <!-- Save Passwords -->
-        <Button Content="Save Passwords" 
-                Width="120"
-                Height="30"
-                Foreground="White"
-                HorizontalAlignment="Left"
-                Margin="0,20,0,0"/>
-    </StackPanel>
-    </Grid>
+        <Window.DataTemplates>
+            <DataTemplate DataType="{x:Type vm:UnlockedRepositoryViewModel}">
+                <Grid>
+                    <!-- Синий левый край -->
+                    <Border Width="200" 
+                            Background="Blue" 
+                            HorizontalAlignment="Left" 
+                            VerticalAlignment="Stretch"/>
+                    <StackPanel Margin="20" HorizontalAlignment="Left">
+                        <!-- Надпись KeyKeeper -->
+                        <TextBlock Text="KeyKeeper" 
+                                FontSize="32"
+                                FontWeight="Bold" 
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,20"/>
+
+                        <!-- Рамочка  -->
+                        <Border BorderBrush="Gray" 
+                                BorderThickness="1" 
+                                CornerRadius="5"
+                                Padding="20"
+                                Background="#F5F5F5"
+                                HorizontalAlignment="Left">
+
+                            <StackPanel HorizontalAlignment="Left">
+                                <Button Content="All Passwords" 
+                                        Width="120"
+                                        Height="30"
+                                        Foreground="Black"
+                                        HorizontalAlignment="Left"/>
+                            </StackPanel>
+
+                        </Border>
+                        <!-- Save Passwords -->
+                        <Button Content="Save Passwords" 
+                                Width="120"
+                                Height="30"
+                                Foreground="White"
+                                HorizontalAlignment="Left"
+                                Margin="0,20,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
+                
+            </DataTemplate>
+        </Window.DataTemplates>
+
+        <ContentControl Content="{Binding CurrentPage}"/>
 </Window>
