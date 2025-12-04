@@ -21,6 +21,7 @@ namespace KeyKeeper.Views
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
         {
+            // 1. Открываем проводник
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Создать новое хранилище паролей",
@@ -39,12 +40,24 @@ namespace KeyKeeper.Views
             {
                 if (file.TryGetLocalPath() is string path)
                 {
-                    (DataContext as MainWindowViewModel)!.CreateVault(path);
-                    OpenRepositoryWindow(new PassStoreFileAccessor(path, true, new StoreCreationOptions()
+                    // 2. Открываем окно с паролем
+                    var passwordDialog = new PasswordDialog();
+                    await passwordDialog.ShowDialog(this);
+
+                    // 3. Если нажали "Создать"
+                    if (passwordDialog.Created)
                     {
-                        Key = new PasswordStore.Crypto.CompositeKey("blablabla", null),
-                        LockTimeoutSeconds = 800,
-                    }));
+                        // 4. Создаем хранилище с паролем
+                        var compositeKey = new PasswordStore.Crypto.CompositeKey(passwordDialog.Password, null);
+                        (DataContext as MainWindowViewModel)!.CreateVault(path);
+
+                        // 5. Открываем окно хранилища
+                        OpenRepositoryWindow(new PassStoreFileAccessor(path, true, new StoreCreationOptions()
+                        {
+                            Key = compositeKey,
+                            LockTimeoutSeconds = 800,
+                        }));
+                    }
                 }
             }
         }
