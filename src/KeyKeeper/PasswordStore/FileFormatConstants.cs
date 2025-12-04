@@ -11,7 +11,7 @@ static class FileFormatConstants
     public const int MAX_AESKDF_ROUNDS = AesKdf.MAX_ROUNDS;
     public const byte ENCRYPT_ALGO_AES = 14;
     public const byte KDF_TYPE_AESKDF = 195;
-    public const int HMAC_SIZE = HMACSHA3_512.HashSizeInBytes;
+    public const int HMAC_SIZE = SHA512.HashSizeInBytes;
     public const uint FILE_FIELD_BEGIN = 0x7853dbd5;
     public const uint FILE_FIELD_INNER_CRYPTO = 0x613e91e4;
     public const uint FILE_FIELD_CONFIG = 0xd36a53c0;
