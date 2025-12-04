@@ -1,8 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Interactivity;
 
-namespace KeyKeeper.Views
+namespace KeyKeeper
 {
     public partial class PasswordDialog : Window
     {
@@ -19,15 +20,47 @@ namespace KeyKeeper.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OnCreateClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void CreateButton_Click(object sender, RoutedEventArgs e)
         {
+            // Получаем значения из полей
             var passwordBox = this.FindControl<TextBox>("PasswordBox");
-            Password = passwordBox?.Text ?? "";
+            var confirmBox = this.FindControl<TextBox>("ConfirmPasswordBox");
+            var errorText = this.FindControl<TextBlock>("ErrorText");
+
+            string password = passwordBox?.Text ?? "";
+            string confirmPassword = confirmBox?.Text ?? "";
+
+            // Проверяем, что пароли не пустые
+            if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
+            {
+                ShowError("Пароль не может быть пустым");
+                return;
+            }
+
+            // Проверяем совпадение паролей
+            if (password != confirmPassword)
+            {
+                ShowError("Пароли не совпадают");
+                return;
+            }
+
+            // Пароли совпадают - сохраняем
+            Password = password;
             Created = true;
             Close();
         }
 
-        private void OnCancelClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private void ShowError(string message)
+        {
+            var errorText = this.FindControl<TextBlock>("ErrorText");
+            if (errorText != null)
+            {
+                errorText.Text = message;
+                errorText.IsVisible = true;
+            }
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Created = false;
             Close();
