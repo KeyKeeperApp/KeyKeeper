@@ -52,7 +52,18 @@
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
-                
+                <StackPanel Margin="20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <TextBox x:Name="UnlockPasswordEdit"
+                             PasswordChar="*"
+                             Width="450" />
+
+                    <Button x:Name="UnlockButton"
+                            HorizontalAlignment="Center"
+                            Foreground="Black"
+                            Content="Unlock!" />
+                </StackPanel>
             </DataTemplate>
         </Window.DataTemplates>
 

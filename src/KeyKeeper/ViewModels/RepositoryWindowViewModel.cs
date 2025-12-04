@@ -21,9 +21,9 @@ public class RepositoryWindowViewModel : ViewModelBase
 
     private void UpdateLockStatus()
     {
-        if (currentPage is LockedRepositoryViewModel && !passStore.Locked)
+        if ((currentPage == null || currentPage is LockedRepositoryViewModel) && !passStore.Locked)
             SwitchToUnlocked();
-        else if (currentPage is UnlockedRepositoryViewModel && passStore.Locked)
+        else if ((currentPage == null || currentPage is UnlockedRepositoryViewModel) && passStore.Locked)
             SwitchToLocked();
     }
 
