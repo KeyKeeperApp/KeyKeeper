@@ -84,7 +84,7 @@ namespace KeyKeeper.Views
         {
             var repositoryWindow = new RepositoryWindow()
             {
-                DataContext = this.DataContext,
+                DataContext = new RepositoryWindowViewModel(),
                 PassStore = store,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
