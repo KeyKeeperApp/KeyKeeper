@@ -129,7 +129,7 @@ public class PassStoreContentChunk
 
     private static byte[] ComputeHmac(byte[] data, byte[] key, int chunkOrdinal)
     {
-        SHA3_512 hasher = SHA3_512.Create();
+        SHA512 hasher = SHA512.Create();
         byte[] innerKey = key.Select(x => (byte)(x ^ 0x36)).ToArray();
         byte[] outerKey = key.Select(x => (byte)(x ^ 0x5c)).ToArray();
 
@@ -145,7 +145,7 @@ public class PassStoreContentChunk
         byte[] innerHash = hasher.Hash!;
         hasher.Clear();
 
-        hasher = SHA3_512.Create();
+        hasher = SHA512.Create();
         hasher.TransformBlock(outerKey, 0, outerKey.Length, null, 0);
         Array.Fill<byte>(outerKey, 0);
         hasher.TransformFinalBlock(innerHash, 0, innerHash.Length);
