@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using KeyKeeper.PasswordStore;
+using KeyKeeper.PasswordStore.Crypto;
 using KeyKeeper.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,6 @@ namespace KeyKeeper.Views
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Открываем проводник
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = "Создать новое хранилище паролей",
@@ -29,34 +29,32 @@ namespace KeyKeeper.Views
                 DefaultExtension = "kkp",
                 FileTypeChoices = new[]
                 {
-                    new FilePickerFileType("Хранилище KeyKeeper")
-                    {
-                        Patterns = new[] { "*.kkp" }
-                    }
-                }
+            new FilePickerFileType("Хранилище KeyKeeper")
+            {
+                Patterns = new[] { "*.kkp" }
+            }
+        }
             });
 
             if (file != null)
             {
                 if (file.TryGetLocalPath() is string path)
                 {
-                    // 2. Открываем окно с паролем
                     var passwordDialog = new PasswordDialog();
                     await passwordDialog.ShowDialog(this);
-
-                    // 3. Если нажали "Создать"
-                    if (passwordDialog.Created)
+                    if (passwordDialog.Created && !string.IsNullOrEmpty(passwordDialog.Password))
                     {
-                        // 4. Создаем хранилище с паролем
-                        var compositeKey = new PasswordStore.Crypto.CompositeKey(passwordDialog.Password, null);
-                        (DataContext as MainWindowViewModel)!.CreateVault(path);
-
-                        // 5. Открываем окно хранилища
-                        OpenRepositoryWindow(new PassStoreFileAccessor(path, true, new StoreCreationOptions()
-                        {
-                            Key = compositeKey,
-                            LockTimeoutSeconds = 800,
-                        }));
+                        var compositeKey = new CompositeKey(passwordDialog.Password, null);
+                        var passStoreAccessor = new PassStoreFileAccessor(
+                            filename: path,
+                            create: true,
+                            createOptions: new StoreCreationOptions()
+                            {
+                                Key = compositeKey,
+                                LockTimeoutSeconds = 800
+                            });
+                        IPassStore passStore = passStoreAccessor;
+                        OpenRepositoryWindow(passStore, passwordDialog.Password);
                     }
                 }
             }
@@ -64,22 +62,21 @@ namespace KeyKeeper.Views
 
         private async void OpenExistingVault_Click(object sender, RoutedEventArgs e)
         {
-            // Открываем диалог выбора файла
             var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 Title = "Открыть хранилище паролей",
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("Хранилище KeyKeeper")
-                    {
-                        Patterns = new[] { "*.kkp" }
-                    },
-                    new FilePickerFileType("Все файлы")
-                    {
-                        Patterns = new[] { "*.*" }
-                    }
-                }
+            new FilePickerFileType("Хранилище KeyKeeper")
+            {
+                Patterns = new[] { "*.kkp" }
+            },
+            new FilePickerFileType("Все файлы")
+            {
+                Patterns = new[] { "*.*" }
+            }
+        }
             });
 
             if (files.Count > 0)
@@ -87,20 +84,32 @@ namespace KeyKeeper.Views
                 var file = files[0];
                 if (file.TryGetLocalPath() is string path)
                 {
-                    (DataContext as MainWindowViewModel)!.OpenVault(path);
-                    OpenRepositoryWindow(new PassStoreFileAccessor(path, false, null));
+                    var passwordDialog = new PasswordEntryDialog();
+                    await passwordDialog.ShowDialog(this);
+                    if (passwordDialog.Opened && !string.IsNullOrEmpty(passwordDialog.Password))
+                    {
+                        var passStoreAccessor = new PassStoreFileAccessor(
+                            filename: path,
+                            create: false,
+                            createOptions: null);
+                        IPassStore passStore = passStoreAccessor;
+                        (DataContext as MainWindowViewModel)!.OpenVault(path);
+                        OpenRepositoryWindow(passStore, passwordDialog.Password);
+                    }
                 }
             }
         }
 
-        private void OpenRepositoryWindow(IPassStore store)
+        private void OpenRepositoryWindow(IPassStore passStore, string masterPassword)
         {
             var repositoryWindow = new RepositoryWindow()
             {
                 DataContext = this.DataContext,
-                PassStore = store,
+                PassStore = passStore,
+                MasterPassword = masterPassword,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+
             repositoryWindow.Closed += (s, e) => this.Show();
             repositoryWindow.Show();
             this.Hide();

@@ -7,9 +7,10 @@ using KeyKeeper.PasswordStore.Crypto;
 
 namespace KeyKeeper;
 
-public partial class RepositoryWindow: Window
+public partial class RepositoryWindow : Window
 {
-    public IPassStore? PassStore { private get; init; }
+    public IPassStore? PassStore { get; init; }
+    public string? MasterPassword { get; init; }  // Для хранения пароля
 
     public RepositoryWindow()
     {
@@ -19,7 +20,12 @@ public partial class RepositoryWindow: Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        if (PassStore!.Locked)
-            PassStore.Unlock(new CompositeKey("blablabla", null));
+
+        // Разблокируем хранилище если нужно
+        if (PassStore != null && PassStore.Locked && !string.IsNullOrEmpty(MasterPassword))
+        {
+            var compositeKey = new CompositeKey(MasterPassword, null);
+            PassStore.Unlock(compositeKey);
+        }
     }
 }
