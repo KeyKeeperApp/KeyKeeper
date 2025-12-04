@@ -33,14 +33,14 @@ namespace KeyKeeper
             // Проверяем, что пароли не пустые
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(confirmPassword))
             {
-                ShowError("Пароль не может быть пустым");
+                ShowError("Password cannot be empty");
                 return;
             }
 
             // Проверяем совпадение паролей
             if (password != confirmPassword)
             {
-                ShowError("Пароли не совпадают");
+                ShowError("Passwords don't match");
                 return;
             }
 
