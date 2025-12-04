@@ -40,8 +40,11 @@ public class PassStoreContentChunk
 
         try
         {
-            chunkLen = rd.ReadUInt16();
-            chunkLen = chunkLen | (rd.ReadByte() << 16);
+            byte[] chunkLenBytes = new byte[3];
+            if (str.Read(chunkLenBytes) < 3)
+                throw PassStoreFileException.UnexpectedEndOfFile;
+            chunkLen = BinaryPrimitives.ReadUInt16LittleEndian(new(chunkLenBytes, 0, 2));
+            chunkLen |= chunkLenBytes[2] << 16;
         }
         catch (EndOfStreamException)
         {
@@ -90,18 +93,17 @@ public class PassStoreContentChunk
     {
         BinaryReader rd = new(s);
         int chunkLen;
-        try
-        {
-            chunkLen = rd.ReadUInt16();
-            chunkLen = (chunkLen << 8) | rd.ReadByte();
-        }
-        catch (EndOfStreamException)
-        {
+
+        byte[] chunkLenBytes = new byte[3];
+        if (s.Read(chunkLenBytes) < 3)
             throw PassStoreFileException.UnexpectedEndOfFile;
-        }
+        chunkLen = BinaryPrimitives.ReadUInt16LittleEndian(new(chunkLenBytes, 0, 2));
+        chunkLen |= chunkLenBytes[2] << 16;
+
         chunkLen &= ~(1 << 23); // 23 бит имеет специальное значение
         byte[] chunk = new byte[3 + HMAC_SIZE + chunkLen];
-        if (s.Read(chunk) < chunk.Length)
+        Array.Copy(chunkLenBytes, chunk, 3);
+        if (s.Read(chunk, 3, HMAC_SIZE + chunkLen) < HMAC_SIZE + chunkLen)
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
         }

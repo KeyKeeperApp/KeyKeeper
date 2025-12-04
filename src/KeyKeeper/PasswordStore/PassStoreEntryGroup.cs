@@ -36,7 +36,7 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
         try
         {
             byte groupType = rd.ReadByte();
-            byte[] guidBuffer = new byte[8];
+            byte[] guidBuffer = new byte[16];
             Guid? customGroupSubtype = null;
             if (groupType == GROUP_TYPE_CUSTOM)
             {
@@ -69,6 +69,13 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
     IEnumerator IEnumerable.GetEnumerator()
     {
         return ChildEntries.GetEnumerator();
+    }
+
+    public override string ToString()
+    {
+        return string.Format(
+            "EntryGroup (id={0} name={1} chilren=[{2}])",
+            Id, Name, string.Join(", ", ChildEntries));
     }
 
     protected override byte[] InnerSerialize()

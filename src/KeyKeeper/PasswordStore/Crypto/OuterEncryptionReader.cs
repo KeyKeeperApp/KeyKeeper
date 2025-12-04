@@ -155,7 +155,10 @@ public class OuterEncryptionReader : Stream
         EraseCurrentChunk();
 
         int decrypted = 0, read = 0;
-        currentChunk = new byte[(encryptedData.Length + encryptedRemainderLength) / 16 * 16];
+        if (isCurrentChunkLast)
+            currentChunk = new byte[encryptedData.Length + encryptedRemainderLength];
+        else
+            currentChunk = new byte[(encryptedData.Length + encryptedRemainderLength) / 16 * 16];
         if (encryptedRemainderLength > 0 && encryptedData.Length >= 16 - encryptedRemainderLength)
         {
             encryptedData.Slice(0, 16 - encryptedRemainderLength)

@@ -20,7 +20,8 @@ public class PassStoreFileAccessor : IPassStore
 
     private string filename;
     private byte[]? key;
-    private IPassStoreDirectory? root;
+    private InnerEncryptionInfo? innerCrypto;
+    private PassStoreEntry? root;
 
     public PassStoreFileAccessor(string filename, bool create, StoreCreationOptions? createOptions)
     {
@@ -44,7 +45,7 @@ public class PassStoreFileAccessor : IPassStore
     {
         if (Locked)
             throw new InvalidOperationException();
-        return root!;
+        return (IPassStoreDirectory)root!;
     }
 
     public int GetTotalEntryCount()
@@ -58,7 +59,50 @@ public class PassStoreFileAccessor : IPassStore
 
         using FileStream file = new(filename, FileMode.Open, FileAccess.Read, FileShare.None);
         FileHeader hdr = FileHeader.ReadFrom(file);
-        Console.WriteLine(hdr); // debug
+
+        file.Seek((file.Position + 4096 - 1) / 4096 * 4096, SeekOrigin.Begin);
+
+        key.Salt = hdr.PreSalt;
+        this.key = hdr.KdfInfo.GetKdf().Derive(key, 32);
+        using OuterEncryptionReader cryptoReader = new(file, this.key, ((OuterAesHeader)hdr.OuterCryptoHeader).InitVector);
+        using BinaryReader rd = new(cryptoReader);
+
+        {
+            if (rd.ReadUInt32() != FILE_FIELD_BEGIN)
+                throw PassStoreFileException.InvalidBeginMarker;
+            Span<byte> marker = stackalloc byte[8];
+            if (rd.Read(marker) < 8)
+                throw PassStoreFileException.UnexpectedEndOfFile;
+            if (!marker.SequenceEqual(BEGIN_MARKER))
+                throw PassStoreFileException.InvalidBeginMarker;
+        }
+
+        while (true)
+        {
+            try
+            {
+                uint fileField = rd.ReadUInt32();
+                bool end = false;
+                switch (fileField)
+                {
+                    case FILE_FIELD_INNER_CRYPTO:
+                        ReadInnerCryptoInfo(cryptoReader);
+                        break;
+                    case FILE_FIELD_CONFIG:
+                        break;
+                    case FILE_FIELD_STORE:
+                        this.root = PassStoreEntry.ReadFromStream(cryptoReader);
+                        break;
+                    case FILE_FIELD_END:
+                        end = true;
+                        break;
+                }
+                if (end) break;
+            } catch (EndOfStreamException)
+            {
+                throw PassStoreFileException.UnexpectedEndOfFile;
+            }
+        }
     }
 
     public void Lock()
@@ -153,7 +197,10 @@ public class PassStoreFileAccessor : IPassStore
         wr.Write(FILE_FIELD_CONFIG);
 
         wr.Write(FILE_FIELD_STORE);
-        root = (IPassStoreDirectory) WriteInitialStoreTree(cryptoWriter);
+        root = WriteInitialStoreTree(cryptoWriter);
+
+        wr.Write(FILE_FIELD_END);
+
         cryptoWriter.Flush();
         cryptoWriter.Dispose();
     }
@@ -171,6 +218,17 @@ public class PassStoreFileAccessor : IPassStore
             );
         root.WriteToStream(w);
         return root;
+    }
+
+    private InnerEncryptionInfo ReadInnerCryptoInfo(Stream str)
+    {
+        byte[] key = new byte[32];
+        byte[] iv = new byte[16];
+        if (str.Read(key) < 32)
+            throw PassStoreFileException.UnexpectedEndOfFile;
+        if (str.Read(iv) < 16)
+            throw PassStoreFileException.UnexpectedEndOfFile;
+        return new(key, iv);
     }
 
     record FileHeader (
@@ -328,4 +386,10 @@ public class PassStoreFileAccessor : IPassStore
             return new AesKdf(Rounds, Seed);
         }
     }
+
+    record struct InnerEncryptionInfo(
+        byte[] Key,
+        byte[] Iv
+    )
+    {}
 }
