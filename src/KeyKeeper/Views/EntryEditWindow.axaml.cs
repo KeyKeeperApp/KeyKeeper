@@ -30,7 +30,7 @@ public partial class EntryEditWindow: Window
         if (password.Length == 0) return;
 
         EditedEntry = new PassStoreEntryPassword(
-            new Guid(),
+            Guid.NewGuid(),
             DateTime.UtcNow,
             DateTime.UtcNow,
             Guid.Empty,

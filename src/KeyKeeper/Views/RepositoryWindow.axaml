@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:KeyKeeper.ViewModels"
+        xmlns:i="using:Avalonia.Interactivity"
         x:Class="KeyKeeper.Views.RepositoryWindow"
         Title="KeyKeeper - Password store"
         CanResize="False"
@@ -69,12 +70,17 @@
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Width="100" Margin="10" HorizontalAlignment="Center">
-                                    <Svg Path="/Assets/logo_en.svg" Width="48" Height="48"/>
-                                    <TextBlock Text="{Binding Name}"
-                                               HorizontalAlignment="Center"
-                                               Foreground="Black" />
-                                </StackPanel>
+                                <Border Background="Transparent" DoubleTapped="Entry_DoubleTapped">
+                                    <StackPanel Width="100"
+                                                Margin="10"
+                                                HorizontalAlignment="Center">
+                                        <Svg Path="/Assets/logo_en.svg" Width="48" Height="48"
+                                                />
+                                        <TextBlock Text="{Binding Name}"
+                                                HorizontalAlignment="Center"
+                                                Foreground="Black" />
+                                    </StackPanel>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
