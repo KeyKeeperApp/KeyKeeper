@@ -10,4 +10,9 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     {
         passStore = store;
     }
+
+    public void Save()
+    {
+        passStore.Save();
+    }
 }
