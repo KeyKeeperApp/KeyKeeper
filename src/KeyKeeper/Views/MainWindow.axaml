@@ -5,12 +5,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KeyKeeper.Views"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="KeyKeeper.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Background="#fff"
         Icon="/Assets/icon.ico"
-        Title="KeyKeeper">
+        Title="KeyKeeper"
+        Width="800"
+        Height="600">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
@@ -21,14 +23,15 @@
         <Border Background="#2328C4" Grid.Column="0">
             <Grid RowDefinitions="Auto,*,Auto" Margin="30">
 
-                    <Svg Path="/Assets/logo_en.svg" Width="340" Height="340"/>
+                <Svg Path="/Assets/logo_en.svg"
+                     Stretch="Uniform" />
 
-                <StackPanel Grid.Row="1" Spacing="5" VerticalAlignment="Top">
+                <StackPanel Grid.Row="1" Spacing="5" VerticalAlignment="Top" Margin="0 40 0 0">
                     <Button Content="New Database"
                             Foreground="White"
                             Background="Transparent"
                             BorderThickness="0"
-                            FontSize="28"
+                            FontSize="24"
                             Cursor="Hand"
                             Click="CreateNewVault_Click"/>
 
@@ -36,17 +39,17 @@
                             Foreground="White"
                             Background="Transparent"
                             BorderThickness="0"
-                            FontSize="28"
+                            FontSize="24"
                             Cursor="Hand"
                             Click="OpenExistingVault_Click"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
 					<Button Command="{Binding OpenSettingsCommand}">
-                        <Svg Path="/Assets/settings.svg" Width="61" Height="61"/>
+                        <Svg Path="/Assets/settings.svg" Width="48" Height="48"/>
 					</Button>
                     <Button Command="{Binding OpenAboutCommand}">
-                        <Svg Path="/Assets/about.svg" Width="61" Height="61"/>
+                        <Svg Path="/Assets/about.svg" Width="48" Height="48"/>
                     </Button>
                 </StackPanel>
 
@@ -65,11 +68,12 @@
                            Margin="0,40,0,30"/>
 
                 <Border Grid.Row="1"
-                        Width="700"
+                        MaxWidth="500"
                         Height="260"
-                        HorizontalAlignment="Center"
+                        HorizontalAlignment="Stretch"
                         BorderBrush="#D0D0D0"
                         BorderThickness="1"
+                        Margin="40 0 40 0"
                         CornerRadius="4"
                         Padding="25">
 
