@@ -1,7 +1,5 @@
 using System;
 using Avalonia.Controls;
-using KeyKeeper.PasswordStore;
-using KeyKeeper.PasswordStore.Crypto;
 
 namespace KeyKeeper;
 
