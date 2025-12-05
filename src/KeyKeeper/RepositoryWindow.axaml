@@ -13,7 +13,7 @@
                 <Grid>
                     <!-- Синий левый край -->
                     <Border Width="200" 
-                            Background="Blue" 
+                            Background="#2328C4" 
                             HorizontalAlignment="Left" 
                             VerticalAlignment="Stretch"/>
                     <StackPanel Margin="20" HorizontalAlignment="Left">
