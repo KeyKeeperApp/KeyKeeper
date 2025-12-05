@@ -15,19 +15,19 @@
 
         <TextBlock Text="Entry name:" HorizontalAlignment="Right"
                    Grid.Row="1" Grid.Column="0" Margin="5" />
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" />
+        <TextBox Name="EntryNameEdit" Grid.Row="1" Grid.Column="1" Margin="5" />
 
         <TextBlock Text="Username:" HorizontalAlignment="Right"
                    Grid.Row="2" Grid.Column="0" Margin="5" />
-        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" />
+        <TextBox Name="UsernameEdit" Grid.Row="2" Grid.Column="1" Margin="5" />
 
         <TextBlock Text="Password:" HorizontalAlignment="Right"
                    Grid.Row="3" Grid.Column="0" Margin="5" />
-        <TextBox Grid.Row="3" Grid.Column="1" Margin="5" PasswordChar="*" />
+        <TextBox Name="PasswordEdit" Grid.Row="3" Grid.Column="1" Margin="5" PasswordChar="*" />
 
         <Button Content="Add!" HorizontalAlignment="Center"
                 Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
-                Background="#aaa" />
+                Background="#aaa" Click="AddButton_Click" />
     </Grid>
 
     <Window.Styles>
