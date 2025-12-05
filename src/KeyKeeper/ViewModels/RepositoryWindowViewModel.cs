@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using KeyKeeper.PasswordStore;
 
 namespace KeyKeeper.ViewModels;
@@ -6,6 +8,8 @@ public partial class RepositoryWindowViewModel : ViewModelBase
 {
     private object currentPage;
     private IPassStore passStore;
+
+    public Func<string, Task> ShowErrorPopup;
 
     public object CurrentPage
     {

@@ -63,8 +63,8 @@ public class PassStoreFileAccessor : IPassStore
         file.Seek((file.Position + 4096 - 1) / 4096 * 4096, SeekOrigin.Begin);
 
         key.Salt = hdr.PreSalt;
-        this.key = hdr.KdfInfo.GetKdf().Derive(key, 32);
-        using OuterEncryptionReader cryptoReader = new(file, this.key, ((OuterAesHeader)hdr.OuterCryptoHeader).InitVector);
+        byte[] masterKey = hdr.KdfInfo.GetKdf().Derive(key, 32);
+        using OuterEncryptionReader cryptoReader = new(file, masterKey, ((OuterAesHeader)hdr.OuterCryptoHeader).InitVector);
         using BinaryReader rd = new(cryptoReader);
 
         {
@@ -103,6 +103,7 @@ public class PassStoreFileAccessor : IPassStore
                 throw PassStoreFileException.UnexpectedEndOfFile;
             }
         }
+        this.key = masterKey;
     }
 
     public void Lock()

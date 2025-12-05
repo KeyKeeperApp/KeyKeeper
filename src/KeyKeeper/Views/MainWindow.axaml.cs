@@ -82,9 +82,8 @@ namespace KeyKeeper.Views
 
         private void OpenRepositoryWindow(IPassStore store)
         {
-            var repositoryWindow = new RepositoryWindow()
+            var repositoryWindow = new RepositoryWindow(new RepositoryWindowViewModel(store))
             {
-                DataContext = new RepositoryWindowViewModel(store),
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             repositoryWindow.Closed += (s, e) => this.Show();

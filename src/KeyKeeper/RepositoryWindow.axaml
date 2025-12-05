@@ -3,6 +3,7 @@
         xmlns:vm="using:KeyKeeper.ViewModels"
         x:Class="KeyKeeper.RepositoryWindow"
         Title="KeyKeeper - Хранилище паролей"
+        CanResize="False"
         Width="800"
         Height="600"
         Background="White"
@@ -13,7 +14,7 @@
                 <Grid>
                     <!-- Синий левый край -->
                     <Border Width="200" 
-                            Background="#2328C4" 
+                            Background="#2328C4"
                             HorizontalAlignment="Left" 
                             VerticalAlignment="Stretch"/>
                     <StackPanel Margin="20" HorizontalAlignment="Left">
@@ -42,8 +43,7 @@
 
                         </Border>
                         <!-- Save Passwords -->
-                        <Button Content="Save Passwords" 
-                                Width="120"
+                        <Button Content="Save Passwords"
                                 Height="30"
                                 Foreground="White"
                                 HorizontalAlignment="Left"

@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyKeeper.Views.ErrorDialog"
+        Width="350" Height="120"
+        Background="White"
+        CanResize="False"
+        Title="Error">
+
+    <Grid Margin="10" RowDefinitions="*,Auto">
+        <TextBlock x:Name="MessageText"
+                   Grid.Row="0"
+                   Foreground="Red"
+                   FontSize="18"
+                   TextWrapping="Wrap" />
+        <Button Grid.Row="1"
+                Content="OK"
+                HorizontalAlignment="Center"
+                Margin="0,10,0,0"
+                Click="Ok_Click"
+                Background="#aaa" />
+        <Grid.Styles>
+            <Style Selector="Button /template/ ContentPresenter">
+                <Setter Property="Foreground" Value="#333" />
+            </Style>
+            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                <Setter Property="Background" Value="#ccc" />
+                <Setter Property="Foreground" Value="#444" />
+            </Style>
+        </Grid.Styles>
+    </Grid>
+</Window>
