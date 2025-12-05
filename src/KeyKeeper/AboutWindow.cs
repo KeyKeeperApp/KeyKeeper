@@ -8,7 +8,7 @@ public class AboutWindow : Window
 {
     public AboutWindow()
     {
-        this.Title = "О приложении";
+        this.Title = "About";
         this.Width = 600;
         this.Height = 400;
 
@@ -24,7 +24,10 @@ public class AboutWindow : Window
 
         var AboutText = new TextBlock
         {
-            Text = "KeyKeeper - личный менеджер паролей и ключей,\nгде пользователь сможет сохранять свои логины, пароли, адреса электронной почты, ключи восстановления с различных веб-сайтов и\nиз приложений и управлять ими. Ключи и пароли\nбудут храниться исключительно локально на\nкомпьютере пользователя и всё хранилище\nцеликом можно будет защитить мастер-паролем.",
+            Text = "KeyKeeper is a personal password and key manager\n" +
+                   "where you can save passwords and other login\n" +
+                   "information, configure one-time code generation,\n" +
+                   "and create encryption keys for personal use.\n",
             HorizontalAlignment = HorizontalAlignment.Left,
             FontSize = 16,
             TextAlignment = TextAlignment.Left,

@@ -7,12 +7,12 @@ public class SettingsWindow : Window
 {
     public SettingsWindow()
     {
-        this.Title = "Настройки";
+        this.Title = "Settings";
         this.Width = 400;
         this.Height = 300;
         var textBlock = new TextBlock
         {
-            Text = "Окно настроек",
+            Text = "Settings window",
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
             FontSize = 16

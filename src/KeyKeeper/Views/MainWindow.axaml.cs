@@ -24,12 +24,12 @@ namespace KeyKeeper.Views
         {
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Создать новое хранилище паролей",
+                Title = "Create new password store",
                 SuggestedFileName = "passwords.kkp",
                 DefaultExtension = "kkp",
                 FileTypeChoices = new[]
                 {
-                    new FilePickerFileType("Хранилище KeyKeeper")
+                    new FilePickerFileType("KeyKeeper files")
                     {
                         Patterns = new[] { "*.kkp" }
                     }
@@ -68,11 +68,11 @@ namespace KeyKeeper.Views
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("Хранилище KeyKeeper")
+                    new FilePickerFileType("KeyKeeper files")
                     {
                         Patterns = new[] { "*.kkp" }
                     },
-                    new FilePickerFileType("Все файлы")
+                    new FilePickerFileType("All files")
                     {
                         Patterns = new[] { "*.*" }
                     }
