@@ -25,7 +25,7 @@ public partial class EntryEditWindow: Window
         username = username.Trim();
         if (username.Length == 0) return;
 
-        string password = UsernameEdit.Text ?? "";
+        string password = PasswordEdit.Text ?? "";
         password = password.Trim();
         if (password.Length == 0) return;
 
