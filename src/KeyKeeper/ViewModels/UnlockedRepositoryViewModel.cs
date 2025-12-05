@@ -32,4 +32,9 @@ public class UnlockedRepositoryViewModel : ViewModelBase
             OnPropertyChanged(nameof(Passwords));
         }
     }
+
+    public void Save()
+    {
+        passStore.Save();
+    }
 }

@@ -44,6 +44,7 @@
                         </Border>
                         <!-- Save Passwords -->
                         <Button Content="Save Passwords"
+                                Click="SaveButton_Click"
                                 Height="30"
                                 Foreground="White"
                                 HorizontalAlignment="Left"

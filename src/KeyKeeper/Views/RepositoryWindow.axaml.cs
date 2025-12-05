@@ -34,4 +34,12 @@ public partial class RepositoryWindow: Window
                 vm.AddEntry(dialog.EditedEntry);
         }
     }
+
+    private void SaveButton_Click(object sender, RoutedEventArgs args)
+    {
+        if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+        {
+            pageVm.Save();
+        }
+    }
 }

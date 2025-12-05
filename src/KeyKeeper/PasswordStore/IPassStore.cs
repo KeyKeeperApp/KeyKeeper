@@ -10,4 +10,5 @@ public interface IPassStore
     int GetTotalEntryCount();
     void Unlock(CompositeKey key);
     void Lock();
+    void Save();
 }
