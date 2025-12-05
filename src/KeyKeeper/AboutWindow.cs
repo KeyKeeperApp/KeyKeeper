@@ -18,7 +18,7 @@ public class AboutWindow : Window
         {
             Text = "About KeyKeeper",
             HorizontalAlignment = HorizontalAlignment.Left,
-            FontSize = 50,
+            FontSize = 45,
             TextAlignment = TextAlignment.Left
         };
 
