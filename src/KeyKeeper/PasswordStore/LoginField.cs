@@ -7,7 +7,7 @@ public struct LoginField
 {
     public byte Type;
     public Guid CustomFieldSubtype;
-    public required string Value;
+    public required string Value { get; set; }
 
     public override string ToString()
     {
