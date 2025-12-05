@@ -48,6 +48,13 @@
                                 Foreground="White"
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
+
+                        <Button Content="New Entry"
+                                Click="AddEntryButton_Click"
+                                Height="30"
+                                Foreground="White"
+                                HorizontalAlignment="Left"
+                                Margin="0,20,0,0"/>
                     </StackPanel>
                     <ListBox Width="580"
                              Margin="210 10 10 10"

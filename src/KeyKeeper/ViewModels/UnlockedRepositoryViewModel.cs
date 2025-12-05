@@ -23,4 +23,12 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     {
         passStore = store;
     }
+
+    public void AddEntry(PassStoreEntry entry)
+    {
+        if (entry is PassStoreEntryPassword)
+        {
+            (passStore.GetRootDirectory() as PassStoreEntryGroup)!.ChildEntries.Add(entry);
+        }
+    }
 }

@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:KeyKeeper.ViewModels"
+        x:Class="KeyKeeper.Views.EntryEditWindow"
+        Title="Add Entry"
+        CanResize="False"
+        Width="540"
+        Height="270"
+        Background="White">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" Margin="5">
+        <TextBlock Text="Add New Password Entry" FontSize="20" HorizontalAlignment="Center"
+                   Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+
+        <TextBlock Text="Entry name:" HorizontalAlignment="Right"
+                   Grid.Row="1" Grid.Column="0" Margin="5" />
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" />
+
+        <TextBlock Text="Username:" HorizontalAlignment="Right"
+                   Grid.Row="2" Grid.Column="0" Margin="5" />
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" />
+
+        <TextBlock Text="Password:" HorizontalAlignment="Right"
+                   Grid.Row="3" Grid.Column="0" Margin="5" />
+        <TextBox Grid.Row="3" Grid.Column="1" Margin="5" PasswordChar="*" />
+
+        <Button Content="Add!" HorizontalAlignment="Center"
+                Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                Background="#aaa" />
+    </Grid>
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style Selector="Button /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="#ccc" />
+        </Style>
+    </Window.Styles>
+</Window>
