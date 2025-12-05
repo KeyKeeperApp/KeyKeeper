@@ -21,6 +21,7 @@ public class PassStoreFileAccessor : IPassStore
     private string filename;
     private byte[]? key;
     private InnerEncryptionInfo? innerCrypto;
+    private OuterEncryptionHeader? outerCryptoHdr;
     private PassStoreEntry? root;
 
     public PassStoreFileAccessor(string filename, bool create, StoreCreationOptions? createOptions)
@@ -59,6 +60,7 @@ public class PassStoreFileAccessor : IPassStore
 
         using FileStream file = new(filename, FileMode.Open, FileAccess.Read, FileShare.None);
         FileHeader hdr = FileHeader.ReadFrom(file);
+        outerCryptoHdr = hdr.OuterCryptoHeader;
 
         file.Seek((file.Position + 4096 - 1) / 4096 * 4096, SeekOrigin.Begin);
 
@@ -109,6 +111,47 @@ public class PassStoreFileAccessor : IPassStore
     public void Lock()
     {
         if (Locked) return;
+        Save();
+        Array.Fill<byte>(key!, 0);
+        key = null;
+    }
+
+    public void Save()
+    {
+        if (Locked) return;
+
+        // skip file header
+        using FileStream file = new(filename, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+        FileHeader.ReadFrom(file);
+        file.Seek((file.Position + 4096 - 1) / 4096 * 4096, SeekOrigin.Begin);
+
+        // write the new contents
+        using OuterEncryptionWriter cryptoWriter = new(file, key!, ((OuterAesHeader)outerCryptoHdr!).InitVector);
+
+        using (BinaryWriter wr = new(cryptoWriter))
+        {
+            wr.Write(FILE_FIELD_BEGIN);
+            cryptoWriter.Write(BEGIN_MARKER);
+
+            byte[] innerKey = new byte[32];
+            RandomNumberGenerator.Fill(innerKey);
+            byte[] innerIv = new byte[16];
+            RandomNumberGenerator.Fill(innerIv);
+
+            wr.Write(FILE_FIELD_INNER_CRYPTO);
+            cryptoWriter.Write(innerKey);
+            cryptoWriter.Write(innerIv);
+
+            wr.Write(FILE_FIELD_CONFIG);
+
+            wr.Write(FILE_FIELD_STORE);
+            root!.WriteToStream(cryptoWriter);
+
+            wr.Write(FILE_FIELD_END);
+        }
+        cryptoWriter.Flush();
+
+        file.SetLength(file.Position);
     }
 
     /// <summary>
@@ -166,6 +209,7 @@ public class PassStoreFileAccessor : IPassStore
         using FileStream file = File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.None);
         FileHeader newHeader = FileHeader.Default();
         newHeader.WriteTo(file);
+        outerCryptoHdr = newHeader.OuterCryptoHeader;
 
         options.Key.Salt = newHeader.PreSalt;
 
