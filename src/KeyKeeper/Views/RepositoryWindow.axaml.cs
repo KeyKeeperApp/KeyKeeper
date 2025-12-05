@@ -1,9 +1,8 @@
 using System;
 using Avalonia.Controls;
 using KeyKeeper.ViewModels;
-using KeyKeeper.Views;
 
-namespace KeyKeeper;
+namespace KeyKeeper.Views;
 
 public partial class RepositoryWindow: Window
 {

@@ -1,7 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:KeyKeeper.ViewModels"
-        x:Class="KeyKeeper.RepositoryWindow"
+        x:Class="KeyKeeper.Views.RepositoryWindow"
         Title="KeyKeeper - Хранилище паролей"
         CanResize="False"
         Width="800"
