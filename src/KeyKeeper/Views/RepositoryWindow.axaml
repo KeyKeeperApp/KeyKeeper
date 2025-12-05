@@ -49,6 +49,27 @@
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
                     </StackPanel>
+                    <ListBox Width="580"
+                             Margin="210 10 10 10"
+                             ItemsSource="{Binding Passwords}"
+                             Background="Transparent">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Width="100" Margin="10" HorizontalAlignment="Center">
+                                    <Svg Path="/Assets/logo_en.svg" Width="48" Height="48"/>
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Center"
+                                               Foreground="Black" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
