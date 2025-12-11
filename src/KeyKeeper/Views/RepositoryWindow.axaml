@@ -92,7 +92,12 @@
             <DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
                 <StackPanel Margin="20"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            Spacing="10">
+                    <TextBlock Text="Enter credentials to unlock"
+                               Foreground="#2328C4"
+                               FontSize="32" />
+
                     <TextBox x:Name="UnlockPasswordEdit"
                              Text="{Binding UnlockPassword, Mode=TwoWay}"
                              PasswordChar="*"
@@ -102,7 +107,18 @@
                             Command="{Binding TryUnlock}"
                             HorizontalAlignment="Center"
                             Foreground="Black"
+                            Background="#aaa"
                             Content="Unlock!" />
+
+                    <StackPanel.Styles>
+                        <Style Selector="Button /template/ ContentPresenter">
+                            <Setter Property="Foreground" Value="#333" />
+                        </Style>
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="#ccc" />
+                            <Setter Property="Foreground" Value="#444" />
+                        </Style>
+                    </StackPanel.Styles>
                 </StackPanel>
             </DataTemplate>
         </Window.DataTemplates>
