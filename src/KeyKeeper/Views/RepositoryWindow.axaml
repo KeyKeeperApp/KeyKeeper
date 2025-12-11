@@ -79,7 +79,7 @@
                                         <TextBlock Text="{Binding Name}"
                                                 HorizontalAlignment="Center"
                                                 Foreground="Black" />
-                                        <TextBlock Text="{Binding Password.Value}" 
+                                        <TextBlock Text="{Binding Username.Value}" 
                                                    Foreground="#666"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
