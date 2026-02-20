@@ -33,7 +33,7 @@ public partial class EntryEditWindow: Window
             Guid.NewGuid(),
             DateTime.UtcNow,
             DateTime.UtcNow,
-            Guid.Empty,
+            EntryIconType.DEFAULT,
             name,
             new LoginField()
             {

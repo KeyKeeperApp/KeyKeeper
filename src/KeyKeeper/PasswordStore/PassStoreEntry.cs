@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using KeyKeeper.PasswordStore.Crypto;
 using static KeyKeeper.PasswordStore.FileFormatConstants;
 
 namespace KeyKeeper.PasswordStore;
@@ -13,6 +12,13 @@ public abstract class PassStoreEntry
     public Guid IconType { get; set; }
     public string Name { get; set; }
     public PassStoreEntryType Type { get; set; }
+    public string IconPath
+    {
+        get
+        {
+            return $"avares://KeyKeeper/Assets/builtin-entry-icon-{IconType}.svg";
+        }
+    }
 
     public void WriteToStream(Stream str)
     {

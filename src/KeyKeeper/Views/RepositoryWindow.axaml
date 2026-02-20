@@ -74,7 +74,7 @@
                                     <StackPanel Width="100"
                                                 Margin="10"
                                                 HorizontalAlignment="Center">
-                                        <Svg Path="/Assets/logo_en.svg" Width="48" Height="48"
+                                        <Svg Path="{Binding IconPath}" Width="48" Height="48"
                                                 />
                                         <TextBlock Text="{Binding Name}"
                                                 HorizontalAlignment="Center"
