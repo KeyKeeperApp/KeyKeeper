@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Input;
 using KeyKeeper.PasswordStore;
 using KeyKeeper.ViewModels;
 
@@ -44,11 +46,11 @@ public partial class RepositoryWindow: Window
         }
     }
 
-    private void Entry_DoubleTapped(object sender, RoutedEventArgs args)
+    private void Entry_DoubleTapped(object sender, TappedEventArgs args)
     {
-        if (args.Source is Border b)
+        if (args.Source is StyledElement s)
         {
-            if (b.DataContext is PassStoreEntryPassword pwd)
+            if (s.DataContext is PassStoreEntryPassword pwd)
                 Clipboard!.SetTextAsync(pwd.Password.Value);
         }
     }
