@@ -1,0 +1,38 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Background="White" Padding="60">
+            <Button Classes="" Content="contentъ"/>
+        </Border>
+    </Design.PreviewWith>
+    
+    <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentTheme.xaml"/>
+    
+    <Style Selector="Button:not(.dummy) /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#cccccc" />
+        <Setter Property="Foreground" Value="#000000" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#aaaaaa" />
+        <Setter Property="Foreground" Value="#000000" />
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#444444" />
+        <Setter Property="Foreground" Value="#ffffff" />
+    </Style>
+
+    <Style Selector="Button.accentSidebarButton /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#00000000" />
+        <Setter Property="Foreground" Value="white" />
+    </Style>
+    <Style Selector="Button.accentSidebarButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="CornerRadius" Value="9" />
+        <Setter Property="BorderBrush" Value="white" />
+    </Style>
+    <Style Selector="Button.accentSidebarButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="CornerRadius" Value="9" />
+        <Setter Property="BorderBrush" Value="white" />
+        <Setter Property="Background" Value="white"/>
+        <Setter Property="Foreground" Value="#2328C4"/>
+    </Style>
+</Styles>

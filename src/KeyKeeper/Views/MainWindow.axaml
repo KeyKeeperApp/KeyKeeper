@@ -28,27 +28,23 @@
 
                 <StackPanel Grid.Row="1" Spacing="5" VerticalAlignment="Top" Margin="0 40 0 0">
                     <Button Content="New Database"
-                            Foreground="White"
-                            Background="Transparent"
-                            BorderThickness="0"
+                            Classes="accentSidebarButton"
                             FontSize="24"
                             Cursor="Hand"
                             Click="CreateNewVault_Click"/>
 
                     <Button Content="Open Database"
-                            Foreground="White"
-                            Background="Transparent"
-                            BorderThickness="0"
+                            Classes="accentSidebarButton"
                             FontSize="24"
                             Cursor="Hand"
                             Click="OpenExistingVault_Click"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="25">
-					<Button Command="{Binding OpenSettingsCommand}">
+					<Button Command="{Binding OpenSettingsCommand}" Classes="accentSidebarButton">
                         <Svg Path="/Assets/settings.svg" Width="48" Height="48"/>
 					</Button>
-                    <Button Command="{Binding OpenAboutCommand}">
+                    <Button Command="{Binding OpenAboutCommand}" Classes="accentSidebarButton">
                         <Svg Path="/Assets/about.svg" Width="48" Height="48"/>
                     </Button>
                 </StackPanel>

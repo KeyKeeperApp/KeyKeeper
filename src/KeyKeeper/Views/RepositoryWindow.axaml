@@ -38,23 +38,22 @@
                                 <Button Content="All Passwords" 
                                         Width="120"
                                         Height="30"
-                                        Foreground="Black"
                                         HorizontalAlignment="Left"/>
                             </StackPanel>
 
                         </Border>
                         <!-- Save Passwords -->
                         <Button Content="Save Passwords"
+                                Classes="accentSidebarButton"
                                 Click="SaveButton_Click"
                                 Height="30"
-                                Foreground="White"
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
 
                         <Button Content="New Entry"
+                                Classes="accentSidebarButton"
                                 Click="AddEntryButton_Click"
                                 Height="30"
-                                Foreground="White"
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
                     </StackPanel>
@@ -106,19 +105,7 @@
                     <Button x:Name="UnlockButton"
                             Command="{Binding TryUnlock}"
                             HorizontalAlignment="Center"
-                            Foreground="Black"
-                            Background="#aaa"
                             Content="Unlock!" />
-
-                    <StackPanel.Styles>
-                        <Style Selector="Button /template/ ContentPresenter">
-                            <Setter Property="Foreground" Value="#333" />
-                        </Style>
-                        <Style Selector="Button:pointerover /template/ ContentPresenter">
-                            <Setter Property="Background" Value="#ccc" />
-                            <Setter Property="Foreground" Value="#444" />
-                        </Style>
-                    </StackPanel.Styles>
                 </StackPanel>
             </DataTemplate>
         </Window.DataTemplates>
