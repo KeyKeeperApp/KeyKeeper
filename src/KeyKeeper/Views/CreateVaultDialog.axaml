@@ -1,0 +1,69 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        x:Class="KeyKeeper.Views.CreateVaultFileWindow"
+        Title="Create New Vault"
+        Background="#fff"
+        Icon="/Assets/icon.ico"
+        Width="600" Height="400"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        x:Name="ThisWindow">
+
+	<Grid ColumnDefinitions="1.5*, 2*">
+		<!-- Левая синяя панель (без логотипа и заголовка) -->
+		<Border Background="#2328C4" Grid.Column="0">
+			<StackPanel VerticalAlignment="Center" Margin="20">
+				<TextBlock Text="Choose where to save your password database"
+                           TextWrapping="Wrap"
+                           Foreground="#E0E0FF"
+                           FontSize="20"
+                           TextAlignment="Center"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Правая белая панель с формой -->
+		<StackPanel Grid.Column="1" Margin="30" VerticalAlignment="Center" Spacing="20">
+			<TextBlock Text="File location"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       Foreground="#2328C4"/>
+
+			<Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto" ColumnSpacing="10">
+				<TextBox x:Name="FilePathTextBox"
+                         Grid.Column="0"
+                         Watermark="Select file path..."
+                         Text="{Binding #ThisWindow.FilePath, Mode=TwoWay}"
+                         Padding="10,8"/>
+				<Button x:Name="BrowseButton"
+                        Grid.Column="1"
+                        Content="Browse..."
+                        Classes="secondaryButton"
+                        Padding="15,8"
+                        Click="BrowseButton_Click"/>
+			</Grid>
+
+			<!-- Предупреждение о существующем файле -->
+			<TextBlock x:Name="PathWarning"
+                       FontSize="12"
+                       Foreground="Orange"
+                       Text=" " />
+
+			<!-- Кнопки действий -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+				<Button Content="Cancel"
+                        Classes="secondaryButton"
+                        Width="80"
+                        Click="CancelButton_Click"/>
+				<Button x:Name="CreateButton"
+                        Content="Next"
+                        Classes="accentButton"
+                        Width="80"
+                        IsEnabled="False"
+                        Click="CreateButton_Click"/>
+			</StackPanel>
+		</StackPanel>
+	</Grid>
+</Window>
