@@ -82,6 +82,13 @@
                                                    Foreground="#666"
                                                    HorizontalAlignment="Center" />
                                     </StackPanel>
+                                    <Border.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Name="entryCtxMenuCopyUsername" Header="Copy username" Click="EntryContextMenuItem_Click"/>
+                                            <MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
+                                            <MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
                                 </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>

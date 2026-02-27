@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -52,6 +51,27 @@ public partial class RepositoryWindow: Window
         {
             if (s.DataContext is PassStoreEntryPassword pwd)
                 Clipboard!.SetTextAsync(pwd.Password.Value);
+        }
+    }
+
+    private void EntryContextMenuItem_Click(object sender, RoutedEventArgs args) {
+        if (args.Source is StyledElement s)
+        {
+            if (s.DataContext is PassStoreEntryPassword pwd)
+            {
+                if (s.Name == "entryCtxMenuCopyUsername")
+                {
+                    Clipboard!.SetTextAsync(pwd.Username.Value);
+                }
+                else if (s.Name == "entryCtxMenuCopyPassword")
+                {
+                    Clipboard!.SetTextAsync(pwd.Password.Value);
+                }
+                else if (s.Name == "entryCtxMenuDelete")
+                {
+                    Console.WriteLine("DELETE");
+                }
+            }
         }
     }
 }
