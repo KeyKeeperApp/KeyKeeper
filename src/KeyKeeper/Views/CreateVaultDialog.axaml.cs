@@ -21,18 +21,25 @@ namespace KeyKeeper.Views
             FilePathTextBox.TextChanged += OnTextChanged;
         }
 
-        private void OnTextChanged(object? sender, TextChangedEventArgs e)
+        private async void OnTextChanged(object? sender, TextChangedEventArgs e)
         {
             string path = FilePathTextBox.Text ?? "";
             CreateButton.IsEnabled = !string.IsNullOrWhiteSpace(path);
+            PathWarning.Text = "";
 
-            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            try
             {
-                PathWarning.Text = "File already exists. It will be overwritten.";
+                var storageFile = await StorageProvider.TryGetFileFromPathAsync(path);
+                if (storageFile != null)
+                {
+                    PathWarning.Text = "File already exists. It will be overwritten.";
+                }
             }
-            else
+            catch
             {
-                PathWarning.Text = "";
             }
         }
 

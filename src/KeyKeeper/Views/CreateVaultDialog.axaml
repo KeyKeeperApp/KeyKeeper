@@ -13,7 +13,7 @@
         x:Name="ThisWindow">
 
 	<Grid ColumnDefinitions="1.5*, 2*">
-		<!-- Ëåâàÿ ñèíÿÿ ïàíåëü (áåç ëîãîòèïà è çàãîëîâêà) -->
+		<!-- Ð›ÐµÐ²Ð°Ñ ÑÐ¸Ð½ÑÑ Ð¿Ð°Ð½ÐµÐ»ÑŒ (Ð±ÐµÐ· Ð»Ð¾Ð³Ð¾Ñ‚Ð¸Ð¿Ð° Ð¸ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐ°) -->
 		<Border Background="#2328C4" Grid.Column="0">
 			<StackPanel VerticalAlignment="Center" Margin="20">
 				<TextBlock Text="Choose where to save your password database"
@@ -24,7 +24,7 @@
 			</StackPanel>
 		</Border>
 
-		<!-- Ïðàâàÿ áåëàÿ ïàíåëü ñ ôîðìîé -->
+		<!-- ÐŸÑ€Ð°Ð²Ð°Ñ Ð±ÐµÐ»Ð°Ñ Ð¿Ð°Ð½ÐµÐ»ÑŒ Ñ Ñ„Ð¾Ñ€Ð¼Ð¾Ð¹ -->
 		<StackPanel Grid.Column="1" Margin="30" VerticalAlignment="Center" Spacing="20">
 			<TextBlock Text="File location"
                        FontSize="22"
@@ -33,10 +33,9 @@
 
 			<Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto" ColumnSpacing="10">
 				<TextBox x:Name="FilePathTextBox"
-                         Grid.Column="0"
-                         Watermark="Select file path..."
-                         Text="{Binding #ThisWindow.FilePath, Mode=TwoWay}"
-                         Padding="10,8"/>
+                        Grid.Column="0"
+                        Watermark="Select file path..."
+                        Padding="10,8"/>
 				<Button x:Name="BrowseButton"
                         Grid.Column="1"
                         Content="Browse..."
@@ -45,13 +44,13 @@
                         Click="BrowseButton_Click"/>
 			</Grid>
 
-			<!-- Ïðåäóïðåæäåíèå î ñóùåñòâóþùåì ôàéëå -->
+			<!-- ÐŸÑ€ÐµÐ´ÑƒÐ¿Ñ€ÐµÐ¶Ð´ÐµÐ½Ð¸Ðµ Ð¾ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰ÐµÐ¼ Ñ„Ð°Ð¹Ð»Ðµ -->
 			<TextBlock x:Name="PathWarning"
                        FontSize="12"
                        Foreground="Orange"
                        Text=" " />
 
-			<!-- Êíîïêè äåéñòâèé -->
+			<!-- ÐšÐ½Ð¾Ð¿ÐºÐ¸ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ð¹ -->
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
 				<Button Content="Cancel"
                         Classes="secondaryButton"
