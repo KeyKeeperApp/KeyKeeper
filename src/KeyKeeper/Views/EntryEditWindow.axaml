@@ -5,13 +5,12 @@
         Title="Add Entry"
         CanResize="False"
         Width="540"
-        Height="270"
+        Height="300"
         Background="White">
 
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*,*" Margin="5">
         <TextBlock Text="Add New Password Entry" FontSize="20" HorizontalAlignment="Center"
                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
-
 
         <TextBlock Text="Entry name:" HorizontalAlignment="Right"
                    Grid.Row="1" Grid.Column="0" Margin="5" />
@@ -23,7 +22,21 @@
 
         <TextBlock Text="Password:" HorizontalAlignment="Right"
                    Grid.Row="3" Grid.Column="0" Margin="5" />
-        <TextBox Name="PasswordEdit" Grid.Row="3" Grid.Column="1" Margin="5" PasswordChar="*" />
+        
+        <!-- Контейнер для поля пароля и индикатора -->
+        <Grid Grid.Row="3" Grid.Column="1" Margin="5" RowDefinitions="Auto,Auto">
+            <TextBox Name="PasswordEdit" Grid.Row="0" PasswordChar="*" />
+            
+            <!-- Индикатор надежности пароля -->
+            <Border Name="PasswordStrengthIndicator" Grid.Row="1" 
+                    Height="4" CornerRadius="2" Margin="0,3,0,0"
+                    Background="#ddd">
+                <Border Name="PasswordStrengthFill" 
+                        Width="0" Height="4" 
+                        HorizontalAlignment="Left"
+                        CornerRadius="2" />
+            </Border>
+        </Grid>
 
         <Button Content="Add!" HorizontalAlignment="Center"
                 Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
