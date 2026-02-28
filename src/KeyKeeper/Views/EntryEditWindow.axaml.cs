@@ -45,15 +45,15 @@ public partial class EntryEditWindow : Window
 
         PasswordStrengthFill.Width = (strength / 100.0) * maxWidth;
 
-        if (strength < 30)
+        if (strength < 20)
         {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Red);
         }
-        else if (strength < 60)
+        else if (strength < 50)
         {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Orange);
         }
-        else if (strength < 80)
+        else if (strength < 70)
         {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Gold);
         }
@@ -67,13 +67,13 @@ public partial class EntryEditWindow : Window
     {
         int score = 0;
 
-        if (password.Length >= 8) score += 10;
-        if (password.Length >= 12) score += 10;
-        if (password.Length >= 16) score += 5;
+        if (password.Length >= 8) score += 20;
+        if (password.Length >= 12) score += 20;
+        if (password.Length >= 16) score += 15;
 
         if (Regex.IsMatch(password, @"\d")) score += 10;
 
-        if (Regex.IsMatch(password, @"[a-z]")) score += 10;
+        if (Regex.IsMatch(password, @"[a-z]")) score += 15;
 
         if (Regex.IsMatch(password, @"[A-Z]")) score += 15;
 
