@@ -7,6 +7,7 @@ namespace KeyKeeper.PasswordStore;
 public abstract class PassStoreEntry
 {
     public Guid Id { get; set; }
+    public PassStoreEntryGroup? Parent { get; set; }
     public DateTime CreationDate { get; protected set; }
     public DateTime ModificationDate { get; set; }
     public Guid IconType { get; set; }

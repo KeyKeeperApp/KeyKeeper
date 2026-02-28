@@ -33,6 +33,12 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         }
     }
 
+    public void DeleteEntry(Guid id)
+    {
+        (passStore.GetRootDirectory() as PassStoreEntryGroup)!.DeleteEntry(id);
+        OnPropertyChanged(nameof(Passwords));
+    }
+
     public void Save()
     {
         passStore.Save();
