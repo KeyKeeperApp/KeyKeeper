@@ -45,20 +45,38 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
                 customGroupSubtype = new Guid(guidBuffer);
             }
 
+            PassStoreEntryGroup group = new(id, createdAt, modifiedAt, iconType, name, groupType, null, customGroupSubtype);
+
             int entryCount = rd.Read7BitEncodedInt();
             List<PassStoreEntry> children = new();
             for (int i = 0; i < entryCount; i++)
-                children.Add(PassStoreEntry.ReadFromStream(str));
+            {
+                PassStoreEntry entry = PassStoreEntry.ReadFromStream(str);
+                entry.Parent = group;
+                children.Add(entry);
+            }
+            group.ChildEntries = children;
             
-            return new PassStoreEntryGroup(
-                id, createdAt, modifiedAt,
-                iconType, name, groupType, children,
-                customGroupSubtype
-            );
+            return group;
         } catch (EndOfStreamException)
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
         }
+    }
+
+    public bool DeleteEntry(Guid id)
+    {
+        if (ChildEntries == null)
+            return false;
+        for (int i = 0; i < ChildEntries.Count; i++)
+        {
+            if (ChildEntries[i].Id == id)
+            {
+                ChildEntries.RemoveAt(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     IEnumerator<PassStoreEntry> IEnumerable<PassStoreEntry>.GetEnumerator()

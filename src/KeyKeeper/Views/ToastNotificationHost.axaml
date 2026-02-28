@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:KeyKeeper.Views"
+             x:Class="KeyKeeper.Views.ToastNotificationHost"
+             Opacity="0">
+
+    <Border Background="#aa666666"
+            CornerRadius="18"
+            Padding="16 12"
+            IsHitTestVisible="False">
+        <TextBlock Text="{Binding Message, RelativeSource={RelativeSource AncestorType=local:ToastNotificationHost}}"
+                   TextWrapping="Wrap"
+                   Foreground="White"/>
+    </Border>
+</UserControl>
