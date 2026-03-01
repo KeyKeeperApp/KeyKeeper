@@ -31,7 +31,7 @@
 
 				<!-- Выбор файла -->
 				<StackPanel Spacing="10">
-					<TextBlock Text="File location" FontWeight="SemiBold"/>
+					<TextBlock Text="File location" FontWeight="SemiBold" Foreground="Black" />
 					<Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
 						<TextBox x:Name="FilePathTextBox"
                                  Grid.Column="0"
@@ -52,7 +52,7 @@
 
 				<!-- Ввод мастер-пароля -->
 				<StackPanel Spacing="10">
-					<TextBlock Text="Master password" FontWeight="SemiBold"/>
+					<TextBlock Text="Master password" FontWeight="SemiBold" Foreground="Black" />
 					<TextBox x:Name="PasswordBox"
                              PasswordChar="*"
                              Watermark="Enter password"
@@ -60,7 +60,7 @@
 				</StackPanel>
 
 				<StackPanel Spacing="10">
-					<TextBlock Text="Confirm password" FontWeight="SemiBold"/>
+					<TextBlock Text="Confirm password" FontWeight="SemiBold" Foreground="Black" />
 					<TextBox x:Name="ConfirmPasswordBox"
                              PasswordChar="*"
                              Watermark="Confirm password"
