@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using System;
+using System.Threading.Tasks;
 
 namespace KeyKeeper.Views
 {
@@ -23,7 +24,7 @@ namespace KeyKeeper.Views
             ConfirmPasswordBox.TextChanged += OnPasswordTextChanged;
         }
 
-        private void OnTextChanged(object? sender, TextChangedEventArgs e)
+        private async void OnTextChanged(object? sender, TextChangedEventArgs e)
         {
             UpdateCreateButtonState();
             PathWarning.Text = "";
@@ -34,7 +35,7 @@ namespace KeyKeeper.Views
 
             try
             {
-                var storageFile = StorageProvider.TryGetFileFromPathAsync(path).GetAwaiter().GetResult();
+                var storageFile = await StorageProvider.TryGetFileFromPathAsync(path);
                 if (storageFile != null)
                 {
                     PathWarning.Text = "File already exists. It will be overwritten.";
