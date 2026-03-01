@@ -8,6 +8,7 @@ namespace KeyKeeper.ViewModels;
 public class UnlockedRepositoryViewModel : ViewModelBase
 {
     private IPassStore passStore;
+    private bool hasUnsavedChanges;
 
     public IEnumerable<PassStoreEntryPassword> Passwords
     {
@@ -16,6 +17,16 @@ public class UnlockedRepositoryViewModel : ViewModelBase
             return passStore.GetRootDirectory()
                 .Where(entry => entry is PassStoreEntryPassword)
                 .Select(entry => (entry as PassStoreEntryPassword)!);
+        }
+    }
+
+    public bool HasUnsavedChanges
+    {
+        get => hasUnsavedChanges;
+        private set
+        {
+            hasUnsavedChanges = value;
+            OnPropertyChanged(nameof(HasUnsavedChanges));
         }
     }
 
