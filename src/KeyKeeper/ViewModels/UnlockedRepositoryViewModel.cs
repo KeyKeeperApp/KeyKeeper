@@ -39,6 +39,16 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         OnPropertyChanged(nameof(Passwords));
     }
 
+    public void UpdateEntry(PassStoreEntryPassword updatedEntry)
+    {
+        var root = passStore.GetRootDirectory() as PassStoreEntryGroup;
+        if (root == null) return;
+
+        root.DeleteEntry(updatedEntry.Id);
+        root.ChildEntries.Add(updatedEntry);
+        OnPropertyChanged(nameof(Passwords));
+    }
+
     public void Save()
     {
         passStore.Save();
