@@ -11,6 +11,7 @@ namespace KeyKeeper.Views;
 public partial class EntryEditWindow : Window
 {
     public PassStoreEntryPassword? EditedEntry;
+    private PassStoreEntryPassword? _originalEntry;
 
     public EntryEditWindow()
     {
@@ -19,6 +20,14 @@ public partial class EntryEditWindow : Window
         {
             PasswordEdit.TextChanged += PasswordTextChanged;
         }
+    }
+
+    public void SetEntry(PassStoreEntryPassword entry)
+    {
+        _originalEntry = entry;
+        EntryNameEdit.Text = entry.Name;
+        UsernameEdit.Text = entry.Username.Value;
+        PasswordEdit.Text = entry.Password.Value;
     }
 
     private void PasswordTextChanged(object? sender, TextChangedEventArgs e)
@@ -39,49 +48,34 @@ public partial class EntryEditWindow : Window
         }
 
         int strength = CalculatePasswordStrength(password);
-
         double maxWidth = PasswordStrengthIndicator.Bounds.Width;
-        if (maxWidth <= 0) maxWidth = 200; 
+        if (maxWidth <= 0) maxWidth = 200;
 
         PasswordStrengthFill.Width = (strength / 100.0) * maxWidth;
 
         if (strength < 20)
-        {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Red);
-        }
         else if (strength < 50)
-        {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Orange);
-        }
         else if (strength < 70)
-        {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Gold);
-        }
         else
-        {
             PasswordStrengthFill.Background = new SolidColorBrush(Colors.Green);
-        }
     }
 
     private int CalculatePasswordStrength(string password)
     {
         int score = 0;
-
         if (password.Length >= 8) score += 20;
         if (password.Length >= 12) score += 20;
         if (password.Length >= 16) score += 15;
-
         if (Regex.IsMatch(password, @"\d")) score += 10;
-
         if (Regex.IsMatch(password, @"[a-z]")) score += 15;
-
         if (Regex.IsMatch(password, @"[A-Z]")) score += 15;
-
         if (Regex.IsMatch(password, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]")) score += 20;
 
         var uniqueChars = new System.Collections.Generic.HashSet<char>(password).Count;
         score += Math.Min(20, uniqueChars * 2);
-
         return Math.Min(100, score);
     }
 
@@ -96,22 +90,17 @@ public partial class EntryEditWindow : Window
         string password = PasswordEdit?.Text ?? "";
         if (string.IsNullOrEmpty(password)) return;
 
+        Guid id = _originalEntry?.Id ?? Guid.NewGuid();
+        DateTime created = DateTime.UtcNow;
+
         EditedEntry = new PassStoreEntryPassword(
-            Guid.NewGuid(),
-            DateTime.UtcNow,
+            id,
+            created,
             DateTime.UtcNow,
             EntryIconType.DEFAULT,
             name,
-            new LoginField()
-            {
-                Type = LOGIN_FIELD_USERNAME_ID,
-                Value = username
-            },
-            new LoginField()
-            {
-                Type = LOGIN_FIELD_PASSWORD_ID,
-                Value = password
-            },
+            new LoginField() { Type = LOGIN_FIELD_USERNAME_ID, Value = username },
+            new LoginField() { Type = LOGIN_FIELD_PASSWORD_ID, Value = password },
             null
         );
         Close();
