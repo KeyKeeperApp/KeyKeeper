@@ -33,6 +33,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     public UnlockedRepositoryViewModel(IPassStore store)
     {
         passStore = store;
+        HasUnsavedChanges = false;
     }
 
     public void AddEntry(PassStoreEntry entry)
@@ -40,6 +41,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         if (entry is PassStoreEntryPassword)
         {
             (passStore.GetRootDirectory() as PassStoreEntryGroup)!.ChildEntries.Add(entry);
+            HasUnsavedChanges = true;
             OnPropertyChanged(nameof(Passwords));
         }
     }
@@ -47,11 +49,13 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     public void DeleteEntry(Guid id)
     {
         (passStore.GetRootDirectory() as PassStoreEntryGroup)!.DeleteEntry(id);
+        HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
     }
 
     public void Save()
     {
         passStore.Save();
+        HasUnsavedChanges = false;
     }
 }
