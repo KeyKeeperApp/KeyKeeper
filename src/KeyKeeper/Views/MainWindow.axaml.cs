@@ -22,41 +22,26 @@ namespace KeyKeeper.Views
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
         {
-            var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-            {
-                Title = "Create new password store",
-                SuggestedFileName = "passwords.kkp",
-                DefaultExtension = "kkp",
-                FileTypeChoices = new[]
-                {
-                    new FilePickerFileType("KeyKeeper files")
-                    {
-                        Patterns = new[] { "*.kkp" }
-                    }
-                }
-            });
+            var createVaultDialog = new CreateVaultFileWindow();
+            await createVaultDialog.ShowDialog(this);
 
-            if (file != null)
+            if (createVaultDialog.Success &&
+                !string.IsNullOrEmpty(createVaultDialog.FilePath) &&
+                !string.IsNullOrEmpty(createVaultDialog.Password))
             {
-                if (file.TryGetLocalPath() is string path)
-                {
-                    var passwordDialog = new PasswordDialog();
-                    await passwordDialog.ShowDialog(this);
-                    if (passwordDialog.Created && !string.IsNullOrEmpty(passwordDialog.Password))
+                var path = createVaultDialog.FilePath;
+                var password = createVaultDialog.Password;
+                var compositeKey = new CompositeKey(password, null);
+                var passStoreAccessor = new PassStoreFileAccessor(
+                    filename: path,
+                    create: true,
+                    createOptions: new StoreCreationOptions()
                     {
-                        var compositeKey = new CompositeKey(passwordDialog.Password, null);
-                        var passStoreAccessor = new PassStoreFileAccessor(
-                            filename: path,
-                            create: true,
-                            createOptions: new StoreCreationOptions()
-                            {
-                                Key = compositeKey,
-                                LockTimeoutSeconds = 800
-                            });
-                        IPassStore passStore = passStoreAccessor;
-                        OpenRepositoryWindow(passStore);
-                    }
-                }
+                        Key = compositeKey,
+                        LockTimeoutSeconds = 800
+                    });
+                IPassStore passStore = passStoreAccessor;
+                OpenRepositoryWindow(passStore);
             }
         }
 
