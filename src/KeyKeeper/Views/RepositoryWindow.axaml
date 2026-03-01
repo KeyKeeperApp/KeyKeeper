@@ -25,7 +25,30 @@
                                 FontSize="32"
                                 FontWeight="Bold" 
                                 HorizontalAlignment="Left"
-                                Margin="0,0,0,20"/>
+                                Margin="0,0,0,8"/>
+
+                        <!-- Таймер блокировки под надписью KeyKeeper -->
+                        <Border Background="#CC000000"
+                                CornerRadius="6"
+                                Padding="8,4"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                IsVisible="{Binding $parent[Window].DataContext.LockTimerDisplay,
+                                            Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <!-- Иконка замка (Material Design lock outline) -->
+                                <Path Fill="White"
+                                      VerticalAlignment="Center"
+                                      Width="13" Height="13"
+                                      Stretch="Uniform"
+                                      Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                <TextBlock Text="{Binding $parent[Window].DataContext.LockTimerDisplay}"
+                                           Foreground="White"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
 
                         <!-- Рамочка  -->
                         <Border BorderBrush="Gray" 

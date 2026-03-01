@@ -10,7 +10,7 @@ using Avalonia.Controls.Presenters;
 
 namespace KeyKeeper.Views;
 
-public partial class RepositoryWindow: Window
+public partial class RepositoryWindow : Window
 {
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
@@ -21,10 +21,19 @@ public partial class RepositoryWindow: Window
             await new ErrorDialog(message).ShowDialog(this);
         };
     }
-    
+
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        AddHandler(PointerMovedEvent, OnUserActivity, RoutingStrategies.Tunnel);
+        AddHandler(PointerPressedEvent, OnUserActivity, RoutingStrategies.Tunnel);
+        AddHandler(KeyDownEvent, OnUserActivity, RoutingStrategies.Tunnel);
+    }
+
+    private void OnUserActivity(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is RepositoryWindowViewModel vm)
+            vm.ResetLockTimer();
     }
 
     private async void AddEntryButton_Click(object sender, RoutedEventArgs args)
@@ -59,7 +68,8 @@ public partial class RepositoryWindow: Window
         }
     }
 
-    private void EntryContextMenuItem_Click(object sender, RoutedEventArgs args) {
+    private void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)
+    {
         if (args.Source is StyledElement s)
         {
             if (s.DataContext is PassStoreEntryPassword pwd)
