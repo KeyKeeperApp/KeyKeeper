@@ -30,6 +30,45 @@ public partial class RepositoryWindow: Window
         base.OnOpened(e);
     }
 
+    private async void RepositoryWindow_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        if (allowClose || closeConfirmationShown)
+        {
+            return;
+        }
+
+        if (DataContext is RepositoryWindowViewModel checkVm &&
+            checkVm.CurrentPage is UnlockedRepositoryViewModel unlockedVm &&
+            !unlockedVm.HasUnsavedChanges)
+        {
+            allowClose = true;
+            return;
+        }
+
+        e.Cancel = true;
+        closeConfirmationShown = true;
+
+        var dialog = new CloseConfirmationDialog();
+        var result = await dialog.ShowDialog<CloseConfirmationResult?>(this);
+
+        closeConfirmationShown = false;
+
+        if (result == null || result == CloseConfirmationResult.Cancel)
+        {
+            return;
+        }
+
+        if (result == CloseConfirmationResult.Save &&
+            DataContext is RepositoryWindowViewModel vm &&
+            vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+        {
+            pageVm.Save();
+        }
+
+        allowClose = true;
+        Close();
+    }
+
     private async void AddEntryButton_Click(object sender, RoutedEventArgs args)
     {
         if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
