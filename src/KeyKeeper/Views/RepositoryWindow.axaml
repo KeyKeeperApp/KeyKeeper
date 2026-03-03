@@ -4,6 +4,7 @@
         xmlns:i="using:Avalonia.Interactivity"
         xmlns:kkp="using:KeyKeeper.Views"
         x:Class="KeyKeeper.Views.RepositoryWindow"
+		Closing="RepositoryWindow_Closing"
         Title="KeyKeeper - Password store"
         CanResize="False"
         Width="800"
