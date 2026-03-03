@@ -12,6 +12,9 @@ namespace KeyKeeper.Views;
 
 public partial class RepositoryWindow: Window
 {
+    private bool allowClose;
+    private bool closeConfirmationShown;
+
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
         InitializeComponent();
