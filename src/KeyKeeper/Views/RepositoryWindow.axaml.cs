@@ -12,6 +12,9 @@ namespace KeyKeeper.Views;
 
 public partial class RepositoryWindow : Window
 {
+    private bool allowClose;
+    private bool closeConfirmationShown;
+
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
         InitializeComponent();
@@ -25,6 +28,45 @@ public partial class RepositoryWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+    }
+
+    private async void RepositoryWindow_Closing(object? sender, WindowClosingEventArgs e)
+    {
+        if (allowClose || closeConfirmationShown)
+        {
+            return;
+        }
+
+        if (DataContext is RepositoryWindowViewModel checkVm &&
+            checkVm.CurrentPage is UnlockedRepositoryViewModel unlockedVm &&
+            !unlockedVm.HasUnsavedChanges)
+        {
+            allowClose = true;
+            return;
+        }
+
+        e.Cancel = true;
+        closeConfirmationShown = true;
+
+        var dialog = new CloseConfirmationDialog();
+        var result = await dialog.ShowDialog<CloseConfirmationResult?>(this);
+
+        closeConfirmationShown = false;
+
+        if (result == null || result == CloseConfirmationResult.Cancel)
+        {
+            return;
+        }
+
+        if (result == CloseConfirmationResult.Save &&
+            DataContext is RepositoryWindowViewModel vm &&
+            vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+        {
+            pageVm.Save();
+        }
+
+        allowClose = true;
+        Close();
     }
 
     private async void AddEntryButton_Click(object sender, RoutedEventArgs args)

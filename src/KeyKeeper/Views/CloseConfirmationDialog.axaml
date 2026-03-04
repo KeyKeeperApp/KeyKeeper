@@ -1,0 +1,28 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyKeeper.Views.CloseConfirmationDialog"
+        Width="420"
+        Height="170"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Title="Confirm close"
+        Background="White">
+    <Grid Margin="16" RowDefinitions="*,Auto">
+        <TextBlock Text="Save changes before closing the storage?"
+                   TextWrapping="Wrap"
+                   FontSize="16"/>
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8"
+                    Margin="0,16,0,0">
+            <Button Content="Save"
+                    Click="Save_Click" />
+            <Button Content="Do not save"
+                    Click="Discard_Click" />
+            <Button Content="Cancel"
+                    Click="Cancel_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
