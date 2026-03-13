@@ -10,6 +10,7 @@
     <Grid Margin="16" RowDefinitions="*,Auto">
         <TextBlock Text="Save changes before closing the storage?"
                    TextWrapping="Wrap"
+                   Foreground="Black"
                    FontSize="16"/>
 
         <StackPanel Grid.Row="1"
