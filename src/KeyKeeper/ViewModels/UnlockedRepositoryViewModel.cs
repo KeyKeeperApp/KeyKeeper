@@ -8,6 +8,7 @@ namespace KeyKeeper.ViewModels;
 public class UnlockedRepositoryViewModel : ViewModelBase
 {
     private IPassStore passStore;
+    private bool hasUnsavedChanges;
 
     public IEnumerable<PassStoreEntryPassword> Passwords
     {
@@ -19,9 +20,20 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         }
     }
 
+    public bool HasUnsavedChanges
+    {
+        get => hasUnsavedChanges;
+        private set
+        {
+            hasUnsavedChanges = value;
+            OnPropertyChanged(nameof(HasUnsavedChanges));
+        }
+    }
+
     public UnlockedRepositoryViewModel(IPassStore store)
     {
         passStore = store;
+        HasUnsavedChanges = false;
     }
 
     public void AddEntry(PassStoreEntry entry)
@@ -29,6 +41,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         if (entry is PassStoreEntryPassword)
         {
             (passStore.GetRootDirectory() as PassStoreEntryGroup)!.ChildEntries.Add(entry);
+            HasUnsavedChanges = true;
             OnPropertyChanged(nameof(Passwords));
         }
     }
@@ -36,6 +49,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     public void DeleteEntry(Guid id)
     {
         (passStore.GetRootDirectory() as PassStoreEntryGroup)!.DeleteEntry(id);
+        HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
     }
 
@@ -52,5 +66,6 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     public void Save()
     {
         passStore.Save();
+        HasUnsavedChanges = false;
     }
 }
