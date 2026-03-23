@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using KeyKeeper.PasswordStore;
+using static KeyKeeper.PasswordStore.FileFormatConstants;
 
 namespace KeyKeeper.ViewModels;
 
@@ -33,7 +34,9 @@ public partial class RepositoryWindowViewModel : ViewModelBase
 
     private void SwitchToUnlocked()
     {
-        CurrentPage = new UnlockedRepositoryViewModel(passStore);
+        var directory = passStore.GetGroupByType(GROUP_TYPE_DEFAULT)
+            ?? passStore.GetRootDirectory();
+        CurrentPage = new UnlockedRepositoryViewModel(passStore, directory);
     }
 
     private void SwitchToLocked()
