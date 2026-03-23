@@ -37,12 +37,15 @@ public partial class RepositoryWindow : Window
             return;
         }
 
-        if (DataContext is RepositoryWindowViewModel checkVm &&
-            checkVm.CurrentPage is UnlockedRepositoryViewModel unlockedVm &&
-            !unlockedVm.HasUnsavedChanges)
+        if (DataContext is RepositoryWindowViewModel checkVm)
         {
-            allowClose = true;
-            return;
+            if ((checkVm.CurrentPage is UnlockedRepositoryViewModel unlockedVm &&
+                !unlockedVm.HasUnsavedChanges)
+                || checkVm.CurrentPage is LockedRepositoryViewModel)
+            {
+                allowClose = true;
+                return;
+            }
         }
 
         e.Cancel = true;
