@@ -64,6 +64,12 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
         }
     }
 
+    public void AddEntry(PassStoreEntry entry)
+    {
+        entry.Parent = this;
+        ChildEntries.Add(entry);
+    }
+
     public bool DeleteEntry(Guid id)
     {
         if (ChildEntries == null)
