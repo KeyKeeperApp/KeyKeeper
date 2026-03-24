@@ -113,7 +113,6 @@ public class OuterEncryptionReader : Stream
 
     public override int Read(Span<byte> buffer)
     {
-        Console.WriteLine("OE read " + buffer.Length);
         int toRead = buffer.Length;
         int read = 0;
         while (toRead > 0)
@@ -122,24 +121,20 @@ public class OuterEncryptionReader : Stream
             {
                 if (!isCurrentChunkLast)
                 {
-                    Console.WriteLine("OER: reading next chunk");
                     LoadAndDecryptNextChunk();
                 }
                 else
                 {
-                    Console.WriteLine("OER: read " + read + " bytes before EOF");
                     break;
                 }
             }
             byte[] chunk = currentChunk!;
             int n = Math.Min(toRead, chunk.Length - chunkPosition);
-            Console.WriteLine("OER: copy " + n + " bytes chunk+" + chunkPosition + " -> buffer+" + read);
             new Span<byte>(chunk, chunkPosition, n).CopyTo(buffer.Slice(read));
             read += n;
             toRead -= n;
             chunkPosition += n;
             position += n;
-            Console.WriteLine(string.Format("read={0} toread={1} pos={2}", read, toRead, chunkPosition));
         }
         return read;
     }
