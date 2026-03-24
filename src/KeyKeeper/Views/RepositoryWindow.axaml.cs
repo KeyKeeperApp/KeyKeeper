@@ -118,7 +118,12 @@ public partial class RepositoryWindow : Window
 
             EntryEditWindow dialog = new();
             dialog.SetEntry(selectedEntry);
+
+            vm_.StopLockTimer();
+
             await dialog.ShowDialog(this);
+
+            vm_.StartLockTimer();
 
             if (dialog.EditedEntry != null)
             {
@@ -165,7 +170,9 @@ public partial class RepositoryWindow : Window
                 {
                     EntryEditWindow dialog = new();
                     dialog.SetEntry(pwd);
+                    vm.StopLockTimer();
                     await dialog.ShowDialog(this);
+                    vm.StartLockTimer();
                     if (dialog.EditedEntry != null)
                     {
                         pageVm.UpdateEntry(dialog.EditedEntry);
