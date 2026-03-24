@@ -28,6 +28,15 @@ public partial class RepositoryWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        AddHandler(PointerMovedEvent, OnUserActivity, RoutingStrategies.Tunnel);
+        AddHandler(PointerPressedEvent, OnUserActivity, RoutingStrategies.Tunnel);
+        AddHandler(KeyDownEvent, OnUserActivity, RoutingStrategies.Tunnel);
+    }
+
+    private void OnUserActivity(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is RepositoryWindowViewModel vm)
+            vm.ResetLockTimer();
     }
 
     private async void RepositoryWindow_Closing(object? sender, WindowClosingEventArgs e)
@@ -77,7 +86,12 @@ public partial class RepositoryWindow : Window
         if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
         {
             EntryEditWindow dialog = new();
+
+            vm_.StopLockTimer();
+
             await dialog.ShowDialog(this);
+
+            vm_.StartLockTimer();
 
             if (dialog.EditedEntry != null)
                 vm.AddEntry(dialog.EditedEntry);
@@ -104,7 +118,12 @@ public partial class RepositoryWindow : Window
 
             EntryEditWindow dialog = new();
             dialog.SetEntry(selectedEntry);
+
+            vm_.StopLockTimer();
+
             await dialog.ShowDialog(this);
+
+            vm_.StartLockTimer();
 
             if (dialog.EditedEntry != null)
             {
@@ -151,7 +170,9 @@ public partial class RepositoryWindow : Window
                 {
                     EntryEditWindow dialog = new();
                     dialog.SetEntry(pwd);
+                    vm.StopLockTimer();
                     await dialog.ShowDialog(this);
+                    vm.StartLockTimer();
                     if (dialog.EditedEntry != null)
                     {
                         pageVm.UpdateEntry(dialog.EditedEntry);

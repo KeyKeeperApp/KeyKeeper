@@ -4,7 +4,7 @@
         xmlns:i="using:Avalonia.Interactivity"
         xmlns:kkp="using:KeyKeeper.Views"
         x:Class="KeyKeeper.Views.RepositoryWindow"
-		Closing="RepositoryWindow_Closing"
+    Closing="RepositoryWindow_Closing"
         Title="KeyKeeper - Password store"
         CanResize="False"
         Width="800"
@@ -12,36 +12,59 @@
         Background="White"
         x:DataType="vm:RepositoryWindowViewModel">
 
-	<Window.DataTemplates>
-		<DataTemplate DataType="{x:Type vm:UnlockedRepositoryViewModel}">
-			<Grid>
-				<!-- Синий левый край -->
-				<Border Width="200"
+  <Window.DataTemplates>
+    <DataTemplate DataType="{x:Type vm:UnlockedRepositoryViewModel}">
+      <Grid>
+        <!-- Синий левый край -->
+        <Border Width="200"
                         Background="#2328C4"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch"/>
-				<StackPanel Margin="20" HorizontalAlignment="Left">
-					<!-- Надпись KeyKeeper -->
-					<TextBlock Text="KeyKeeper"
+        <StackPanel Margin="20" HorizontalAlignment="Left">
+          <!-- Надпись KeyKeeper -->
+          <TextBlock Text="KeyKeeper"
                                FontSize="32"
                                FontWeight="Bold"
                                HorizontalAlignment="Left"
                                Margin="0,0,0,20"/>
 
+                        <!-- Таймер блокировки под надписью KeyKeeper -->
+                        <Border Background="#CC000000"
+                                CornerRadius="6"
+                                Padding="8,4"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                IsVisible="{Binding $parent[Window].DataContext.LockTimerDisplay,
+                                            Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <!-- Иконка замка (Material Design lock outline) -->
+                                <Path Fill="White"
+                                      VerticalAlignment="Center"
+                                      Width="13" Height="13"
+                                      Stretch="Uniform"
+                                      Data="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                <TextBlock Text="{Binding $parent[Window].DataContext.LockTimerDisplay}"
+                                           Foreground="White"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
                         <!-- Рамочка  -->
-						<!-- <Border BorderBrush="Gray" 
+            <!-- <Border BorderBrush="Gray" 
                                 BorderThickness="1" 
                                 CornerRadius="5"
                                 Padding="20"
                                 Background="#F5F5F5"
                                 HorizontalAlignment="Left">
 
-						<StackPanel HorizontalAlignment="Left">
-							<Button Content="All Passwords"
+            <StackPanel HorizontalAlignment="Left">
+              <Button Content="All Passwords"
                                     Width="120"
                                     Height="30"
                                     HorizontalAlignment="Left"/>
-						</StackPanel>
+            </StackPanel>
 
                         </Border> -->
                         <!-- Save Passwords -->
@@ -52,93 +75,93 @@
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
 
-					<!-- New Entry -->
-					<Button Content="New Entry"
+          <!-- New Entry -->
+          <Button Content="New Entry"
                             Classes="accentSidebarButton"
                             Click="AddEntryButton_Click"
                             Height="30"
                             HorizontalAlignment="Left"
                             Margin="0,20,0,0"/>
 
-					<!-- Edit Selected Entry -->
-					<Button Content="Edit Selected Entry"
+          <!-- Edit Selected Entry -->
+          <Button Content="Edit Selected Entry"
                             Classes="accentSidebarButton"
                             Click="EditEntryButton_Click"
                             Height="30"
                             HorizontalAlignment="Left"
                             Margin="0,20,0,0"/>
-				</StackPanel>
+        </StackPanel>
 
-				<!-- ListBox с паролями -->
-				<ListBox x:Name="PasswordsListBox"
+        <!-- ListBox с паролями -->
+        <ListBox x:Name="PasswordsListBox"
                          Width="580"
                          Margin="210 10 10 10"
                          ItemsSource="{Binding Passwords}"
                          Background="Transparent"
                          SelectionMode="Single">
-					<ListBox.ItemsPanel>
-						<ItemsPanelTemplate>
-							<WrapPanel Orientation="Horizontal" />
-						</ItemsPanelTemplate>
-					</ListBox.ItemsPanel>
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
 
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<Border Background="Transparent" DoubleTapped="Entry_DoubleTapped">
-								<StackPanel Width="100"
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Background="Transparent" DoubleTapped="Entry_DoubleTapped">
+                <StackPanel Width="100"
                                             Margin="10"
                                             HorizontalAlignment="Center">
-									<Svg Path="{Binding IconPath}" Width="48" Height="48"/>
-									<TextBlock Text="{Binding Name}"
+                  <Svg Path="{Binding IconPath}" Width="48" Height="48"/>
+                  <TextBlock Text="{Binding Name}"
                                                HorizontalAlignment="Center"
                                                Foreground="Black" />
-									<TextBlock Text="{Binding Username.Value}"
+                  <TextBlock Text="{Binding Username.Value}"
                                                Foreground="#666"
                                                HorizontalAlignment="Center" />
-								</StackPanel>
-								<Border.ContextMenu>
-									<ContextMenu>
-										<MenuItem Name="entryCtxMenuCopyUsername" Header="Copy username" Click="EntryContextMenuItem_Click"/>
-										<MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
-										<!-- Новый пункт меню "Edit" -->
-										<MenuItem Name="entryCtxMenuEdit" Header="Edit" Click="EntryContextMenuItem_Click"/>
-										<MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
-									</ContextMenu>
-								</Border.ContextMenu>
-							</Border>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+                </StackPanel>
+                <Border.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Name="entryCtxMenuCopyUsername" Header="Copy username" Click="EntryContextMenuItem_Click"/>
+                    <MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
+                    <!-- Новый пункт меню "Edit" -->
+                    <MenuItem Name="entryCtxMenuEdit" Header="Edit" Click="EntryContextMenuItem_Click"/>
+                    <MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
+                  </ContextMenu>
+                </Border.ContextMenu>
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
 
-				<kkp:ToastNotificationHost x:Name="NotificationHost"
+        <kkp:ToastNotificationHost x:Name="NotificationHost"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Margin="20"
                                             Duration="0:0:2" />
-			</Grid>
-		</DataTemplate>
+      </Grid>
+    </DataTemplate>
 
-		<DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
-			<StackPanel Margin="20"
+    <DataTemplate DataType="{x:Type vm:LockedRepositoryViewModel}">
+      <StackPanel Margin="20"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Spacing="10">
-				<TextBlock Text="Enter credentials to unlock"
+        <TextBlock Text="Enter credentials to unlock"
                            Foreground="#2328C4"
                            FontSize="32" />
 
-				<TextBox x:Name="UnlockPasswordEdit"
+        <TextBox x:Name="UnlockPasswordEdit"
                          Text="{Binding UnlockPassword, Mode=TwoWay}"
                          PasswordChar="*"
                          Width="450" />
 
-				<Button x:Name="UnlockButton"
+        <Button x:Name="UnlockButton"
                         Command="{Binding TryUnlock}"
                         HorizontalAlignment="Center"
                         Content="Unlock!" />
-			</StackPanel>
-		</DataTemplate>
-	</Window.DataTemplates>
+      </StackPanel>
+    </DataTemplate>
+  </Window.DataTemplates>
 
-	<ContentControl Content="{Binding CurrentPage}"/>
+  <ContentControl Content="{Binding CurrentPage}"/>
 </Window>
