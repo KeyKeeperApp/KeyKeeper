@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using KeyKeeper.PasswordStore;
+using static KeyKeeper.PasswordStore.FileFormatConstants;
 
 namespace KeyKeeper.ViewModels;
 
@@ -44,7 +45,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Сбрасывает таймер блокировки (вызывается при любой активности пользователя).
+    /// РЎР±СЂР°СЃС‹РІР°РµС‚ С‚Р°Р№РјРµСЂ Р±Р»РѕРєРёСЂРѕРІРєРё (РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё Р»СЋР±РѕР№ Р°РєС‚РёРІРЅРѕСЃС‚Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ).
     /// </summary>
     public void ResetLockTimer()
     {
@@ -54,7 +55,9 @@ public partial class RepositoryWindowViewModel : ViewModelBase
 
     private void SwitchToUnlocked()
     {
-        CurrentPage = new UnlockedRepositoryViewModel(passStore);
+        var directory = passStore.GetGroupByType(GROUP_TYPE_DEFAULT)
+            ?? passStore.GetRootDirectory();
+        CurrentPage = new UnlockedRepositoryViewModel(passStore, directory);
         StartLockTimer();
     }
 

@@ -8,39 +8,64 @@ namespace KeyKeeper.ViewModels;
 public class UnlockedRepositoryViewModel : ViewModelBase
 {
     private IPassStore passStore;
+    private IPassStoreDirectory currentDirectory;
+    private bool hasUnsavedChanges;
 
     public IEnumerable<PassStoreEntryPassword> Passwords
     {
         get
         {
-            return passStore.GetRootDirectory()
+            return currentDirectory
                 .Where(entry => entry is PassStoreEntryPassword)
                 .Select(entry => (entry as PassStoreEntryPassword)!);
         }
     }
 
-    public UnlockedRepositoryViewModel(IPassStore store)
+    public bool HasUnsavedChanges
+    {
+        get => hasUnsavedChanges;
+        private set
+        {
+            hasUnsavedChanges = value;
+            OnPropertyChanged(nameof(HasUnsavedChanges));
+        }
+    }
+
+    public UnlockedRepositoryViewModel(IPassStore store, IPassStoreDirectory directory)
     {
         passStore = store;
+        currentDirectory = directory;
+        HasUnsavedChanges = false;
     }
 
     public void AddEntry(PassStoreEntry entry)
     {
         if (entry is PassStoreEntryPassword)
         {
-            (passStore.GetRootDirectory() as PassStoreEntryGroup)!.ChildEntries.Add(entry);
+            currentDirectory.AddEntry(entry);
+            HasUnsavedChanges = true;
             OnPropertyChanged(nameof(Passwords));
         }
     }
 
     public void DeleteEntry(Guid id)
     {
-        (passStore.GetRootDirectory() as PassStoreEntryGroup)!.DeleteEntry(id);
+        currentDirectory.DeleteEntry(id);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(Passwords));
+    }
+
+    public void UpdateEntry(PassStoreEntryPassword updatedEntry)
+    {
+        currentDirectory.DeleteEntry(updatedEntry.Id);
+        currentDirectory.AddEntry(updatedEntry);
+        HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
     }
 
     public void Save()
     {
         passStore.Save();
+        HasUnsavedChanges = false;
     }
 }

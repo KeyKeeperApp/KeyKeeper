@@ -49,6 +49,15 @@ public class PassStoreFileAccessor : IPassStore
         return (IPassStoreDirectory)root!;
     }
 
+    public IPassStoreDirectory? GetGroupByType(byte groupType)
+    {
+        if (Locked)
+            throw new InvalidOperationException();
+        return (root as PassStoreEntryGroup)?.ChildEntries
+            .OfType<PassStoreEntryGroup>()
+            .FirstOrDefault(g => g.GroupType == groupType);
+    }
+
     public int GetTotalEntryCount()
     {
         throw new NotImplementedException();
@@ -252,15 +261,24 @@ public class PassStoreFileAccessor : IPassStore
 
     private PassStoreEntry WriteInitialStoreTree(OuterEncryptionWriter w)
     {
-        PassStoreEntry root =
-            new PassStoreEntryGroup(
-                Guid.NewGuid(),
-                DateTime.UtcNow,
-                DateTime.UtcNow,
-                Guid.Empty,
-                "",
-                GROUP_TYPE_ROOT
-            );
+        PassStoreEntryGroup defaultGroup = new(
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            DateTime.UtcNow,
+            Guid.Empty,
+            "",
+            GROUP_TYPE_DEFAULT
+        );
+        PassStoreEntryGroup root = new(
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            DateTime.UtcNow,
+            Guid.Empty,
+            "",
+            GROUP_TYPE_ROOT,
+            [defaultGroup]
+        );
+        defaultGroup.Parent = root;
         root.WriteToStream(w);
         return root;
     }
