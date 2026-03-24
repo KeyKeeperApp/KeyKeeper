@@ -41,7 +41,12 @@ public partial class RepositoryWindow : Window
         if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
         {
             EntryEditWindow dialog = new();
+
+            vm_.StopLockTimer();
+
             await dialog.ShowDialog(this);
+
+            vm_.StartLockTimer();
 
             if (dialog.EditedEntry != null)
                 vm.AddEntry(dialog.EditedEntry);

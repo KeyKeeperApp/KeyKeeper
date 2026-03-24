@@ -64,7 +64,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
         CurrentPage = new LockedRepositoryViewModel(passStore, this);
     }
 
-    private void StartLockTimer()
+    public void StartLockTimer()
     {
         StopLockTimer();
         _timerStart = DateTime.UtcNow;
@@ -77,7 +77,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
         UpdateTimerDisplay();
     }
 
-    private void StopLockTimer()
+    public void StopLockTimer()
     {
         if (_lockTimer != null)
         {
