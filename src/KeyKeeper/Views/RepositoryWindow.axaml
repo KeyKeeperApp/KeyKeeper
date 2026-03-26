@@ -154,7 +154,11 @@
                          Text="{Binding UnlockPassword, Mode=TwoWay}"
                          PasswordChar="*"
                          Width="450"
-                         Loaded="UnlockPasswordEdit_Loaded" />
+                         Loaded="UnlockPasswordEdit_Loaded">
+          <TextBox.KeyBindings>
+            <KeyBinding Gesture="Return" Command="{Binding TryUnlock}"/>
+          </TextBox.KeyBindings>
+        </TextBox>
 
         <Button x:Name="UnlockButton"
                         Command="{Binding TryUnlock}"
