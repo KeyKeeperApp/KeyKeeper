@@ -20,16 +20,6 @@ public partial class MainWindowViewModel : ViewModelBase
         this.recentFilesService = recentFilesService;
     }
 
-    public void OpenVault(string filename)
-    {
-        recentFilesService.Remember(filename);
-    }
-
-    public void CreateVault(string filename)
-    {
-        recentFilesService.Remember(filename);
-    }
-
     [RelayCommand]
     private async Task OpenSettings()
     {
