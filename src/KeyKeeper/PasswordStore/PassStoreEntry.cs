@@ -46,31 +46,37 @@ public abstract class PassStoreEntry
         BinaryReader rd = new(str);
         try
         {
-            rd.Read7BitEncodedInt();
+            int entryLength = rd.Read7BitEncodedInt();
+            byte[] entryData = rd.ReadBytes(entryLength);
+            if (entryData.Length < entryLength)
+                throw PassStoreFileException.UnexpectedEndOfFile;
+
+            MemoryStream entryStream = new(entryData);
+            BinaryReader entryRd = new(entryStream);
 
             byte[] uuidBuffer = new byte[16];
-            if (rd.Read(uuidBuffer) < 16)
+            if (entryRd.Read(uuidBuffer) < 16)
                 throw PassStoreFileException.UnexpectedEndOfFile;
             Guid id = new Guid(uuidBuffer);
 
-            ulong timestamp = FileFormatUtil.ReadVarUint16(str);
+            ulong timestamp = FileFormatUtil.ReadVarUint16(entryStream);
             DateTime createdAt = DateTimeOffset.FromUnixTimeSeconds((long)timestamp).UtcDateTime;
-            timestamp = FileFormatUtil.ReadVarUint16(str);
+            timestamp = FileFormatUtil.ReadVarUint16(entryStream);
             DateTime modifiedAt = DateTimeOffset.FromUnixTimeSeconds((long)timestamp).UtcDateTime;
 
-            if (rd.Read(uuidBuffer) < 16)
+            if (entryRd.Read(uuidBuffer) < 16)
                 throw PassStoreFileException.UnexpectedEndOfFile;
             Guid iconType = new Guid(uuidBuffer);
 
-            string name = FileFormatUtil.ReadU16TaggedString(str);
+            string name = FileFormatUtil.ReadU16TaggedString(entryStream);
 
-            byte entryType = rd.ReadByte();
+            byte entryType = entryRd.ReadByte();
             if (entryType == ENTRY_GROUP_ID)
             {
-                return PassStoreEntryGroup.ReadFromStream(str, id, createdAt, modifiedAt, iconType, name);
+                return PassStoreEntryGroup.ReadFromStream(entryStream, id, createdAt, modifiedAt, iconType, name);
             } else if (entryType == ENTRY_PASS_ID)
             {
-                return PassStoreEntryPassword.ReadFromStream(str, id, createdAt, modifiedAt, iconType, name);
+                return PassStoreEntryPassword.ReadFromStream(entryStream, id, createdAt, modifiedAt, iconType, name);
             } else
             {
                 throw PassStoreFileException.InvalidPassStoreEntry;
