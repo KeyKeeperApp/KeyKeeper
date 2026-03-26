@@ -50,12 +50,5 @@
         <Style Selector="TextBox">
             <Setter Property="Foreground" Value="Black" />
         </Style>
-        <Style Selector="Button /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="Black" />
-        </Style>
-        <Style Selector="Button:pointerover /template/ ContentPresenter">
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="Background" Value="#ccc" />
-        </Style>
     </Window.Styles>
 </Window>
