@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="KeyKeeper.Views.CreateVaultFileWindow"
+        x:Class="KeyKeeper.Views.CreateVaultDialog"
         Title="Create New Vault"
         Background="#fff"
         Focusable="True"

@@ -22,7 +22,7 @@ namespace KeyKeeper.Views
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
         {
-            var createVaultDialog = new CreateVaultFileWindow();
+            var createVaultDialog = new CreateVaultDialog();
             await createVaultDialog.ShowDialog(this);
 
             if (createVaultDialog.Success &&

@@ -6,13 +6,13 @@ using Avalonia.Platform.Storage;
 
 namespace KeyKeeper.Views
 {
-    public partial class CreateVaultFileWindow : Window
+    public partial class CreateVaultDialog : Window
     {
         public string FilePath { get; private set; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
         public bool Success { get; private set; }
 
-        public CreateVaultFileWindow()
+        public CreateVaultDialog()
         {
             InitializeComponent();
 #if DEBUG
