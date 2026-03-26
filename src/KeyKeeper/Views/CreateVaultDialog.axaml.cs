@@ -1,9 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using System;
-using System.Threading.Tasks;
 
 namespace KeyKeeper.Views
 {
@@ -22,6 +21,8 @@ namespace KeyKeeper.Views
             FilePathTextBox.TextChanged += OnTextChanged;
             PasswordBox.TextChanged += OnPasswordTextChanged;
             ConfirmPasswordBox.TextChanged += OnPasswordTextChanged;
+
+            KeyDown += CreateVaultDialog_KeyDown;
         }
 
         private async void OnTextChanged(object? sender, TextChangedEventArgs e)
@@ -60,6 +61,18 @@ namespace KeyKeeper.Views
             CreateButton.IsEnabled = pathValid && passwordsEntered;
         }
 
+        private void CreateVaultDialog_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                Close();
+            }
+            else if (e.Key == Key.Enter && CreateButton.IsEnabled)
+            {
+                Submit();
+            }
+        }
+
         private async void BrowseButton_Click(object? sender, RoutedEventArgs e)
         {
             var file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
@@ -83,6 +96,11 @@ namespace KeyKeeper.Views
         }
 
         private void CreateButton_Click(object? sender, RoutedEventArgs e)
+        {
+            Submit();
+        }
+
+        private void Submit()
         {
             string path = FilePathTextBox.Text ?? "";
             if (string.IsNullOrWhiteSpace(path))
