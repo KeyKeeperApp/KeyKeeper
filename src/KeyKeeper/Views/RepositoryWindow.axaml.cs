@@ -39,6 +39,11 @@ public partial class RepositoryWindow : Window
             vm.ResetLockTimer();
     }
 
+    private void UnlockPasswordEdit_Loaded(object? sender, RoutedEventArgs e)
+    {
+        (sender as TextBox)?.Focus();
+    }
+
     private async void RepositoryWindow_Closing(object? sender, WindowClosingEventArgs e)
     {
         if (allowClose || closeConfirmationShown)

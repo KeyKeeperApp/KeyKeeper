@@ -153,7 +153,8 @@
         <TextBox x:Name="UnlockPasswordEdit"
                          Text="{Binding UnlockPassword, Mode=TwoWay}"
                          PasswordChar="*"
-                         Width="450" />
+                         Width="450"
+                         Loaded="UnlockPasswordEdit_Loaded" />
 
         <Button x:Name="UnlockButton"
                         Command="{Binding TryUnlock}"
