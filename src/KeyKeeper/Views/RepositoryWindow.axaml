@@ -96,12 +96,11 @@
 
                 <!-- ListBox с паролями -->
                 <ListBox x:Name="PasswordsListBox"
-                                Width="580"
-                                Margin="286 10 10 10"
-                                ItemsSource="{Binding Passwords}"
-                                Background="Transparent"
-                                SelectionMode="Single"
-                                KeyDown="PasswordsListBox_KeyDown">
+                         Margin="234 10 10 10"
+                         ItemsSource="{Binding Passwords}"
+                         Background="Transparent"
+                         SelectionMode="Single"
+                         KeyDown="PasswordsListBox_KeyDown">
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
