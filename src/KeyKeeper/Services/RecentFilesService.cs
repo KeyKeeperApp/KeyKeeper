@@ -11,6 +11,7 @@ namespace KeyKeeper.Services;
 internal class RecentFilesService : IRecentFilesService
 {
     private const string RecentFilesFilename = "recent-files.json";
+    private static readonly JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
 
     // files are stored in reverse chronological order
     public ObservableCollection<RecentFile> RecentFiles { get; }
@@ -51,6 +52,18 @@ internal class RecentFilesService : IRecentFilesService
         {
             // ignore broken data and continue with empty recent files
         }
+    }
+
+    public void Save()
+    {
+        var directory = Path.GetDirectoryName(recentFilesPath);
+        if (!string.IsNullOrEmpty(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        var payload = JsonSerializer.Serialize(RecentFiles, jsonOptions);
+        File.WriteAllText(recentFilesPath, payload);
     }
 
     public void Remember(string filename)
