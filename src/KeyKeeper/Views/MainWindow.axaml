@@ -56,7 +56,7 @@
         <Grid Grid.Column="1" VerticalAlignment="Center">
             <Grid RowDefinitions="Auto,Auto">
 
-                <TextBlock Text="Recent Database"
+                <TextBlock Text="Recently opened"
                            FontSize="38"
                            Foreground="#2328C4"
                            FontWeight="SemiBold"
