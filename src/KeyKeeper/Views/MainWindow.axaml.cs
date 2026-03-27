@@ -80,8 +80,7 @@ namespace KeyKeeper.Views
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-
-            repositoryWindow.Closed += (s, e) => this.Show();
+            repositoryWindow.Closed += (s, e) => this.Close();
             repositoryWindow.Show();
             this.Hide();
         }
