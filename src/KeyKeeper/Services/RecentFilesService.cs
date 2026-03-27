@@ -74,16 +74,19 @@ internal class RecentFilesService : IRecentFilesService
         {
             RecentFiles.RemoveAt(RecentFiles.Count - 1);
         }
+        Save();
     }
 
     public void Forget(string filename)
     {
         RemoveIfExists(filename);
+        Save();
     }
 
     public void ForgetAll()
     {
         RecentFiles.Clear();
+        Save();
     }
 
     public void RemoveIfExists(string filename)
