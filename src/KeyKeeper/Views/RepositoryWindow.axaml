@@ -100,7 +100,8 @@
                                 Margin="286 10 10 10"
                                 ItemsSource="{Binding Passwords}"
                                 Background="Transparent"
-                                SelectionMode="Single">
+                                SelectionMode="Single"
+                                KeyDown="PasswordsListBox_KeyDown">
 
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -110,7 +111,8 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Background="Transparent" DoubleTapped="Entry_DoubleTapped">
+                            <Border Background="Transparent"
+                                    DoubleTapped="Entry_DoubleTapped">
 
                                 <StackPanel Width="100"
                                             Margin="10"

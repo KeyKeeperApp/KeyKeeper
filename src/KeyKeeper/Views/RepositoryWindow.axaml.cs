@@ -155,6 +155,18 @@ public partial class RepositoryWindow : Window
         }
     }
 
+    private void PasswordsListBox_KeyDown(object sender, KeyEventArgs args)
+    {
+        if (args.Key == Key.C && args.KeyModifiers == KeyModifiers.Control)
+        {
+            if (sender is ListBox list && list.SelectedItem is PassStoreEntryPassword pwd)
+            {
+                Clipboard!.SetTextAsync(pwd.Password.Value);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+            }
+        }
+    }
+
     private async void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)
     {
         if (args.Source is StyledElement s && s.DataContext is PassStoreEntryPassword pwd)
