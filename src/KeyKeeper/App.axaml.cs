@@ -25,6 +25,7 @@ public partial class App : Application
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
             var recentFilesService = new RecentFilesService();
+            recentFilesService.Load();
             desktop.MainWindow = new MainWindow(recentFilesService)
             {
                 DataContext = new MainWindowViewModel(recentFilesService),
