@@ -87,6 +87,7 @@ namespace KeyKeeper.Views
         {
             if (sender is Control c && c.DataContext is RecentFile recentFile)
             {
+                recentFilesService.Remember(recentFile.Path);
                 OpenRepositoryWindow(new PassStoreFileAccessor(recentFile.Path, false, null));
             }
         }
