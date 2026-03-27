@@ -18,6 +18,10 @@ public partial class RepositoryWindow : Window
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
         InitializeComponent();
+
+        MinWidth = 650;
+        MinHeight = 500;
+
         DataContext = model;
         model.ShowErrorPopup = async (string message) =>
         {

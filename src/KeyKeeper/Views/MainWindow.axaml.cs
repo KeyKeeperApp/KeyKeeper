@@ -18,6 +18,8 @@ namespace KeyKeeper.Views
         public MainWindow()
         {
             InitializeComponent();
+            this.MinWidth = 550;
+            this.MinHeight = 350;
         }
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)

@@ -20,6 +20,9 @@ public partial class EntryEditWindow : Window
         _viewModel = new EntryEditViewModel();
         DataContext = _viewModel;
 
+        MinWidth = 500;
+        MinHeight = 400;
+
         if (PasswordEdit != null)
         {
             PasswordEdit.TextChanged += PasswordTextChanged;

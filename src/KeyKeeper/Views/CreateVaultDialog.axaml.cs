@@ -15,6 +15,8 @@ namespace KeyKeeper.Views
         public CreateVaultDialog()
         {
             InitializeComponent();
+            MinWidth = 450;
+            MinHeight = 350;
 #if DEBUG
             this.AttachDevTools();
 #endif
