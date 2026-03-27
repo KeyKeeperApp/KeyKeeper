@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using KeyKeeper.Models;
 
 namespace KeyKeeper.Services;
@@ -22,6 +24,33 @@ internal class RecentFilesService : IRecentFilesService
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "KeyKeeper");
         recentFilesPath = Path.Combine(appDataDirectory, RecentFilesFilename);
+    }
+
+    public void Load()
+    {
+        RecentFiles.Clear();
+
+        if (!File.Exists(recentFilesPath))
+        {
+            return;
+        }
+
+        try
+        {
+            var content = File.ReadAllText(recentFilesPath);
+            var loadedFiles = JsonSerializer.Deserialize<List<RecentFile>>(content) ?? new List<RecentFile>();
+
+            foreach (var recentFile in loadedFiles
+                         .OrderByDescending(file => file.LastOpened)
+                         .Take(maxEntries))
+            {
+                RecentFiles.Add(recentFile);
+            }
+        }
+        catch
+        {
+            // ignore broken data and continue with empty recent files
+        }
     }
 
     public void Remember(string filename)
