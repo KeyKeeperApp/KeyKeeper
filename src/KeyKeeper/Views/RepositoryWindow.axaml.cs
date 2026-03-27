@@ -39,6 +39,11 @@ public partial class RepositoryWindow : Window
             vm.ResetLockTimer();
     }
 
+    private void UnlockPasswordEdit_Loaded(object? sender, RoutedEventArgs e)
+    {
+        (sender as TextBox)?.Focus();
+    }
+
     private async void RepositoryWindow_Closing(object? sender, WindowClosingEventArgs e)
     {
         if (allowClose || closeConfirmationShown)
@@ -147,6 +152,18 @@ public partial class RepositoryWindow : Window
         {
             Clipboard!.SetTextAsync(pwd.Password.Value);
             this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+        }
+    }
+
+    private void PasswordsListBox_KeyDown(object sender, KeyEventArgs args)
+    {
+        if (args.Key == Key.C && args.KeyModifiers == KeyModifiers.Control)
+        {
+            if (sender is ListBox list && list.SelectedItem is PassStoreEntryPassword pwd)
+            {
+                Clipboard!.SetTextAsync(pwd.Password.Value);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+            }
         }
     }
 
