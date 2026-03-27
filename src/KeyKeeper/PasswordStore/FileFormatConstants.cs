@@ -25,6 +25,11 @@ static class FileFormatConstants
     public const byte LOGIN_FIELD_ACCOUNT_NUMBER_ID = 0x03;
     public const byte LOGIN_FIELD_NOTES_ID = 0x04;
     public const byte LOGIN_FIELD_CUSTOM_ID = 0xff; // пока не используется
+    public const byte TOTP_ABSENT = 0x00;
+    public const byte TOTP_PRESENT = 0x01;
+    public const byte TOTP_ALGO_SHA1 = 0x00;
+    public const byte TOTP_ALGO_SHA256 = 0x01;
+    public const byte TOTP_ALGO_SHA512 = 0x02;
     public const byte GROUP_TYPE_ROOT = 0x00;
     public const byte GROUP_TYPE_DEFAULT = 0x01;
     public const byte GROUP_TYPE_FAVOURITES = 0x02;

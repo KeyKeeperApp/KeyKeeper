@@ -1,47 +1,105 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:KeyKeeper.ViewModels"
+        xmlns:ps="using:KeyKeeper.PasswordStore"
         x:Class="KeyKeeper.Views.EntryEditWindow"
+        x:DataType="vm:EntryEditViewModel"
         Title="Add Entry"
         CanResize="False"
-        Width="400"
-        Height="250"
+        Width="450"
+        Height="400"
         Background="White">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" ColumnDefinitions="1*,3*" Margin="5">
-        <TextBlock Text="Add New Password Entry" FontSize="20" HorizontalAlignment="Center"
-                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,20"/>
+    <ScrollViewer>
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*" ColumnDefinitions="1*,3*" Margin="5">
+            <TextBlock Text="Add New Password Entry" FontSize="20" HorizontalAlignment="Center"
+                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,20"/>
 
-        <TextBlock Text="Entry name:" HorizontalAlignment="Right"
-                Grid.Row="1" Grid.Column="0" Margin="5" />
-        <TextBox Name="EntryNameEdit" Grid.Row="1" Grid.Column="1" Margin="5" />
+            <TextBlock Text="Entry name:" HorizontalAlignment="Right"
+                    Grid.Row="1" Grid.Column="0" Margin="5" />
+            <TextBox Name="EntryNameEdit" Text="{Binding EntryName}" Grid.Row="1" Grid.Column="1" Margin="5" />
 
-        <TextBlock Text="Username:" HorizontalAlignment="Right"
-                Grid.Row="2" Grid.Column="0" Margin="5" />
-        <TextBox Name="UsernameEdit" Grid.Row="2" Grid.Column="1" Margin="5" />
+            <TextBlock Text="Username:" HorizontalAlignment="Right"
+                    Grid.Row="2" Grid.Column="0" Margin="5" />
+            <TextBox Name="UsernameEdit" Text="{Binding Username}" Grid.Row="2" Grid.Column="1" Margin="5" />
 
-        <TextBlock Text="Password:" HorizontalAlignment="Right"
-                Grid.Row="3" Grid.Column="0" Margin="5" />
-        
-        <!-- ��������� ��� ���� ������ � ���������� -->
-        <Grid Grid.Row="3" Grid.Column="1" Margin="5" RowDefinitions="Auto,Auto">
-            <TextBox Name="PasswordEdit" Grid.Row="0" PasswordChar="*" />
-            
-            <!-- ��������� ���������� ������ -->
-            <Border Name="PasswordStrengthIndicator" Grid.Row="1" 
-                    Height="4" CornerRadius="2" Margin="0,3,0,0"
-                    Background="#ddd">
-                <Border Name="PasswordStrengthFill" 
-                        Width="0" Height="4" 
-                        HorizontalAlignment="Left"
-                        CornerRadius="2" />
-            </Border>
+            <TextBlock Text="Password:" HorizontalAlignment="Right"
+                    Grid.Row="3" Grid.Column="0" Margin="5" />
+
+            <Grid Grid.Row="3" Grid.Column="1" Margin="5" RowDefinitions="Auto,Auto">
+                <TextBox Name="PasswordEdit" Text="{Binding Password}" Grid.Row="0" PasswordChar="*" />
+
+                <Border Name="PasswordStrengthIndicator" Grid.Row="1"
+                        Height="4" CornerRadius="2" Margin="0,3,0,0"
+                        Background="#ddd">
+                    <Border Name="PasswordStrengthFill"
+                            Width="0" Height="4"
+                            HorizontalAlignment="Left"
+                            CornerRadius="2" />
+                </Border>
+            </Grid>
+
+            <TextBlock Text="One-time passwords:" HorizontalAlignment="Right"
+                    Grid.Row="4" Grid.Column="0" Margin="5" />
+            <StackPanel Grid.Row="4" Grid.Column="1" Margin="5">
+                <Button Name="ConfigureTotpButton" Content="Configure..." HorizontalAlignment="Left"
+                        IsVisible="{Binding !IsTotpConfigured}" Padding="8,4" />
+
+                <StackPanel IsVisible="{Binding IsTotpConfigured}" Spacing="8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Secret (Base32):" FontSize="12" Foreground="#666" />
+                        <TextBox Name="TotpSecretEdit" Text="{Binding TotpSecret}" />
+                        <TextBlock Text="{Binding SecretValidationError}"
+                                IsVisible="{Binding SecretValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                FontSize="11" Foreground="Red" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Algorithm:" FontSize="12" Foreground="#666" />
+                        <ComboBox SelectedItem="{Binding TotpAlgorithm}">
+                            <ps:TotpAlgorithm>SHA1</ps:TotpAlgorithm>
+                            <ps:TotpAlgorithm>SHA256</ps:TotpAlgorithm>
+                            <ps:TotpAlgorithm>SHA512</ps:TotpAlgorithm>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Digits (6-8):" FontSize="12" Foreground="#666" />
+                        <TextBox Name="TotpDigitsEdit" Text="{Binding TotpDigits}" />
+                        <TextBlock Text="{Binding DigitsValidationError}"
+                                IsVisible="{Binding DigitsValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                FontSize="11" Foreground="Red" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Period (seconds):" FontSize="12" Foreground="#666" />
+                        <TextBox Name="TotpPeriodEdit" Text="{Binding TotpPeriod}" />
+                        <TextBlock Text="{Binding PeriodValidationError}"
+                                IsVisible="{Binding PeriodValidationError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                FontSize="11" Foreground="Red" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Issuer (optional):" FontSize="12" Foreground="#666" />
+                        <TextBox Name="TotpIssuerEdit" Text="{Binding TotpIssuer}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Account Name (optional):" FontSize="12" Foreground="#666" />
+                        <TextBox Name="TotpAccountNameEdit" Text="{Binding TotpAccountName}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <Button Name="PasteUrlButton" Content="Paste URL" Padding="8,4" />
+                        <Button Name="RemoveTotpButton" Content="Remove TOTP" Padding="8,4" Background="#ddd" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <Button Name="DoneButton" Content="Done" HorizontalAlignment="Center" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                    VerticalAlignment="Bottom" Background="#aaa" Padding="20,8" IsEnabled="{Binding SaveAllowed}" />
         </Grid>
-        
-        <Button Content="Done" HorizontalAlignment="Center" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
-                    VerticalAlignment="Bottom"
-                    Background="#aaa" Click="AddButton_Click" />
-    </Grid>
+    </ScrollViewer>
 
     <Window.Styles>
         <Style Selector="TextBlock">

@@ -12,6 +12,10 @@
         Background="White"
         x:DataType="vm:RepositoryWindowViewModel">
 
+    <Window.Resources>
+        <kkp:TotpCodeConverter x:Key="TotpCodeConverter" />
+    </Window.Resources>
+
     <Window.DataTemplates>
         <DataTemplate DataType="{x:Type vm:UnlockedRepositoryViewModel}">
             <Grid>
@@ -124,6 +128,20 @@
                                     <TextBlock Text="{Binding Username.Value}"
                                                Foreground="#666"
                                                HorizontalAlignment="Center" />
+
+                                    <!-- TOTP Code Display -->
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="#2A2ABB"
+                                               FontWeight="Bold"
+                                               FontSize="16"
+                                               Margin="0,4,0,0">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{StaticResource TotpCodeConverter}">
+                                                <Binding />
+                                                <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ListBox}" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </StackPanel>
                                 <Border.ContextMenu>
                                     <ContextMenu>

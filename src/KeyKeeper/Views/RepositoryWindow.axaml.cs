@@ -33,6 +33,17 @@ public partial class RepositoryWindow : Window
         AddHandler(KeyDownEvent, OnUserActivity, RoutingStrategies.Tunnel);
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        // Stop TOTP refresh timer when window closes
+        if (DataContext is RepositoryWindowViewModel vm &&
+            vm.CurrentPage is UnlockedRepositoryViewModel unlockedVm)
+        {
+            unlockedVm.StopTotpRefreshTimer();
+        }
+        base.OnClosed(e);
+    }
+
     private void OnUserActivity(object? sender, RoutedEventArgs e)
     {
         if (DataContext is RepositoryWindowViewModel vm)
