@@ -1,93 +1,94 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="KeyKeeper.Views.CreateVaultFileWindow"
+        x:Class="KeyKeeper.Views.CreateVaultDialog"
         Title="Create New Vault"
         Background="#fff"
+        Focusable="True"
         Icon="/Assets/icon.ico"
         Width="600" Height="450"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         x:Name="ThisWindow">
 
-	<Grid ColumnDefinitions="1.5*, 2*">
-		<!-- Левая синяя панель -->
-		<Border Background="#2328C4" Grid.Column="0">
-			<StackPanel VerticalAlignment="Center" Margin="20">
-				<TextBlock Text="Choose where to save your password database and set a master password"
+    <Grid ColumnDefinitions="1.5*, 2*">
+        <!-- Левая синяя панель -->
+        <Border Background="#2328C4" Grid.Column="0">
+            <StackPanel VerticalAlignment="Center" Margin="20">
+                <TextBlock Text="Choose where to save your password database and set a master password"
                            TextWrapping="Wrap"
                            Foreground="#E0E0FF"
                            FontSize="20"
                            TextAlignment="Center"/>
-			</StackPanel>
-		</Border>
+            </StackPanel>
+        </Border>
 
-		<!-- Правая белая панель с формой -->
-		<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-			<StackPanel Margin="30" VerticalAlignment="Center" Spacing="20">
-				<TextBlock Text="Create new vault"
+        <!-- Правая белая панель с формой -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="30" VerticalAlignment="Center" Spacing="20">
+                <TextBlock Text="Create new vault"
                            FontSize="22"
                            FontWeight="Bold"
                            Foreground="#2328C4"/>
 
-				<!-- Выбор файла -->
-				<StackPanel Spacing="10">
-					<TextBlock Text="File location" FontWeight="SemiBold" Foreground="Black" />
-					<Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-						<TextBox x:Name="FilePathTextBox"
+                <!-- Выбор файла -->
+                <StackPanel Spacing="10">
+                    <TextBlock Text="File location" FontWeight="SemiBold" Foreground="Black" />
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <TextBox x:Name="FilePathTextBox"
                                  Grid.Column="0"
                                  Watermark="Select file path..."
                                  Padding="10,8"/>
-						<Button x:Name="BrowseButton"
+                        <Button x:Name="BrowseButton"
                                 Grid.Column="1"
                                 Content="Browse..."
                                 Classes="secondaryButton"
                                 Padding="15,8"
                                 Click="BrowseButton_Click"/>
-					</Grid>
-					<TextBlock x:Name="PathWarning"
+                    </Grid>
+                    <TextBlock x:Name="PathWarning"
                                FontSize="12"
                                Foreground="Orange"
                                Text=" "/>
-				</StackPanel>
+                </StackPanel>
 
-				<!-- Ввод мастер-пароля -->
-				<StackPanel Spacing="10">
-					<TextBlock Text="Master password" FontWeight="SemiBold" Foreground="Black" />
-					<TextBox x:Name="PasswordBox"
+                <!-- Ввод мастер-пароля -->
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Master password" FontWeight="SemiBold" Foreground="Black" />
+                    <TextBox x:Name="PasswordBox"
                              PasswordChar="*"
                              Watermark="Enter password"
                              Padding="10,8"/>
-				</StackPanel>
+                </StackPanel>
 
-				<StackPanel Spacing="10">
-					<TextBlock Text="Confirm password" FontWeight="SemiBold" Foreground="Black" />
-					<TextBox x:Name="ConfirmPasswordBox"
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Confirm password" FontWeight="SemiBold" Foreground="Black" />
+                    <TextBox x:Name="ConfirmPasswordBox"
                              PasswordChar="*"
                              Watermark="Confirm password"
                              Padding="10,8"/>
-				</StackPanel>
+                </StackPanel>
 
-				<!-- Сообщение об ошибке пароля -->
-				<TextBlock x:Name="PasswordErrorText"
+                <!-- Сообщение об ошибке пароля -->
+                <TextBlock x:Name="PasswordErrorText"
                            FontSize="12"
                            Foreground="Red"
                            Text=""
                            IsVisible="False"/>
 
-				<!-- Кнопки действий -->
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
-					<Button Content="Cancel"
+                <!-- Кнопки действий -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+                    <Button Content="Cancel"
                             Classes="secondaryButton"
                             Width="80"
                             Click="CancelButton_Click"/>
-					<Button x:Name="CreateButton"
+                    <Button x:Name="CreateButton"
                             Content="Create"
                             Classes="accentButton"
                             Width="80"
                             IsEnabled="False"
                             Click="CreateButton_Click"/>
-				</StackPanel>
-			</StackPanel>
-		</ScrollViewer>
-	</Grid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>
