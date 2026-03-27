@@ -4,30 +4,51 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using KeyKeeper.PasswordStore;
-using static KeyKeeper.PasswordStore.FileFormatConstants;
+using KeyKeeper.ViewModels;
 
 namespace KeyKeeper.Views;
 
 public partial class EntryEditWindow : Window
 {
-    public PassStoreEntryPassword? EditedEntry;
-    private PassStoreEntryPassword? _originalEntry;
+    private EntryEditViewModel _viewModel;
+
+    public PassStoreEntryPassword? EditedEntry => _viewModel.EditedEntry;
 
     public EntryEditWindow()
     {
         InitializeComponent();
+        _viewModel = new EntryEditViewModel();
+        DataContext = _viewModel;
+
         if (PasswordEdit != null)
         {
             PasswordEdit.TextChanged += PasswordTextChanged;
+        }
+
+        if (ConfigureTotpButton != null)
+        {
+            ConfigureTotpButton.Click += ConfigureTotpButton_Click;
+        }
+
+        if (PasteUrlButton != null)
+        {
+            PasteUrlButton.Click += PasteUrlButton_Click;
+        }
+
+        if (RemoveTotpButton != null)
+        {
+            RemoveTotpButton.Click += RemoveTotpButton_Click;
+        }
+
+        if (DoneButton != null)
+        {
+            DoneButton.Click += DoneButton_Click;
         }
     }
 
     public void SetEntry(PassStoreEntryPassword entry)
     {
-        _originalEntry = entry;
-        EntryNameEdit.Text = entry.Name;
-        UsernameEdit.Text = entry.Username.Value;
-        PasswordEdit.Text = entry.Password.Value;
+        _viewModel.LoadEntry(entry);
     }
 
     private void PasswordTextChanged(object? sender, TextChangedEventArgs e)
@@ -49,7 +70,7 @@ public partial class EntryEditWindow : Window
 
         int strength = CalculatePasswordStrength(password);
         double maxWidth = PasswordStrengthIndicator.Bounds.Width;
-        if (maxWidth <= 0) maxWidth = 200;
+        if (maxWidth <= 0) maxWidth = 300;
 
         PasswordStrengthFill.Width = (strength / 100.0) * maxWidth;
 
@@ -79,30 +100,35 @@ public partial class EntryEditWindow : Window
         return Math.Min(100, score);
     }
 
-    private void AddButton_Click(object sender, RoutedEventArgs args)
+    private void ConfigureTotpButton_Click(object? sender, RoutedEventArgs args)
     {
-        string name = EntryNameEdit?.Text?.Trim() ?? "";
-        if (string.IsNullOrEmpty(name)) return;
+        _viewModel.ConfigureTotp();
+    }
 
-        string username = UsernameEdit?.Text?.Trim() ?? "";
-        if (string.IsNullOrEmpty(username)) return;
+    private async void PasteUrlButton_Click(object? sender, RoutedEventArgs args)
+    {
+        try
+        {
+            string? clipboardText = await Clipboard!.GetTextAsync();
+            if (!string.IsNullOrEmpty(clipboardText))
+            {
+                _viewModel.ParseOtpauthUrl(clipboardText);
+            }
+        }
+        catch
+        {
+            // Silently fail if clipboard access fails
+        }
+    }
 
-        string password = PasswordEdit?.Text ?? "";
-        if (string.IsNullOrEmpty(password)) return;
+    private void RemoveTotpButton_Click(object? sender, RoutedEventArgs args)
+    {
+        _viewModel.RemoveTotp();
+    }
 
-        Guid id = _originalEntry?.Id ?? Guid.NewGuid();
-        DateTime created = DateTime.UtcNow;
-
-        EditedEntry = new PassStoreEntryPassword(
-            id,
-            created,
-            DateTime.UtcNow,
-            EntryIconType.DEFAULT,
-            name,
-            new LoginField() { Type = LOGIN_FIELD_USERNAME_ID, Value = username },
-            new LoginField() { Type = LOGIN_FIELD_PASSWORD_ID, Value = password },
-            null
-        );
+    private void DoneButton_Click(object? sender, RoutedEventArgs args)
+    {
+        _viewModel.CreateEntry();
         Close();
     }
 }
