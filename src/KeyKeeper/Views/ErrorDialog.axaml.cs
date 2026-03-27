@@ -8,6 +8,8 @@ public partial class ErrorDialog : Window
     public ErrorDialog(string message)
     {
         InitializeComponent();
+        MinWidth = 400;
+        MinHeight = 200;
         MessageText.Text = message;
     }
 

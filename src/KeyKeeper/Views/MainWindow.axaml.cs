@@ -18,6 +18,8 @@ namespace KeyKeeper.Views
         public MainWindow()
         {
             InitializeComponent();
+            this.MinWidth = 550;
+            this.MinHeight = 350;
         }
 
         private async void CreateNewVault_Click(object sender, RoutedEventArgs e)
@@ -80,8 +82,7 @@ namespace KeyKeeper.Views
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-
-            repositoryWindow.Closed += (s, e) => this.Show();
+            repositoryWindow.Closed += (s, e) => this.Close();
             repositoryWindow.Show();
             this.Hide();
         }

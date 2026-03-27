@@ -16,6 +16,10 @@ public partial class EntryEditWindow : Window
     public EntryEditWindow()
     {
         InitializeComponent();
+
+        MinWidth = 500;
+        MinHeight = 400;
+
         if (PasswordEdit != null)
         {
             PasswordEdit.TextChanged += PasswordTextChanged;
