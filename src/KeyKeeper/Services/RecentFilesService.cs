@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using KeyKeeper.Models;
 
@@ -7,13 +8,20 @@ namespace KeyKeeper.Services;
 
 internal class RecentFilesService : IRecentFilesService
 {
+    private const string RecentFilesFilename = "recent-files.json";
+
     // files are stored in reverse chronological order
     public ObservableCollection<RecentFile> RecentFiles { get; }
     private readonly int maxEntries = 8;
+    private readonly string recentFilesPath;
 
     public RecentFilesService()
     {
         RecentFiles = new ObservableCollection<RecentFile>();
+        var appDataDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "KeyKeeper");
+        recentFilesPath = Path.Combine(appDataDirectory, RecentFilesFilename);
     }
 
     public void Remember(string filename)
