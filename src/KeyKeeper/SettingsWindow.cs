@@ -1,25 +1,61 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Media;
 
 namespace KeyKeeper.Views;
+
 public class SettingsWindow : Window
 {
     public SettingsWindow()
     {
-        this.Title = "Settings";
-        this.MinWidth = 500;
-        this.MinHeight = 400;
-        this.Width = 400;
-        this.Height = 300;
-        var textBlock = new TextBlock
+        // Базовые параметры окна
+        this.Title = "Настройки";
+        this.Width = 450;
+        this.Height = 250;
+        this.MinWidth = 450;
+        this.MinHeight = 250;
+        this.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        this.Padding = new Thickness(25);
+
+        // Контейнер, который выравнивает элементы по вертикали
+        var mainStack = new StackPanel
         {
-            Text = "Settings window",
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            FontSize = 16
+            Spacing = 15,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top
         };
 
-        this.Content = textBlock;
+        // Заголовок окна
+        var titleText = new TextBlock
+        {
+            Text = "Настройки приложения",
+            FontSize = 20,
+            FontWeight = FontWeight.Bold,
+            Margin = new Thickness(0, 0, 0, 10)
+        };
+
+        // Чекбокс (Галочка)
+        var exitOnCloseCheckBox = new CheckBox
+        {
+            Content = "Завершение работы KeyKeeper при закрытии хранилища",
+            FontSize = 14,
+            // Подгружаем сохраненное состояние из статического класса
+            IsChecked = AppSettings.ExitOnRepositoryClose
+        };
+
+        // Событие: когда пользователь щелкает по галочке, данные сразу улетают в AppSettings
+        exitOnCloseCheckBox.IsCheckedChanged += (s, e) =>
+        {
+            AppSettings.ExitOnRepositoryClose = exitOnCloseCheckBox.IsChecked ?? false;
+            AppSettings.Save();
+        };
+
+        // Добавляем элементы в стек
+        mainStack.Children.Add(titleText);
+        mainStack.Children.Add(exitOnCloseCheckBox);
+
+        // Назначаем стек основным контентом окна
+        this.Content = mainStack;
     }
 }
