@@ -10,7 +10,7 @@ public class SettingsWindow : Window
     public SettingsWindow()
     {
         // Базовые параметры окна
-        this.Title = "Настройки";
+        this.Title = "Settings";
         this.Width = 450;
         this.Height = 250;
         this.MinWidth = 450;
@@ -29,7 +29,7 @@ public class SettingsWindow : Window
         // Заголовок окна
         var titleText = new TextBlock
         {
-            Text = "Настройки приложения",
+            Text = "App Settings",
             FontSize = 20,
             FontWeight = FontWeight.Bold,
             Margin = new Thickness(0, 0, 0, 10)
@@ -38,7 +38,7 @@ public class SettingsWindow : Window
         // Чекбокс (Галочка)
         var exitOnCloseCheckBox = new CheckBox
         {
-            Content = "Завершение работы KeyKeeper при закрытии хранилища",
+            Content = "Exit KeyKeeper when closing vault",
             FontSize = 14,
             // Подгружаем сохраненное состояние из статического класса
             IsChecked = AppSettings.ExitOnRepositoryClose
