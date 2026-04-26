@@ -11,5 +11,9 @@
   
     <Application.Styles>
         <StyleInclude Source="avares://KeyKeeper/Styles/AppTheme.axaml"/>
+
+        <Style Selector="Window">
+            <Setter Property="Icon" Value="/Assets/icon.ico"/>
+        </Style>
     </Application.Styles>
 </Application>
