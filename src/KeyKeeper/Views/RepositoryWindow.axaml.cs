@@ -28,7 +28,6 @@ public partial class RepositoryWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        AddHandler(PointerMovedEvent, OnUserActivity, RoutingStrategies.Tunnel);
         AddHandler(PointerPressedEvent, OnUserActivity, RoutingStrategies.Tunnel);
         AddHandler(KeyDownEvent, OnUserActivity, RoutingStrategies.Tunnel);
     }
