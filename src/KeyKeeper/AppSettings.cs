@@ -1,17 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 
 namespace KeyKeeper;
 
 public static class AppSettings
 {
-    private static readonly string FilePath = "settings.json";
+    private static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "KeyKeeper", "settings.json");
 
     public static bool ExitOnRepositoryClose { get; set; } = false;
 
     // Сохранение в файл
     public static void Save()
     {
+        var directory = Path.GetDirectoryName(FilePath);
+        if (!string.IsNullOrEmpty(directory))
+            Directory.CreateDirectory(directory);
+
         var data = new { ExitOnRepositoryClose };
         string json = JsonSerializer.Serialize(data);
         File.WriteAllText(FilePath, json);
