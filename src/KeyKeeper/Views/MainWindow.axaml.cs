@@ -3,8 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using KeyKeeper.Models;
 using KeyKeeper.PasswordStore;
 using KeyKeeper.PasswordStore.Crypto;
+using KeyKeeper.Services;
 using KeyKeeper.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,8 +17,11 @@ namespace KeyKeeper.Views
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private IRecentFilesService recentFilesService;
+
+        public MainWindow(IRecentFilesService recentFilesService)
         {
+            this.recentFilesService = recentFilesService;
             InitializeComponent();
             this.MinWidth = 550;
             this.MinHeight = 350;
@@ -42,6 +47,9 @@ namespace KeyKeeper.Views
                         Key = compositeKey,
                         LockTimeoutSeconds = 800
                     });
+
+                recentFilesService.Remember(path);
+
                 IPassStore passStore = passStoreAccessor;
                 OpenRepositoryWindow(passStore);
             }
@@ -71,8 +79,18 @@ namespace KeyKeeper.Views
                 var file = files[0];
                 if (file.TryGetLocalPath() is string path)
                 {
+                    recentFilesService.Remember(path);
                     OpenRepositoryWindow(new PassStoreFileAccessor(path, false, null));
                 }
+            }
+        }
+
+        private void RecentVaultsListItem_DoubleTapped(object sender, RoutedEventArgs e)
+        {
+            if (sender is Control c && c.DataContext is RecentFile recentFile)
+            {
+                recentFilesService.Remember(recentFile.Path);
+                OpenRepositoryWindow(new PassStoreFileAccessor(recentFile.Path, false, null));
             }
         }
 

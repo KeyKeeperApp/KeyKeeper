@@ -7,10 +7,11 @@ public interface IRecentFilesService
 {
     // files are stored in reverse chronological order
     ObservableCollection<RecentFile> RecentFiles { get; }
-    
+
+    void Load();
+    void Save();
+
     void Remember(string filename);
     void Forget(string filename);
     void ForgetAll();
-
-    // TODO load and store
 }

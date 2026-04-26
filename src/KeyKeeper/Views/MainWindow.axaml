@@ -78,9 +78,14 @@
                              ItemsSource="{Binding RecentFiles}">
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="m:RecentFile">
-                                <TextBlock Text="{Binding DisplayPath}"
-                                           Foreground="#000"
-                                           Margin="5"/>
+                                <Border Background="Transparent" 
+                                        Cursor="Hand"
+                                        DoubleTapped="RecentVaultsListItem_DoubleTapped"
+                                        Padding="10">
+                                    <TextBlock Text="{Binding DisplayPath}"
+                                               Foreground="#000"
+                                               Margin="5"/>
+                                </Border>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                         <ListBox.Styles>
@@ -93,7 +98,5 @@
                 </Border>
             </Grid>
         </Grid>
-
-
     </Grid>
 </Window>
