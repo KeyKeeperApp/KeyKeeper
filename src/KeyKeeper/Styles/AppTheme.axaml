@@ -5,9 +5,24 @@
             <Button Classes="" Content="contentъ"/>
         </Border>
     </Design.PreviewWith>
-    
+
     <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentTheme.xaml"/>
-    
+
+    <Styles.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.ThemeDictionaries>
+          <ResourceDictionary x:Key="Default">
+            <Color x:Key="KeyKeeperAccentColor">#FF2328C4</Color>
+            <Color x:Key="KeyKeeperForeground">#00000000</Color>
+            <Color x:Key="KeyKeeperBackground">#FFFFFFFF</Color>
+
+            <SolidColorBrush x:Key="KeyKeeperAboutWindowBackgroundBrush" Color="{DynamicResource KeyKeeperAccentColor}" />
+            <SolidColorBrush x:Key="KeyKeeperAboutWindowForegroundBrush" Color="#FFFFFFFF" />
+          </ResourceDictionary>
+        </ResourceDictionary.ThemeDictionaries>
+      </ResourceDictionary>
+    </Styles.Resources>
+
     <Style Selector="Button:not(.dummy) /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="#cccccc" />
         <Setter Property="Foreground" Value="#000000" />
@@ -20,7 +35,6 @@
         <Setter Property="Background" Value="#444444" />
         <Setter Property="Foreground" Value="#ffffff" />
     </Style>
-
     <Style Selector="Button.accentSidebarButton /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="#00000000" />
         <Setter Property="Foreground" Value="white" />
@@ -33,6 +47,6 @@
         <Setter Property="CornerRadius" Value="9" />
         <Setter Property="BorderBrush" Value="white" />
         <Setter Property="Background" Value="white"/>
-        <Setter Property="Foreground" Value="#2328C4"/>
+        <Setter Property="Foreground" Value="{DynamicResource KeyKeeperAccentColor}"/>
     </Style>
 </Styles>

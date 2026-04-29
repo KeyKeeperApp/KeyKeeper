@@ -15,7 +15,8 @@ public class AboutWindow : Window
         this.MinWidth = 450;
         this.MinHeight = 250;
 
-        this.Background = new SolidColorBrush(Color.Parse("#2328c4"));
+        this.Background = this.FindResource("KeyKeeperAboutWindowBackgroundBrush") as IBrush;
+        this.Foreground = this.FindResource("KeyKeeperAboutWindowForegroundBrush") as IBrush;
 
         var AboutKeyKeeper = new TextBlock
         {
