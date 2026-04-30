@@ -16,6 +16,7 @@
             <Color x:Key="KeyKeeperForeground">#00000000</Color>
             <Color x:Key="KeyKeeperBackground">#FFFFFFFF</Color>
 
+            <SolidColorBrush x:Key="KeyKeeperHeadingTextBrush" Color="{DynamicResource KeyKeeperAccentColor}" />
             <SolidColorBrush x:Key="KeyKeeperAboutWindowBackgroundBrush" Color="{DynamicResource KeyKeeperAccentColor}" />
             <SolidColorBrush x:Key="KeyKeeperAboutWindowForegroundBrush" Color="#FFFFFFFF" />
           </ResourceDictionary>
@@ -34,6 +35,10 @@
     <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="#444444" />
         <Setter Property="Foreground" Value="#ffffff" />
+    </Style>
+    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="#d7d7d7" />
+        <Setter Property="Foreground" Value="#777777" />
     </Style>
     <Style Selector="Button.accentSidebarButton /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="#00000000" />

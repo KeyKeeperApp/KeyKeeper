@@ -30,6 +30,7 @@ public class SettingsWindow : Window
         var titleText = new TextBlock
         {
             Text = "App Settings",
+            Foreground = this.FindResource("KeyKeeperHeadingTextBrush") as IBrush,
             FontSize = 20,
             FontWeight = FontWeight.Bold,
             Margin = new Thickness(0, 0, 0, 10)
