@@ -1,31 +1,64 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="KeyKeeper.Views.ErrorDialog"
-        Width="350" Height="120"
-        Background="White"
+        Width="400" Height="180"
+        WindowStartupLocation="CenterOwner"
+        Background="#F9F9F9"
         CanResize="False"
-        Title="Error">
+        Title="Access Error"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="True">
 
-    <Grid Margin="10" RowDefinitions="*,Auto">
-        <TextBlock x:Name="MessageText"
-                   Grid.Row="0"
-                   Foreground="Red"
-                   FontSize="18"
-                   TextWrapping="Wrap" />
+    <Grid Margin="20" RowDefinitions="*, Auto">
+        <!-- Main Content -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="15" VerticalAlignment="Center">
+            <!-- Error Icon (Material Design Style) -->
+            <Path Data="M12,2C6.47,2 2,6.47 2,12C2,17.53 6.47,22 12,22C17.53,22 22,17.53 22,12C22,6.47 17.53,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"
+                  Fill="#E74C3C"
+                  Width="40" Height="40"
+                  Stretch="Uniform" />
+            
+            <StackPanel VerticalAlignment="Center" Width="280">
+                <TextBlock Text="Oops! Something went wrong" 
+                           FontWeight="Bold" 
+                           FontSize="16" 
+                           Foreground="#333"
+                           Margin="0,0,0,4"/>
+                <TextBlock x:Name="MessageText"
+                           Foreground="#666"
+                           FontSize="14"
+                           TextWrapping="Wrap"
+                           LineHeight="20"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Action Button -->
         <Button Grid.Row="1"
-                Content="OK"
-                HorizontalAlignment="Center"
-                Margin="0,10,0,0"
+                Content="Got it"
                 Click="Ok_Click"
-                Background="#aaa" />
-        <Grid.Styles>
-            <Style Selector="Button /template/ ContentPresenter">
-                <Setter Property="Foreground" Value="#333" />
-            </Style>
-            <Style Selector="Button:pointerover /template/ ContentPresenter">
-                <Setter Property="Background" Value="#ccc" />
-                <Setter Property="Foreground" Value="#444" />
-            </Style>
-        </Grid.Styles>
+                HorizontalAlignment="Right"
+                Padding="25,8"
+                BorderThickness="0"
+                CornerRadius="4"
+                Cursor="Hand">
+            <Button.Styles>
+                <Style Selector="Button">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                    <Setter Property="Foreground" Value="#333"/>
+                    <Setter Property="Transitions">
+                        <Transitions>
+                            <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" />
+                            <BrushTransition Property="Background" Duration="0:0:0.2" />
+                        </Transitions>
+                    </Setter>
+                </Style>
+                <Style Selector="Button:pointerover /template/ ContentPresenter">
+                    <Setter Property="Background" Value="#D5D5D5"/>
+                </Style>
+                <Style Selector="Button:pressed">
+                    <Setter Property="RenderTransform" Value="scale(0.95)"/>
+                </Style>
+            </Button.Styles>
+        </Button>
     </Grid>
 </Window>
