@@ -16,7 +16,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
     private DateTime _timerStart;
     private string _lockTimerDisplay = string.Empty;
 
-    public Func<string, Task> ShowErrorPopup;
+    public Func<string, string, Task> ShowErrorPopup;
 
     public object CurrentPage
     {

@@ -23,9 +23,9 @@ public partial class RepositoryWindow : Window
         MinHeight = 500;
 
         DataContext = model;
-        model.ShowErrorPopup = async (string message) =>
+        model.ShowErrorPopup = async (string message, string title) =>
         {
-            await new ErrorDialog(message).ShowDialog(this);
+            await new ErrorDialog(message, title).ShowDialog(this);
         };
     }
 
