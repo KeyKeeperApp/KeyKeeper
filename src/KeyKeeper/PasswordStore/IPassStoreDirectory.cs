@@ -7,4 +7,5 @@ public interface IPassStoreDirectory : IEnumerable<PassStoreEntry>
 {
     bool DeleteEntry(Guid id);
     void AddEntry(PassStoreEntry entry);
+    void UpdateEntry(Guid id, PassStoreEntry entry);
 }

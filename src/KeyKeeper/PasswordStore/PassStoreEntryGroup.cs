@@ -85,6 +85,21 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
         return false;
     }
 
+    public void UpdateEntry(Guid id, PassStoreEntry entry)
+    {
+        entry.Parent = this;
+        if (ChildEntries == null)
+            return;
+        for (int i = 0; i < ChildEntries.Count; i++)
+        {
+            if (ChildEntries[i].Id == id)
+            {
+                ChildEntries[i] = entry;
+                return;
+            }
+        }
+    }
+
     IEnumerator<PassStoreEntry> IEnumerable<PassStoreEntry>.GetEnumerator()
     {
         return ChildEntries.GetEnumerator();

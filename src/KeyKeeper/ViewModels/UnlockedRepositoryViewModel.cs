@@ -77,8 +77,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
 
     public void UpdateEntry(PassStoreEntryPassword updatedEntry)
     {
-        currentDirectory.DeleteEntry(updatedEntry.Id);
-        currentDirectory.AddEntry(updatedEntry);
+        currentDirectory.UpdateEntry(updatedEntry.Id, updatedEntry);
         HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
     }
