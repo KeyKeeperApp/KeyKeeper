@@ -1,5 +1,7 @@
-﻿using Avalonia.Controls;
+using System;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace KeyKeeper.Views;
 
@@ -15,5 +17,11 @@ public partial class ErrorDialog : Window
     private void Ok_Click(object? sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        OkButton.Focus();
     }
 }
