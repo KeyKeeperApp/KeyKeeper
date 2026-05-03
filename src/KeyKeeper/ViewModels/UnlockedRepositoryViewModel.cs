@@ -95,6 +95,15 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         }
     }
 
+    public void AddGroup(PassStoreEntryGroup group)
+    {
+        if (rootDirectory == null)
+            return;
+        rootDirectory.AddEntry(group);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
+    }
+
     public void DeleteEntry(Guid id)
     {
         currentDirectory.DeleteEntry(id);

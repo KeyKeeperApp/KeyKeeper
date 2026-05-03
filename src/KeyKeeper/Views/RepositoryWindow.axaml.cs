@@ -153,6 +153,34 @@ public partial class RepositoryWindow : Window
         }
     }
 
+    private async void AddGroupButton_Click(object sender, RoutedEventArgs args)
+    {
+        if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
+        {
+            CreateGroupDialog dialog = new();
+
+            vm_.StopLockTimer();
+
+            await dialog.ShowDialog(this);
+
+            vm_.StartLockTimer();
+
+            if (dialog.Success)
+            {
+                var group = new PassStoreEntryGroup(
+                    Guid.NewGuid(),
+                    DateTime.UtcNow,
+                    DateTime.UtcNow,
+                    dialog.IconType,
+                    dialog.GroupName,
+                    FileFormatConstants.GROUP_TYPE_SIMPLE
+                );
+                vm.AddGroup(group);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group created");
+            }
+        }
+    }
+
     private void SaveButton_Click(object sender, RoutedEventArgs args)
     {
         if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)

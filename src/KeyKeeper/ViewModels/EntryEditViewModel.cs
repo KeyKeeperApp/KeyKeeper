@@ -323,7 +323,6 @@ public class EntryEditViewModel : ViewModelBase
             }
             catch (Exception)
             {
-                // Validation should have caught this, but handle gracefully
                 totp = null;
             }
         }
@@ -332,7 +331,7 @@ public class EntryEditViewModel : ViewModelBase
             id,
             created,
             DateTime.UtcNow,
-            EntryIconType.DEFAULT,
+            BuiltinEntryIconType.DEFAULT,
             EntryName.Trim(),
             new LoginField() { Type = LOGIN_FIELD_USERNAME_ID, Value = Username.Trim() },
             new LoginField() { Type = LOGIN_FIELD_PASSWORD_ID, Value = Password },

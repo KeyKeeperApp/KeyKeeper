@@ -96,6 +96,14 @@
                                         Height="30"
                                         HorizontalAlignment="Left"
                                         Margin="0,20,0,0"/>
+
+                        <!-- New Group -->
+                        <Button Content="New Group"
+                                        Classes="accentSidebarButton"
+                                        Click="AddGroupButton_Click"
+                                        Height="30"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,20,0,0"/>
                     </StackPanel>
                 </Border>
 

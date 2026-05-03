@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyKeeper.Views.CreateGroupDialog"
+        Title="Create New Group"
+        Background="White"
+        Icon="/Assets/icon.ico"
+        Width="420" Height="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <StackPanel Margin="20" Spacing="16">
+        <TextBlock Text="Create new group"
+                   FontSize="20"
+                   FontWeight="Bold"
+                   Foreground="#2328C4"/>
+
+        <StackPanel Spacing="6">
+            <TextBlock Text="Group name" FontWeight="SemiBold" Foreground="Black" />
+            <TextBox x:Name="NameTextBox"
+                     Watermark="Enter group name"
+                     Padding="10,8"/>
+        </StackPanel>
+
+        <StackPanel Spacing="6">
+            <TextBlock Text="Icon" FontWeight="SemiBold" Foreground="Black" />
+            <ListBox x:Name="IconListBox"
+                     Height="80"
+                     SelectionMode="Single"
+                     Background="#F5F5F5">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:CompileBindings="False">
+                        <Svg Path="{Binding IconPath}" Width="48" Height="48" Margin="6"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
+
+        <TextBlock x:Name="ErrorText"
+                   FontSize="12"
+                   Foreground="Red"
+                   Text=""
+                   IsVisible="False"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="Cancel"
+                    Width="80"
+                    Click="CancelButton_Click"/>
+            <Button x:Name="CreateButton"
+                    Content="Create"
+                    Width="80"
+                    IsEnabled="False"
+                    Click="CreateButton_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
