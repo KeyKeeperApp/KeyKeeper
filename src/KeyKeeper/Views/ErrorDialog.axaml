@@ -19,7 +19,7 @@
                   Stretch="Uniform" />
             
             <StackPanel VerticalAlignment="Center" Width="280">
-                <TextBlock Text="Oops! Something went wrong" 
+                <TextBlock x:Name="MessageTitle"
                            FontWeight="Bold" 
                            FontSize="16" 
                            Foreground="#333"

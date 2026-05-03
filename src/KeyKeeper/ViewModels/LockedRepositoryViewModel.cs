@@ -37,24 +37,24 @@ public partial class LockedRepositoryViewModel : ViewModelBase
             if (e.Message == PassStoreFileException.ContentHMACMismatch.Message ||
                 e.Message == PassStoreFileException.InvalidBeginMarker.Message)
             {
-                await parent.ShowErrorPopup("Incorrect password or corrupted file");
+                await parent.ShowErrorPopup("Incorrect password or corrupted file", "Check password");
             } else if (e.Message == PassStoreFileException.UnexpectedEndOfFile.Message ||
                        e.Message == PassStoreFileException.IncorrectMagicNumber.Message ||
                        e.Message == PassStoreFileException.InvalidCryptoHeader.Message ||
                        e.Message == PassStoreFileException.InvalidPassStoreEntry.Message)
             {
-                await parent.ShowErrorPopup("Corrupted file");
+                await parent.ShowErrorPopup("Corrupted file", "Password store error");
             } else if (e.Message == PassStoreFileException.UnsupportedVersion.Message)
             {
-                await parent.ShowErrorPopup("Unsupported store file version");
+                await parent.ShowErrorPopup("Unsupported store file version", "Password store error");
             } else
             {
-                await parent.ShowErrorPopup("Unknown password store unlock error");
+                await parent.ShowErrorPopup("Unknown unlock error", "Password store error");
             }
         } catch (Exception e)
         {
             Console.WriteLine(e);
-            await parent.ShowErrorPopup("Cannot open the password store file");
+            await parent.ShowErrorPopup("Cannot open the password store file", "Password store error");
         }
     }
 }
