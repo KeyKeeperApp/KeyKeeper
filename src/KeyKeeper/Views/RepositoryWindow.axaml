@@ -3,6 +3,7 @@
         xmlns:vm="using:KeyKeeper.ViewModels"
         xmlns:i="using:Avalonia.Interactivity"
         xmlns:kkp="using:KeyKeeper.Views"
+        xmlns:converters="using:KeyKeeper.Views.Converters"
         x:Class="KeyKeeper.Views.RepositoryWindow"
         Closing="RepositoryWindow_Closing"
         Title="KeyKeeper - Password store"
@@ -13,7 +14,8 @@
         x:DataType="vm:RepositoryWindowViewModel">
 
     <Window.Resources>
-        <kkp:TotpCodeConverter x:Key="TotpCodeConverter" />
+        <converters:TotpCodeConverter x:Key="TotpCodeConverter" />
+        <converters:StringPresenceToOpacityConverter x:Key="StringPresenceToOpacityConverter" />
     </Window.Resources>
 
     <Window.DataTemplates>
@@ -36,8 +38,7 @@
                                 Padding="8,4"
                                 HorizontalAlignment="Left"
                                 Margin="0,12,0,12"
-                                IsVisible="{Binding $parent[Window].DataContext.LockTimerDisplay,
-                                            Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                Opacity="{Binding $parent[Window].DataContext.LockTimerDisplay, Converter={StaticResource StringPresenceToOpacityConverter}}">
 
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
 

@@ -5,7 +5,7 @@ using Avalonia.Data.Converters;
 using KeyKeeper.PasswordStore;
 using KeyKeeper.ViewModels;
 
-namespace KeyKeeper.Views;
+namespace KeyKeeper.Views.Converters;
 
 public class TotpCodeConverter : IMultiValueConverter
 {
