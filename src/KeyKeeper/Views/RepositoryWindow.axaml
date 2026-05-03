@@ -56,22 +56,23 @@
                             </StackPanel>
                         </Border>
 
-                                    <!-- Рамочка  -->
-                        <!-- <Border BorderBrush="Gray"
-                                            BorderThickness="1"
-                                            CornerRadius="5"
-                                            Padding="20"
-                                            Background="#F5F5F5"
-                                            HorizontalAlignment="Left">
+                        <!-- Группы паролей  -->
+                        <TreeView x:Name="GroupTree"
+                                 ItemsSource="{Binding PasswordGroups}"
+                                 SelectedItem="{Binding SelectedPasswordGroup}"
+                                 Background="#FFFFFFFF"
+                                 SelectionMode="Single" >
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding ChildGroups}">
+                                    <Border Background="Transparent"
+                                            DoubleTapped="Entry_DoubleTapped">
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   Foreground="Black" />
+                                    </Border>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
 
-                        <StackPanel HorizontalAlignment="Left">
-                            <Button Content="All Passwords"
-                                                Width="120"
-                                                Height="30"
-                                                HorizontalAlignment="Left"/>
-                        </StackPanel>
-
-                        </Border> -->
                         <!-- Save Passwords -->
                         <Button Content="Save Passwords"
                                 Classes="accentSidebarButton"

@@ -269,6 +269,15 @@ public class PassStoreFileAccessor : IPassStore
             "",
             GROUP_TYPE_DEFAULT
         );
+        PassStoreEntryGroup favourites = new(
+            Guid.NewGuid(),
+            DateTime.UtcNow,
+            DateTime.UtcNow,
+            Guid.Empty,
+            "",
+            GROUP_TYPE_FAVOURITES
+        );
+
         PassStoreEntryGroup root = new(
             Guid.NewGuid(),
             DateTime.UtcNow,
@@ -276,9 +285,10 @@ public class PassStoreFileAccessor : IPassStore
             Guid.Empty,
             "",
             GROUP_TYPE_ROOT,
-            [defaultGroup]
+            [defaultGroup, favourites]
         );
         defaultGroup.Parent = root;
+        favourites.Parent = root;
         root.WriteToStream(w);
         return root;
     }

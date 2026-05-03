@@ -11,6 +11,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
 {
     private IPassStore passStore;
     private IPassStoreDirectory currentDirectory;
+    private PassStoreEntryGroup? rootDirectory;
     private bool hasUnsavedChanges;
     private DispatcherTimer? _totpRefreshTimer;
     private Dictionary<Guid, string> _totpCodes = new();
@@ -22,6 +23,31 @@ public class UnlockedRepositoryViewModel : ViewModelBase
             return currentDirectory
                 .Where(entry => entry is PassStoreEntryPassword)
                 .Select(entry => (entry as PassStoreEntryPassword)!);
+        }
+    }
+
+    public IEnumerable<PassStoreEntryGroup> PasswordGroups
+    {
+        get
+        {
+            if (rootDirectory == null) return [];
+            return rootDirectory
+                .Where(entry => entry is PassStoreEntryGroup)
+                .Select(entry => (entry as PassStoreEntryGroup)!);
+        }
+    }
+    public PassStoreEntryGroup SelectedPasswordGroup
+    {
+        get
+        {
+            return PasswordGroups.First(group => group == currentDirectory);
+        }
+        set
+        {
+            if (PasswordGroups.Any(group => group == value))
+            {
+                ChangeDirectory(value);
+            }
         }
     }
 
@@ -39,6 +65,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     {
         passStore = store;
         currentDirectory = directory;
+        rootDirectory = (directory as PassStoreEntryGroup)?.Parent;
         HasUnsavedChanges = false;
         InitializeTotpCodes();
         StartTotpRefreshTimer();
@@ -88,6 +115,19 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         HasUnsavedChanges = false;
     }
 
+    private void ChangeDirectory(PassStoreEntryGroup newDir)
+    {
+        if (newDir == currentDirectory)
+            return;
+
+        currentDirectory = newDir;
+        InitializeTotpCodes();
+        StartTotpRefreshTimer();
+
+        OnPropertyChanged(nameof(SelectedPasswordGroup));
+        OnPropertyChanged(nameof(Passwords));
+    }
+
     private void InitializeTotpCodes()
     {
         _totpCodes.Clear();
@@ -102,6 +142,10 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         // Calculate time until next TOTP period boundary
         int secondsUntilNextCode = CalculateSecondsUntilNextTotpRefresh();
 
+        if (_totpRefreshTimer != null)
+        {
+            _totpRefreshTimer.Stop();
+        }
         _totpRefreshTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(secondsUntilNextCode)

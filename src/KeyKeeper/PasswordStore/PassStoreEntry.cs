@@ -20,6 +20,7 @@ public abstract class PassStoreEntry
             return $"avares://KeyKeeper/Assets/builtin-entry-icon-{IconType}.svg";
         }
     }
+    public virtual string DisplayName => Name;
 
     public void WriteToStream(Stream str)
     {
