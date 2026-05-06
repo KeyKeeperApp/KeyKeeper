@@ -14,6 +14,7 @@
 
     <Window.Resources>
         <kkp:TotpCodeConverter x:Key="TotpCodeConverter" />
+        <kkp:PasswordEntryConverter x:Key="PasswordEntryConverter" />
     </Window.Resources>
 
     <Window.DataTemplates>
@@ -130,11 +131,11 @@
                                             Margin="10"
                                             HorizontalAlignment="Center">
 
-                                    <Svg Path="{Binding IconPath}" Width="48" Height="48"/>
-                                    <TextBlock Text="{Binding Name}"
+                                    <Svg Path="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=IconPath}" Width="48" Height="48"/>
+                                    <TextBlock Text="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=Name}"
                                                HorizontalAlignment="Center"
                                                Foreground="Black" />
-                                    <TextBlock Text="{Binding Username.Value}"
+                                    <TextBlock Text="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=Username.Value}"
                                                Foreground="#666"
                                                HorizontalAlignment="Center" />
 
@@ -146,7 +147,7 @@
                                                Margin="0,4,0,0">
                                         <TextBlock.Text>
                                             <MultiBinding Converter="{StaticResource TotpCodeConverter}">
-                                                <Binding />
+                                                <Binding Converter="{StaticResource PasswordEntryConverter}" />
                                                 <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ListBox}" />
                                             </MultiBinding>
                                         </TextBlock.Text>

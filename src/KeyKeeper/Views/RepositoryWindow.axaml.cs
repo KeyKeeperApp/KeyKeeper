@@ -118,6 +118,37 @@ public partial class RepositoryWindow : Window
         }
     }
 
+    private async void EditEntry(RepositoryWindowViewModel vm1, UnlockedRepositoryViewModel vm2, PassStoreEntry entry)
+    {
+        if (entry == null)
+        {
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("No entry selected");
+            return;
+        }
+
+        EntryEditWindow dialog = new();
+
+        PassStoreEntry realEntry = entry;
+        if (realEntry is PassStoreEntryLink lnk)
+            realEntry = lnk.LinkTarget!;
+
+        dialog.SetEntry((realEntry as PassStoreEntryPassword)!);
+
+        vm1.StopLockTimer();
+
+        await dialog.ShowDialog(this);
+
+        vm1.StartLockTimer();
+
+        if (dialog.EditedEntry != null)
+        {
+            if (entry is PassStoreEntryLink l)
+                l.LinkTarget = dialog.EditedEntry;
+            vm2.UpdateEntry(dialog.EditedEntry);
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
+        }
+    }
+
     private async void EditEntryButton_Click(object sender, RoutedEventArgs args)
     {
         if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
@@ -129,27 +160,9 @@ public partial class RepositoryWindow : Window
                 return;
             }
 
-            var selectedEntry = listBox.SelectedItem as PassStoreEntryPassword;
-            if (selectedEntry == null)
-            {
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("No entry selected");
-                return;
-            }
-
-            EntryEditWindow dialog = new();
-            dialog.SetEntry(selectedEntry);
-
-            vm_.StopLockTimer();
-
-            await dialog.ShowDialog(this);
-
-            vm_.StartLockTimer();
-
-            if (dialog.EditedEntry != null)
-            {
-                vm.UpdateEntry(dialog.EditedEntry);
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
-            }
+            PassStoreEntry? entry = listBox.SelectedItem as PassStoreEntry;
+            if (entry == null) return;
+            EditEntry(vm_, vm, entry);
         }
     }
 
@@ -212,39 +225,33 @@ public partial class RepositoryWindow : Window
 
     private async void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)
     {
-        if (args.Source is StyledElement s && s.DataContext is PassStoreEntryPassword pwd)
+        if (args.Source is StyledElement s && s.DataContext is PassStoreEntry ent)
         {
+            PassStoreEntryPassword? pwd = UnlockedRepositoryViewModel.FollowLinkIfNeeded(ent);
+            if (pwd == null) return;
+
             if (s.Name == "entryCtxMenuCopyUsername")
             {
-                Clipboard!.SetTextAsync(pwd.Username.Value);
+                await Clipboard!.SetTextAsync(pwd.Username.Value);
                 this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Username copied to clipboard");
             }
             else if (s.Name == "entryCtxMenuCopyPassword")
             {
-                Clipboard!.SetTextAsync(pwd.Password.Value);
+                await Clipboard!.SetTextAsync(pwd.Password.Value);
                 this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
             }
             else if (s.Name == "entryCtxMenuEdit")
             {
                 if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
                 {
-                    EntryEditWindow dialog = new();
-                    dialog.SetEntry(pwd);
-                    vm.StopLockTimer();
-                    await dialog.ShowDialog(this);
-                    vm.StartLockTimer();
-                    if (dialog.EditedEntry != null)
-                    {
-                        pageVm.UpdateEntry(dialog.EditedEntry);
-                        this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
-                    }
+                    EditEntry(vm, pageVm, ent);
                 }
             }
             else if (s.Name == "entryCtxMenuDelete")
             {
                 if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
                 {
-                    pageVm.DeleteEntry(pwd.Id);
+                    pageVm.DeleteEntry(ent.Id);
                     this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry deleted");
                 }
             }

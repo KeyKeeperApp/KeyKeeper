@@ -14,20 +14,22 @@ namespace KeyKeeper.PasswordStore;
 /// </summary>
 public class PassStoreFileAccessor : IPassStore
 {
-    private const ushort FORMAT_VERSION_MAJOR = 0;
-    private const ushort FORMAT_VERSION_MINOR = 0;
+    private const ushort FORMAT_VERSION_MAJOR = 1;
+    private const ushort FORMAT_VERSION_MINOR = 1;
     private static readonly byte[] FORMAT_MAGIC = [0xf5, 0x3a, 0xa4, 0xb7, 0xeb, 0xd9, 0xc2, 0x12];
 
     private string filename;
     private byte[]? key;
     private InnerEncryptionInfo? innerCrypto;
     private OuterEncryptionHeader? outerCryptoHdr;
-    private PassStoreEntry? root;
+    private PassStoreEntryGroup? root;
+    private Dictionary<Guid, PassStoreEntry> allEntries;
 
     public PassStoreFileAccessor(string filename, bool create, StoreCreationOptions? createOptions)
     {
         this.filename = filename;
         this.key = null;
+        this.allEntries = new();
         if (!create)
         {
             CheckStoreFile();
@@ -42,14 +44,14 @@ public class PassStoreFileAccessor : IPassStore
         get { return key == null; }
     }
 
-    public IPassStoreDirectory GetRootDirectory()
+    public PassStoreEntryGroup GetRootDirectory()
     {
         if (Locked)
             throw new InvalidOperationException();
-        return (IPassStoreDirectory)root!;
+        return root!;
     }
 
-    public IPassStoreDirectory? GetGroupByType(byte groupType)
+    public PassStoreEntryGroup? GetGroupByType(byte groupType)
     {
         if (Locked)
             throw new InvalidOperationException();
@@ -102,7 +104,9 @@ public class PassStoreFileAccessor : IPassStore
                     case FILE_FIELD_CONFIG:
                         break;
                     case FILE_FIELD_STORE:
-                        this.root = PassStoreEntry.ReadFromStream(cryptoReader);
+                        root = PassStoreEntry.ReadFromStream(cryptoReader) as PassStoreEntryGroup;
+                        AddEntriesToDict(root!);
+                        ResolveLinks();
                         break;
                     case FILE_FIELD_END:
                         end = true;
@@ -123,6 +127,8 @@ public class PassStoreFileAccessor : IPassStore
         Save();
         Array.Fill<byte>(key!, 0);
         key = null;
+        root = null;
+        allEntries = new();
     }
 
     public void Save()
@@ -161,6 +167,96 @@ public class PassStoreFileAccessor : IPassStore
         cryptoWriter.Flush();
 
         file.SetLength(file.Position);
+    }
+
+    public void AddEntry(PassStoreEntryGroup group, PassStoreEntry entry)
+    {
+        if (Locked) throw new InvalidOperationException("store locked");
+
+        entry.Parent = group;
+        group.ChildEntries.Add(entry);
+        if (entry is PassStoreEntryLink link)
+        {
+            link.LinkTarget ??= allEntries[link.LinkTargetId];
+            if (link.LinkTarget == null)
+                throw new ArgumentException("invalid link target");
+            PassStoreEntry t = link.LinkTarget;
+            if (!t.Backlinks.Contains(entry))
+                t.Backlinks.Add(entry);
+        }
+        allEntries[entry.Id] = entry;
+    }
+
+    public bool DeleteEntry(PassStoreEntryGroup? group, Guid id)
+    {
+        if (Locked) throw new InvalidOperationException("store locked");
+
+        if (group == null)
+            group = allEntries[id]?.Parent;
+
+        if (group == null || group.ChildEntries == null)
+            return false;
+
+        var ch = group.ChildEntries;
+        for (int i = 0; i < ch.Count; i++)
+        {
+            if (ch[i].Id == id)
+            {
+                for (int j = 0; j < ch[i].Backlinks.Count; j++)
+                {
+                    PassStoreEntry bl = ch[i].Backlinks[j];
+                    if (bl is PassStoreEntryLink)
+                        DeleteEntry(bl.Parent, bl.Id);
+                }
+                if (ch[i] is PassStoreEntryLink lnk && lnk.LinkTarget != null)
+                {
+                    lnk.LinkTarget.Backlinks.Remove(lnk);
+                }
+                allEntries.Remove(ch[i].Id);
+                ch.RemoveAt(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void UpdateEntry(PassStoreEntryGroup? group, Guid id, PassStoreEntry entry)
+    {
+        if (Locked) throw new InvalidOperationException("store locked");
+
+        if (group == null)
+            group = allEntries[id]?.Parent;
+
+        if (group == null || group.ChildEntries == null)
+            return;
+
+        entry.Parent = group;
+        entry.Backlinks = allEntries[id].Backlinks;
+        foreach (PassStoreEntry bl in entry.Backlinks)
+        {
+            if (bl is PassStoreEntryLink lnk)
+            {
+                lnk.LinkTarget = entry;
+            }
+        }
+        
+        var ch = group.ChildEntries;
+        for (int i = 0; i < ch.Count; i++)
+        {
+            if (ch[i].Id == id)
+            {
+                allEntries.Remove(ch[i].Id); // убрать
+                allEntries[entry.Id] = entry;
+                ch[i] = entry;
+                return;
+            }
+        }
+    }
+
+    public PassStoreEntry GetEntryById(Guid id)
+    {
+        if (Locked) throw new InvalidOperationException("store locked");
+        return allEntries[id];
     }
 
     /// <summary>
@@ -213,6 +309,30 @@ public class PassStoreFileAccessor : IPassStore
         OuterEncryptionUtil.CheckOuterEncryptionHeader(file);
     }
 
+    private void AddEntriesToDict(PassStoreEntryGroup root)
+    {
+        allEntries.Add(root.Id, root);
+        foreach (PassStoreEntry entry in root.ChildEntries)
+        {
+            if (entry is PassStoreEntryGroup group)
+                AddEntriesToDict(group);
+            else
+                allEntries.Add(entry.Id, entry);
+        }
+    }
+
+    private void ResolveLinks()
+    {
+        foreach (var kv in allEntries)
+        {
+            if (kv.Value is PassStoreEntryLink lnk)
+            {
+                lnk.LinkTarget = allEntries[lnk.LinkTargetId];
+                lnk.LinkTarget.Backlinks.Add(lnk);
+            }
+        }
+    }
+
     private void CreateNewAndUnlock(StoreCreationOptions options)
     {
         using FileStream file = File.Open(filename, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -257,9 +377,12 @@ public class PassStoreFileAccessor : IPassStore
 
         cryptoWriter.Flush();
         cryptoWriter.Dispose();
+
+        AddEntriesToDict(root);
+        ResolveLinks();
     }
 
-    private PassStoreEntry WriteInitialStoreTree(OuterEncryptionWriter w)
+    private PassStoreEntryGroup WriteInitialStoreTree(OuterEncryptionWriter w)
     {
         PassStoreEntryGroup defaultGroup = new(
             Guid.NewGuid(),

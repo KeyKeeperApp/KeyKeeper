@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using static KeyKeeper.PasswordStore.FileFormatConstants;
 
@@ -13,6 +14,7 @@ public abstract class PassStoreEntry
     public Guid IconType { get; set; }
     public string Name { get; set; }
     public PassStoreEntryType Type { get; set; }
+    public List<PassStoreEntry> Backlinks = new();
     public string IconPath
     {
         get
@@ -78,6 +80,9 @@ public abstract class PassStoreEntry
             } else if (entryType == ENTRY_PASS_ID)
             {
                 return PassStoreEntryPassword.ReadFromStream(entryStream, id, createdAt, modifiedAt, iconType, name);
+            } else if (entryType == ENTRY_LINK_ID)
+            {
+                return PassStoreEntryLink.ReadFromStream(entryStream, id, createdAt, modifiedAt, iconType, name);
             } else
             {
                 throw PassStoreFileException.InvalidPassStoreEntry;

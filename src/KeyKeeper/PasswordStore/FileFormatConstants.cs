@@ -19,6 +19,7 @@ static class FileFormatConstants
     public const uint FILE_FIELD_END = 0x010ba81a;
     public const byte ENTRY_PASS_ID = 0x00;
     public const byte ENTRY_GROUP_ID = 0x01;
+    public const byte ENTRY_LINK_ID = 0x02;
     public const byte LOGIN_FIELD_PASSWORD_ID = 0x00;
     public const byte LOGIN_FIELD_USERNAME_ID = 0x01;
     public const byte LOGIN_FIELD_EMAIL_ID = 0x02;
