@@ -62,13 +62,16 @@
                                  ItemsSource="{Binding PasswordGroups}"
                                  SelectedItem="{Binding SelectedPasswordGroup}"
                                  Background="#FFFFFFFF"
-                                 SelectionMode="Single" >
+                                 SelectionMode="Single"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
                             <TreeView.ItemTemplate>
                                 <TreeDataTemplate ItemsSource="{Binding ChildGroups}">
                                     <Border Background="Transparent"
                                             DoubleTapped="Entry_DoubleTapped">
                                         <TextBlock Text="{Binding DisplayName}"
-                                                   Foreground="Black" />
+                                                   Foreground="Black"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   MaxWidth="180" />
                                         <Border.ContextMenu>
                                             <ContextMenu>
                                                 <MenuItem Name="groupCtxMenuEdit" Header="Edit" Click="GroupContextMenuItem_Click" />
