@@ -58,8 +58,14 @@
                              PasswordChar="*"
                              Watermark="Enter password"
                              Padding="10,8"/>
+                    <!-- Линия сложности пароля -->
+                    <StackPanel Margin="0, -5, 0, 0">
+                        <Border x:Name="StrengthBorder" Height="3" CornerRadius="2" Background="Gray" Width="0" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="StrengthText" FontSize="11" Margin="0,4,0,0" Foreground="Gray"/>
+                    </StackPanel>
                 </StackPanel>
 
+                <!-- Подтверждение пароля -->
                 <StackPanel Spacing="10">
                     <TextBlock Text="Confirm password" FontWeight="SemiBold" Foreground="Black" />
                     <TextBox x:Name="ConfirmPasswordBox"
