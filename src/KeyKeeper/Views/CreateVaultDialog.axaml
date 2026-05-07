@@ -54,12 +54,32 @@
                 <!-- Ввод мастер-пароля -->
                 <StackPanel Spacing="10">
                     <TextBlock Text="Master password" FontWeight="SemiBold" Foreground="Black" />
-                    <TextBox x:Name="PasswordBox"
-                             PasswordChar="*"
-                             Watermark="Enter password"
-                             Padding="10,8"/>
+
+                    <!-- Контейнер для поля пароля и индикатора -->
+                    <Grid RowDefinitions="Auto,Auto">
+                        <TextBox x:Name="PasswordBox"
+                                 Grid.Row="0"
+                                 PasswordChar="*"
+                                 Watermark="Enter password"
+                                 Padding="10,8"/>
+
+                        <!-- Индикатор надежности пароля -->
+                        <Border x:Name="PasswordStrengthIndicator"
+                                Grid.Row="1"
+                                Height="4"
+                                CornerRadius="2"
+                                Margin="0,5,0,0"
+                                Background="#ddd">
+                            <Border x:Name="PasswordStrengthFill"
+                                    Width="0"
+                                    Height="4"
+                                    HorizontalAlignment="Left"
+                                    CornerRadius="2" />
+                        </Border>
+                    </Grid>
                 </StackPanel>
 
+                <!-- Подтверждение пароля -->
                 <StackPanel Spacing="10">
                     <TextBlock Text="Confirm password" FontWeight="SemiBold" Foreground="Black" />
                     <TextBox x:Name="ConfirmPasswordBox"
