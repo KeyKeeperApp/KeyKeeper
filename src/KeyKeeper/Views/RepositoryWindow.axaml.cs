@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using KeyKeeper.PasswordStore;
+using KeyKeeper.Models;
 using KeyKeeper.ViewModels;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Presenters;
@@ -180,14 +182,14 @@ public partial class RepositoryWindow : Window
 
             vm_.StartLockTimer();
 
-            if (dialog.Success)
+            if (dialog.GroupData != null)
             {
                 var group = new PassStoreEntryGroup(
                     Guid.NewGuid(),
                     DateTime.UtcNow,
                     DateTime.UtcNow,
-                    dialog.IconType,
-                    dialog.GroupName,
+                    dialog.GroupData.IconType,
+                    dialog.GroupData.Name,
                     FileFormatConstants.GROUP_TYPE_SIMPLE
                 );
                 vm.AddGroup(group);
@@ -302,6 +304,76 @@ public partial class RepositoryWindow : Window
         else
             notificationHost?.Show($"This entry is already in {targetGroup.DisplayName}!");
         _contextMenuEntry = null;
+    }
+
+    private async void GroupContextMenuItem_Click(object sender, RoutedEventArgs args)
+    {
+        if (args.Source is not StyledElement s || s.DataContext is not PassStoreEntryGroup group)
+            return;
+
+        if (DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        if (group.GroupType == FileFormatConstants.GROUP_TYPE_DEFAULT ||
+            group.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES ||
+            group.GroupType == FileFormatConstants.GROUP_TYPE_ROOT)
+            return;
+
+        if (s.Name == "groupCtxMenuEdit")
+        {
+            await EditGroup(vm, pageVm, group);
+        }
+        else if (s.Name == "groupCtxMenuDelete")
+        {
+            await DeleteGroup(group);
+        }
+    }
+
+    private async Task EditGroup(RepositoryWindowViewModel vm, UnlockedRepositoryViewModel pageVm, PassStoreEntryGroup group)
+    {
+        CreateGroupDialog dialog = new();
+        dialog.SetupForEdit(group);
+
+        vm.StopLockTimer();
+
+        await dialog.ShowDialog(this);
+
+        vm.StartLockTimer();
+
+        if (dialog.GroupData != null)
+        {
+            pageVm.UpdateGroup(group, dialog.GroupData.Name, dialog.GroupData.IconType);
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group updated");
+        }
+    }
+
+    private async Task DeleteGroup(PassStoreEntryGroup group)
+    {
+        ConfirmationDialog confirmDialog = new();
+        confirmDialog.SetContent(
+            "Delete Group",
+            $"Are you sure you want to delete the group '{group.DisplayName}'? This action cannot be undone.",
+            "Delete"
+        );
+
+        if (DataContext is not RepositoryWindowViewModel vm)
+            return;
+
+        vm.StopLockTimer();
+
+        await confirmDialog.ShowDialog(this);
+
+        vm.StartLockTimer();
+
+        if (confirmDialog.Confirmed)
+        {
+            if (vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+            {
+                pageVm.DeleteGroup(group);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group deleted");
+            }
+        }
     }
 
     private async void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)

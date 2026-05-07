@@ -9,7 +9,8 @@
         CanResize="False">
 
     <StackPanel Margin="20" Spacing="16">
-        <TextBlock Text="Create new group"
+        <TextBlock x:Name="TitleText"
+                   Text="Create new group"
                    FontSize="20"
                    FontWeight="Bold"
                    Foreground="#2328C4"/>
@@ -50,11 +51,11 @@
             <Button Content="Cancel"
                     Width="80"
                     Click="CancelButton_Click"/>
-            <Button x:Name="CreateButton"
+            <Button x:Name="ActionButton"
                     Content="Create"
                     Width="80"
                     IsEnabled="False"
-                    Click="CreateButton_Click"/>
+                    Click="ActionButton_Click"/>
         </StackPanel>
     </StackPanel>
 </Window>

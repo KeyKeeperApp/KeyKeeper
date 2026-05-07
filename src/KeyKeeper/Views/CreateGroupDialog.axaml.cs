@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using KeyKeeper.Models;
 using KeyKeeper.PasswordStore;
 
 namespace KeyKeeper.Views;
 
 public partial class CreateGroupDialog : Window
 {
-    public string GroupName { get; private set; } = string.Empty;
-    public Guid IconType { get; private set; } = BuiltinEntryIconType.DEFAULT;
-    public bool Success { get; private set; }
+    public GroupEditData? GroupData { get; private set; }
 
     private record IconChoice(Guid Id)
     {
@@ -29,28 +28,44 @@ public partial class CreateGroupDialog : Window
         IconListBox.ItemsSource = icons;
         IconListBox.SelectedIndex = 0;
 
-        NameTextBox.TextChanged += (_, _) => UpdateCreateButtonState();
+        NameTextBox.TextChanged += (_, _) => UpdateActionButtonState();
         KeyDown += OnKeyDown;
     }
 
-    private void UpdateCreateButtonState()
+    public void SetupForEdit(PassStoreEntryGroup group)
     {
-        CreateButton.IsEnabled = !string.IsNullOrWhiteSpace(NameTextBox.Text);
+        TitleText.Text = "Edit group";
+        ActionButton.Content = "Save";
+        NameTextBox.Text = group.Name;
+
+        for (int i = 0; i < IconListBox.ItemCount; i++)
+        {
+            if (IconListBox.Items[i] is IconChoice choice && choice.Id == group.IconType)
+            {
+                IconListBox.SelectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    private void UpdateActionButtonState()
+    {
+        ActionButton.IsEnabled = !string.IsNullOrWhiteSpace(NameTextBox.Text);
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape)
             Close();
-        else if (e.Key == Key.Enter && CreateButton.IsEnabled)
+        else if (e.Key == Key.Enter && ActionButton.IsEnabled)
             Submit();
     }
 
-    private void CreateButton_Click(object? sender, RoutedEventArgs e) => Submit();
+    private void ActionButton_Click(object? sender, RoutedEventArgs e) => Submit();
 
     private void CancelButton_Click(object? sender, RoutedEventArgs e)
     {
-        Success = false;
+        GroupData = null;
         Close();
     }
 
@@ -64,11 +79,11 @@ public partial class CreateGroupDialog : Window
             return;
         }
 
-        GroupName = name;
+        var iconType = BuiltinEntryIconType.DEFAULT;
         if (IconListBox.SelectedItem is IconChoice choice)
-            IconType = choice.Id;
+            iconType = choice.Id;
 
-        Success = true;
+        GroupData = new GroupEditData(name, iconType);
         Close();
     }
 }

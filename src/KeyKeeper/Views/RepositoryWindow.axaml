@@ -69,6 +69,12 @@
                                             DoubleTapped="Entry_DoubleTapped">
                                         <TextBlock Text="{Binding DisplayName}"
                                                    Foreground="Black" />
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Name="groupCtxMenuEdit" Header="Edit" Click="GroupContextMenuItem_Click" />
+                                                <MenuItem Name="groupCtxMenuDelete" Header="Delete" Click="GroupContextMenuItem_Click" />
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
                                     </Border>
                                 </TreeDataTemplate>
                             </TreeView.ItemTemplate>

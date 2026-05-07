@@ -160,6 +160,29 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         OnPropertyChanged(nameof(Passwords));
     }
 
+    public void UpdateGroup(PassStoreEntryGroup group, string newName, Guid newIconType)
+    {
+        group.Name = newName;
+        group.IconType = newIconType;
+        group.ModificationDate = DateTime.UtcNow;
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
+    }
+
+    public void DeleteGroup(PassStoreEntryGroup group)
+    {
+        if (rootDirectory == null)
+            return;
+
+        passStore.DeleteEntry(rootDirectory, group.Id);
+        if (currentDirectory == group && rootDirectory != null)
+        {
+            ChangeDirectory(rootDirectory.ChildGroups.FirstOrDefault() ?? rootDirectory);
+        }
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
+    }
+
     public void Save()
     {
         passStore.Save();
