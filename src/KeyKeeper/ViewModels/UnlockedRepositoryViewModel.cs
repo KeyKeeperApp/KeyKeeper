@@ -143,6 +143,16 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         return true;
     }
 
+    public void RemoveEntryFromGroup(PassStoreEntry entry)
+    {
+        if (currentDirectory.GroupType == FileFormatConstants.GROUP_TYPE_DEFAULT)
+            return;
+
+        passStore.DeleteEntry(currentDirectory, entry.Id);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(Passwords));
+    }
+
     public void UpdateEntry(PassStoreEntryPassword updatedEntry)
     {
         passStore.UpdateEntry(null, updatedEntry.Id, updatedEntry);

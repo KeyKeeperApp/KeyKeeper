@@ -242,6 +242,16 @@ public partial class RepositoryWindow : Window
             .OfType<MenuItem>()
             .FirstOrDefault(m => m.Name == "entryCtxMenuAddToGroup");
 
+        var removeFromGroupItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuRemoveFromGroup");
+
+        var isNonDefaultGroup = pageVm.SelectedPasswordGroup.GroupType != FileFormatConstants.GROUP_TYPE_DEFAULT;
+        if (removeFromGroupItem != null)
+        {
+            removeFromGroupItem.IsVisible = isNonDefaultGroup;
+        }
+
         if (addToGroupItem == null)
             return;
 
@@ -307,6 +317,14 @@ public partial class RepositoryWindow : Window
                 if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
                 {
                     EditEntry(vm, pageVm, ent);
+                }
+            }
+            else if (s.Name == "entryCtxMenuRemoveFromGroup")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    pageVm.RemoveEntryFromGroup(ent);
+                    this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Removed from group");
                 }
             }
             else if (s.Name == "entryCtxMenuDelete")

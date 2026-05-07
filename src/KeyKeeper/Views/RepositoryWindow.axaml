@@ -159,6 +159,7 @@
                                         <MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuEdit" Header="Edit" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuAddToGroup" Header="Add to group" />
+                                        <MenuItem Name="entryCtxMenuRemoveFromGroup" Header="Remove from this group" Click="EntryContextMenuItem_Click" />
                                         <MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>
