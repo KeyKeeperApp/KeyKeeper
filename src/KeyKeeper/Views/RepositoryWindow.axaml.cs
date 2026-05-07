@@ -206,10 +206,9 @@ public partial class RepositoryWindow : Window
 
     private void Entry_DoubleTapped(object sender, TappedEventArgs args)
     {
-        if (args.Source is StyledElement s && s.DataContext is PassStoreEntryPassword pwd)
+        if (args.Source is StyledElement s && s.DataContext is PassStoreEntry ent)
         {
-            Clipboard!.SetTextAsync(pwd.Password.Value);
-            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+            CopyPassword(ent);
         }
     }
 
@@ -217,12 +216,22 @@ public partial class RepositoryWindow : Window
     {
         if (args.Key == Key.C && args.KeyModifiers == KeyModifiers.Control)
         {
-            if (sender is ListBox list && list.SelectedItem is PassStoreEntryPassword pwd)
+            if (sender is ListBox list && list.SelectedItem is PassStoreEntry ent)
             {
-                Clipboard!.SetTextAsync(pwd.Password.Value);
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+                CopyPassword(ent);
             }
         }
+    }
+
+    private void CopyPassword(PassStoreEntry ent)
+    {
+        PassStoreEntryPassword? pwd = null;
+        if (ent is PassStoreEntryPassword p) pwd = p;
+        else if (ent is PassStoreEntryLink lnk && lnk.LinkTarget is PassStoreEntryPassword p1) pwd = p1;
+        if (pwd == null) return;
+
+        Clipboard!.SetTextAsync(pwd.Password.Value);
+        this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
     }
 
     private void EntryContextMenu_Opening(object? sender, RoutedEventArgs args)
