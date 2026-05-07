@@ -2,7 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using System.Text.RegularExpressions;
 
 namespace KeyKeeper.Views
 {
@@ -11,6 +13,10 @@ namespace KeyKeeper.Views
         public string FilePath { get; private set; } = string.Empty;
         public string Password { get; private set; } = string.Empty;
         public bool Success { get; private set; }
+
+        // Добавлено для индикатора сложности пароля
+        private Border? _strengthBorder;
+        private TextBlock? _strengthText;
 
         public CreateVaultDialog()
         {
@@ -53,6 +59,62 @@ namespace KeyKeeper.Views
         {
             UpdateCreateButtonState();
             PasswordErrorText.IsVisible = false;
+
+            // Добавлено: обновляем индикатор сложности пароля
+            UpdatePasswordStrength(PasswordBox.Text ?? "");
+        }
+
+        // Добавлен метод для оценки сложности пароля
+        private void UpdatePasswordStrength(string password)
+        {
+            if (_strengthBorder == null || _strengthText == null)
+            {
+                _strengthBorder = this.FindControl<Border>("StrengthBorder");
+                _strengthText = this.FindControl<TextBlock>("StrengthText");
+                if (_strengthBorder == null || _strengthText == null) return;
+            }
+
+            int score = 0;
+            if (password.Length >= 8) score++;
+            if (password.Length >= 12) score++;
+            if (Regex.IsMatch(password, @"\d")) score++;
+            if (Regex.IsMatch(password, @"[a-z]")) score++;
+            if (Regex.IsMatch(password, @"[A-Z]")) score++;
+            if (Regex.IsMatch(password, @"[!@#$%^&*(),.?"":{}|<>]")) score++;
+
+            IBrush color;
+            string text;
+            double widthPercent;
+
+            if (string.IsNullOrEmpty(password))
+            {
+                color = Brushes.Gray;
+                text = "";
+                widthPercent = 0;
+            }
+            else if (score < 3)
+            {
+                color = Brushes.Red;
+                text = "Weak";
+                widthPercent = 33;
+            }
+            else if (score < 5)
+            {
+                color = Brushes.Orange;
+                text = "Medium";
+                widthPercent = 66;
+            }
+            else
+            {
+                color = Brushes.LimeGreen;
+                text = "Strong";
+                widthPercent = 100;
+            }
+
+            _strengthBorder.Background = color;
+            _strengthBorder.Width = 250 * (widthPercent / 100);
+            _strengthText.Text = text;
+            _strengthText.Foreground = color;
         }
 
         private void UpdateCreateButtonState()
