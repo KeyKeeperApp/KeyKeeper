@@ -126,6 +126,23 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         OnPropertyChanged(nameof(Passwords));
     }
 
+    public bool AddEntryToGroup(PassStoreEntry entry, PassStoreEntryGroup targetGroup)
+    {
+        PassStoreEntryPassword? pwd = FollowLinkIfNeeded(entry);
+        if (pwd == null) return false;
+
+        foreach (var bl in pwd.Backlinks)
+        {
+            if (bl is PassStoreEntryLink lnk && lnk.Parent == targetGroup)
+                return false;
+        }
+        passStore.AddEntry(targetGroup, new PassStoreEntryLink(Guid.NewGuid(), DateTime.Now, DateTime.Now, pwd.Id, pwd));
+
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(Passwords));
+        return true;
+    }
+
     public void UpdateEntry(PassStoreEntryPassword updatedEntry)
     {
         passStore.UpdateEntry(null, updatedEntry.Id, updatedEntry);

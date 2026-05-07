@@ -154,10 +154,11 @@
                                     </TextBlock>
                                 </StackPanel>
                                 <Border.ContextMenu>
-                                    <ContextMenu>
+                                    <ContextMenu Opened="EntryContextMenu_Opening">
                                         <MenuItem Name="entryCtxMenuCopyUsername" Header="Copy username" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuEdit" Header="Edit" Click="EntryContextMenuItem_Click"/>
+                                        <MenuItem Name="entryCtxMenuAddToGroup" Header="Add to group" />
                                         <MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>

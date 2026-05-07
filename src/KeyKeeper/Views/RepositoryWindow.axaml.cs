@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -14,6 +15,7 @@ public partial class RepositoryWindow : Window
 {
     private bool allowClose;
     private bool closeConfirmationShown;
+    private PassStoreEntry? _contextMenuEntry;
 
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
@@ -221,6 +223,66 @@ public partial class RepositoryWindow : Window
                 this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
             }
         }
+    }
+
+    private void EntryContextMenu_Opening(object? sender, RoutedEventArgs args)
+    {
+        if (sender is not ContextMenu contextMenu || DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        _contextMenuEntry = null;
+
+        if (contextMenu.Parent?.Parent is Border border && border.DataContext is PassStoreEntry entry)
+        {
+            _contextMenuEntry = entry;
+        }
+
+        var addToGroupItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuAddToGroup");
+
+        if (addToGroupItem == null)
+            return;
+
+        addToGroupItem.Items.Clear();
+
+        var nonDefaultGroups = pageVm.PasswordGroups
+            .Where(g => g.GroupType != FileFormatConstants.GROUP_TYPE_DEFAULT)
+            .ToList();
+
+        EventHandler<RoutedEventArgs> onSubmenuClick = (sender, args) => AddToGroup_Click(sender, args, _contextMenuEntry!);
+        foreach (var group in nonDefaultGroups)
+        {
+            var menuItem = new MenuItem
+            {
+                Header = group.DisplayName,
+                Tag = group
+            };
+            menuItem.Click += onSubmenuClick;
+            addToGroupItem.Items.Add(menuItem);
+        }
+    }
+
+    private void AddToGroup_Click(object? sender, RoutedEventArgs args, PassStoreEntry entry)
+    {
+        if (sender is not MenuItem item || item.Tag is not PassStoreEntryGroup targetGroup)
+            return;
+
+        if (entry == null)
+            return;
+
+        if (DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        var notificationHost = this.FindControlRecursive<ToastNotificationHost>("NotificationHost");
+
+        if (pageVm.AddEntryToGroup(entry, targetGroup))
+            notificationHost?.Show($"Added to {targetGroup.DisplayName}");
+        else
+            notificationHost?.Show($"This entry is already in {targetGroup.DisplayName}!");
+        _contextMenuEntry = null;
     }
 
     private async void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)
