@@ -257,11 +257,36 @@ public partial class RepositoryWindow : Window
             .OfType<MenuItem>()
             .FirstOrDefault(m => m.Name == "entryCtxMenuRemoveFromGroup");
 
+        var addToFavouritesItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuAddToFavourites");
+
+        var removeFromFavouritesItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuRemoveFromFavourites");
+
         var isNonDefaultGroup = pageVm.SelectedPasswordGroup.GroupType != FileFormatConstants.GROUP_TYPE_DEFAULT;
         if (removeFromGroupItem != null)
         {
             removeFromGroupItem.IsVisible = isNonDefaultGroup;
         }
+
+        // Check if entry is in Favourites group
+        var favouritesGroup = pageVm.PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+        var isInFavourites = false;
+        if (favouritesGroup != null && _contextMenuEntry != null)
+        {
+            PassStoreEntryPassword? pwd = UnlockedRepositoryViewModel.FollowLinkIfNeeded(_contextMenuEntry);
+            if (pwd != null)
+            {
+                isInFavourites = pwd.Backlinks.Any(bl => bl is PassStoreEntryLink lnk && lnk.Parent == favouritesGroup);
+            }
+        }
+
+        if (addToFavouritesItem != null)
+            addToFavouritesItem.IsVisible = !isInFavourites;
+        if (removeFromFavouritesItem != null)
+            removeFromFavouritesItem.IsVisible = isInFavourites;
 
         if (addToGroupItem == null)
             return;
@@ -406,6 +431,28 @@ public partial class RepositoryWindow : Window
                 {
                     pageVm.RemoveEntryFromGroup(ent);
                     this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Removed from group");
+                }
+            }
+            else if (s.Name == "entryCtxMenuAddToFavourites")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    var favouritesGroup = pageVm.PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+                    if (favouritesGroup != null)
+                    {
+                        if (pageVm.AddEntryToGroup(ent, favouritesGroup))
+                            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Added to Favourites");
+                        else
+                            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Already in Favourites");
+                    }
+                }
+            }
+            else if (s.Name == "entryCtxMenuRemoveFromFavourites")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    pageVm.RemoveEntryFromFavourites(ent);
+                    this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Removed from Favourites");
                 }
             }
             else if (s.Name == "entryCtxMenuDelete")

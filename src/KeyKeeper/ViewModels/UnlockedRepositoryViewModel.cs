@@ -153,6 +153,25 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         OnPropertyChanged(nameof(Passwords));
     }
 
+    public void RemoveEntryFromFavourites(PassStoreEntry entry)
+    {
+        var favouritesGroup = PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+        if (favouritesGroup == null)
+            return;
+
+        PassStoreEntryPassword? pwd = FollowLinkIfNeeded(entry);
+        if (pwd == null)
+            return;
+
+        var linkToRemove = pwd.Backlinks.FirstOrDefault(bl => bl is PassStoreEntryLink lnk && lnk.Parent == favouritesGroup);
+        if (linkToRemove != null)
+        {
+            passStore.DeleteEntry(favouritesGroup, linkToRemove.Id);
+            HasUnsavedChanges = true;
+            OnPropertyChanged(nameof(Passwords));
+        }
+    }
+
     public void UpdateEntry(PassStoreEntryPassword updatedEntry)
     {
         passStore.UpdateEntry(null, updatedEntry.Id, updatedEntry);
