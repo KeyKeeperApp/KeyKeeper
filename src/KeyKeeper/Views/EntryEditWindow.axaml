@@ -4,7 +4,7 @@
         xmlns:ps="using:KeyKeeper.PasswordStore"
         x:Class="KeyKeeper.Views.EntryEditWindow"
         x:DataType="vm:EntryEditViewModel"
-        Title="Add Entry"
+        Title="Add Password"
         CanResize="True"
         MinWidth="540"
         MinHeight="400"

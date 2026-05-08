@@ -85,7 +85,7 @@
                         </TreeView>
 
                         <!-- Save Passwords -->
-                        <Button Content="Save Passwords"
+                        <Button Content="Save"
                                 Classes="accentSidebarButton"
                                 Click="SaveButton_Click"
                                 Height="30"
@@ -93,7 +93,7 @@
                                 Margin="0,20,0,0"/>
 
                         <!-- New Entry -->
-                        <Button Content="New Entry"
+                        <Button Content="New Password"
                                         Classes="accentSidebarButton"
                                         Click="AddEntryButton_Click"
                                         Height="30"
@@ -101,7 +101,7 @@
                                         Margin="0,20,0,0"/>
 
                         <!-- Edit Selected Entry -->
-                        <Button Content="Edit Selected Entry"
+                        <Button Content="Edit Selected Password"
                                         Classes="accentSidebarButton"
                                         Click="EditEntryButton_Click"
                                         Height="30"

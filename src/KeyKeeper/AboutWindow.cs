@@ -28,14 +28,21 @@ public class AboutWindow : Window
 
         var AboutText = new TextBlock
         {
-            Text = "KeyKeeper is a personal password and key manager\n" +
-                   "where you can save passwords and other login\n" +
-                   "information, configure one-time code generation,\n" +
-                   "and create encryption keys for personal use.\n",
+            Text = "KeyKeeper is a personal local password manager\n" +
+                   "and a TOTP (Time-based One-Time Password) generator.\n",
             HorizontalAlignment = HorizontalAlignment.Left,
             FontSize = 16,
             TextAlignment = TextAlignment.Left,
             Margin = new Thickness(0, 20, 0, 0)
+        };
+
+        var AboutSmallText = new TextBlock
+        {
+            Text = "Authors: The KeyKeeper Team\nVersion: 2.0 (08.05.2026)",
+            HorizontalAlignment = HorizontalAlignment.Left,
+            FontSize = 12,
+            TextAlignment = TextAlignment.Left,
+            Margin = new Thickness(0, 30, 0, 0)
         };
 
         var mainGrid = new Grid
@@ -46,11 +53,12 @@ public class AboutWindow : Window
 
         var innerStack = new StackPanel
         {
-            Width = 400
+            Width = 550
         };
 
         innerStack.Children.Add(AboutKeyKeeper);
         innerStack.Children.Add(AboutText);
+        innerStack.Children.Add(AboutSmallText);
 
         mainGrid.Children.Add(innerStack);
 
