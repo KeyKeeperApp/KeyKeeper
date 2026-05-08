@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="KeyKeeper.Views.ConfirmationDialog"
+        Title="Confirm Action"
+        Background="White"
+        Icon="/Assets/icon.ico"
+        Width="380" Height="180"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Grid Margin="20" RowDefinitions="*,*,Auto">
+
+        <TextBlock Grid.Row="0"
+                   x:Name="TitleText"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Foreground="#2328C4"
+                   TextWrapping="Wrap"/>
+
+        <TextBlock Grid.Row="1"
+                   x:Name="MessageText"
+                   FontSize="14"
+                   Foreground="Black"
+                   TextWrapping="Wrap"/>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Spacing="10" VerticalAlignment="Bottom">
+
+            <Button Content="Cancel"
+                    Width="80"
+                    Click="CancelButton_Click"/>
+            <Button x:Name="ConfirmButton"
+                    Content="Confirm"
+                    Width="80"
+                    Click="ConfirmButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

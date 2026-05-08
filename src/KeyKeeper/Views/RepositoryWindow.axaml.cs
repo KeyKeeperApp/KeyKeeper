@@ -1,9 +1,12 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Input;
 using KeyKeeper.PasswordStore;
+using KeyKeeper.Models;
 using KeyKeeper.ViewModels;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Presenters;
@@ -14,6 +17,7 @@ public partial class RepositoryWindow : Window
 {
     private bool allowClose;
     private bool closeConfirmationShown;
+    private PassStoreEntry? _contextMenuEntry;
 
     public RepositoryWindow(RepositoryWindowViewModel model)
     {
@@ -118,6 +122,37 @@ public partial class RepositoryWindow : Window
         }
     }
 
+    private async void EditEntry(RepositoryWindowViewModel vm1, UnlockedRepositoryViewModel vm2, PassStoreEntry entry)
+    {
+        if (entry == null)
+        {
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("No entry selected");
+            return;
+        }
+
+        EntryEditWindow dialog = new();
+
+        PassStoreEntry realEntry = entry;
+        if (realEntry is PassStoreEntryLink lnk)
+            realEntry = lnk.LinkTarget!;
+
+        dialog.SetEntry((realEntry as PassStoreEntryPassword)!);
+
+        vm1.StopLockTimer();
+
+        await dialog.ShowDialog(this);
+
+        vm1.StartLockTimer();
+
+        if (dialog.EditedEntry != null)
+        {
+            if (entry is PassStoreEntryLink l)
+                l.LinkTarget = dialog.EditedEntry;
+            vm2.UpdateEntry(dialog.EditedEntry);
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
+        }
+    }
+
     private async void EditEntryButton_Click(object sender, RoutedEventArgs args)
     {
         if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
@@ -129,15 +164,17 @@ public partial class RepositoryWindow : Window
                 return;
             }
 
-            var selectedEntry = listBox.SelectedItem as PassStoreEntryPassword;
-            if (selectedEntry == null)
-            {
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("No entry selected");
-                return;
-            }
+            PassStoreEntry? entry = listBox.SelectedItem as PassStoreEntry;
+            if (entry == null) return;
+            EditEntry(vm_, vm, entry);
+        }
+    }
 
-            EntryEditWindow dialog = new();
-            dialog.SetEntry(selectedEntry);
+    private async void AddGroupButton_Click(object sender, RoutedEventArgs args)
+    {
+        if (DataContext is RepositoryWindowViewModel vm_ && vm_.CurrentPage is UnlockedRepositoryViewModel vm)
+        {
+            CreateGroupDialog dialog = new();
 
             vm_.StopLockTimer();
 
@@ -145,10 +182,18 @@ public partial class RepositoryWindow : Window
 
             vm_.StartLockTimer();
 
-            if (dialog.EditedEntry != null)
+            if (dialog.GroupData != null)
             {
-                vm.UpdateEntry(dialog.EditedEntry);
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
+                var group = new PassStoreEntryGroup(
+                    Guid.NewGuid(),
+                    DateTime.UtcNow,
+                    DateTime.UtcNow,
+                    dialog.GroupData.IconType,
+                    dialog.GroupData.Name,
+                    FileFormatConstants.GROUP_TYPE_SIMPLE
+                );
+                vm.AddGroup(group);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group created");
             }
         }
     }
@@ -163,10 +208,9 @@ public partial class RepositoryWindow : Window
 
     private void Entry_DoubleTapped(object sender, TappedEventArgs args)
     {
-        if (args.Source is StyledElement s && s.DataContext is PassStoreEntryPassword pwd)
+        if (args.Source is StyledElement s && s.DataContext is PassStoreEntry ent)
         {
-            Clipboard!.SetTextAsync(pwd.Password.Value);
-            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+            CopyPassword(ent);
         }
     }
 
@@ -174,49 +218,248 @@ public partial class RepositoryWindow : Window
     {
         if (args.Key == Key.C && args.KeyModifiers == KeyModifiers.Control)
         {
-            if (sender is ListBox list && list.SelectedItem is PassStoreEntryPassword pwd)
+            if (sender is ListBox list && list.SelectedItem is PassStoreEntry ent)
             {
-                Clipboard!.SetTextAsync(pwd.Password.Value);
-                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+                CopyPassword(ent);
+            }
+        }
+    }
+
+    private void CopyPassword(PassStoreEntry ent)
+    {
+        PassStoreEntryPassword? pwd = null;
+        if (ent is PassStoreEntryPassword p) pwd = p;
+        else if (ent is PassStoreEntryLink lnk && lnk.LinkTarget is PassStoreEntryPassword p1) pwd = p1;
+        if (pwd == null) return;
+
+        Clipboard!.SetTextAsync(pwd.Password.Value);
+        this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
+    }
+
+    private void EntryContextMenu_Opening(object? sender, RoutedEventArgs args)
+    {
+        if (sender is not ContextMenu contextMenu || DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        _contextMenuEntry = null;
+
+        if (contextMenu.Parent?.Parent is Border border && border.DataContext is PassStoreEntry entry)
+        {
+            _contextMenuEntry = entry;
+        }
+
+        var addToGroupItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuAddToGroup");
+
+        var removeFromGroupItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuRemoveFromGroup");
+
+        var addToFavouritesItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuAddToFavourites");
+
+        var removeFromFavouritesItem = contextMenu.Items
+            .OfType<MenuItem>()
+            .FirstOrDefault(m => m.Name == "entryCtxMenuRemoveFromFavourites");
+
+        var isNonDefaultGroup = pageVm.SelectedPasswordGroup.GroupType != FileFormatConstants.GROUP_TYPE_DEFAULT;
+        if (removeFromGroupItem != null)
+        {
+            removeFromGroupItem.IsVisible = isNonDefaultGroup;
+        }
+
+        // Check if entry is in Favourites group
+        var favouritesGroup = pageVm.PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+        var isInFavourites = false;
+        if (favouritesGroup != null && _contextMenuEntry != null)
+        {
+            PassStoreEntryPassword? pwd = UnlockedRepositoryViewModel.FollowLinkIfNeeded(_contextMenuEntry);
+            if (pwd != null)
+            {
+                isInFavourites = pwd.Backlinks.Any(bl => bl is PassStoreEntryLink lnk && lnk.Parent == favouritesGroup);
+            }
+        }
+
+        if (addToFavouritesItem != null)
+            addToFavouritesItem.IsVisible = !isInFavourites;
+        if (removeFromFavouritesItem != null)
+            removeFromFavouritesItem.IsVisible = isInFavourites;
+
+        if (addToGroupItem == null)
+            return;
+
+        addToGroupItem.Items.Clear();
+
+        var nonDefaultGroups = pageVm.PasswordGroups
+            .Where(g => g.GroupType != FileFormatConstants.GROUP_TYPE_DEFAULT)
+            .ToList();
+
+        EventHandler<RoutedEventArgs> onSubmenuClick = (sender, args) => AddToGroup_Click(sender, args, _contextMenuEntry!);
+        foreach (var group in nonDefaultGroups)
+        {
+            var menuItem = new MenuItem
+            {
+                Header = group.DisplayName,
+                Tag = group
+            };
+            menuItem.Click += onSubmenuClick;
+            addToGroupItem.Items.Add(menuItem);
+        }
+    }
+
+    private void AddToGroup_Click(object? sender, RoutedEventArgs args, PassStoreEntry entry)
+    {
+        if (sender is not MenuItem item || item.Tag is not PassStoreEntryGroup targetGroup)
+            return;
+
+        if (entry == null)
+            return;
+
+        if (DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        var notificationHost = this.FindControlRecursive<ToastNotificationHost>("NotificationHost");
+
+        if (pageVm.AddEntryToGroup(entry, targetGroup))
+            notificationHost?.Show($"Added to {targetGroup.DisplayName}");
+        else
+            notificationHost?.Show($"This entry is already in {targetGroup.DisplayName}!");
+        _contextMenuEntry = null;
+    }
+
+    private async void GroupContextMenuItem_Click(object sender, RoutedEventArgs args)
+    {
+        if (args.Source is not StyledElement s || s.DataContext is not PassStoreEntryGroup group)
+            return;
+
+        if (DataContext is not RepositoryWindowViewModel vm ||
+            vm.CurrentPage is not UnlockedRepositoryViewModel pageVm)
+            return;
+
+        if (group.GroupType == FileFormatConstants.GROUP_TYPE_DEFAULT ||
+            group.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES ||
+            group.GroupType == FileFormatConstants.GROUP_TYPE_ROOT)
+            return;
+
+        if (s.Name == "groupCtxMenuEdit")
+        {
+            await EditGroup(vm, pageVm, group);
+        }
+        else if (s.Name == "groupCtxMenuDelete")
+        {
+            await DeleteGroup(group);
+        }
+    }
+
+    private async Task EditGroup(RepositoryWindowViewModel vm, UnlockedRepositoryViewModel pageVm, PassStoreEntryGroup group)
+    {
+        CreateGroupDialog dialog = new();
+        dialog.SetupForEdit(group);
+
+        vm.StopLockTimer();
+
+        await dialog.ShowDialog(this);
+
+        vm.StartLockTimer();
+
+        if (dialog.GroupData != null)
+        {
+            pageVm.UpdateGroup(group, dialog.GroupData.Name, dialog.GroupData.IconType);
+            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group updated");
+        }
+    }
+
+    private async Task DeleteGroup(PassStoreEntryGroup group)
+    {
+        ConfirmationDialog confirmDialog = new();
+        confirmDialog.SetContent(
+            "Delete Group",
+            $"Are you sure you want to delete the group '{group.DisplayName}'? This action cannot be undone.",
+            "Delete"
+        );
+
+        if (DataContext is not RepositoryWindowViewModel vm)
+            return;
+
+        vm.StopLockTimer();
+
+        await confirmDialog.ShowDialog(this);
+
+        vm.StartLockTimer();
+
+        if (confirmDialog.Confirmed)
+        {
+            if (vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+            {
+                pageVm.DeleteGroup(group);
+                this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Group deleted");
             }
         }
     }
 
     private async void EntryContextMenuItem_Click(object sender, RoutedEventArgs args)
     {
-        if (args.Source is StyledElement s && s.DataContext is PassStoreEntryPassword pwd)
+        if (args.Source is StyledElement s && s.DataContext is PassStoreEntry ent)
         {
+            PassStoreEntryPassword? pwd = UnlockedRepositoryViewModel.FollowLinkIfNeeded(ent);
+            if (pwd == null) return;
+
             if (s.Name == "entryCtxMenuCopyUsername")
             {
-                Clipboard!.SetTextAsync(pwd.Username.Value);
+                await Clipboard!.SetTextAsync(pwd.Username.Value);
                 this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Username copied to clipboard");
             }
             else if (s.Name == "entryCtxMenuCopyPassword")
             {
-                Clipboard!.SetTextAsync(pwd.Password.Value);
+                await Clipboard!.SetTextAsync(pwd.Password.Value);
                 this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Password copied to clipboard");
             }
             else if (s.Name == "entryCtxMenuEdit")
             {
                 if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
                 {
-                    EntryEditWindow dialog = new();
-                    dialog.SetEntry(pwd);
-                    vm.StopLockTimer();
-                    await dialog.ShowDialog(this);
-                    vm.StartLockTimer();
-                    if (dialog.EditedEntry != null)
+                    EditEntry(vm, pageVm, ent);
+                }
+            }
+            else if (s.Name == "entryCtxMenuRemoveFromGroup")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    pageVm.RemoveEntryFromGroup(ent);
+                    this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Removed from group");
+                }
+            }
+            else if (s.Name == "entryCtxMenuAddToFavourites")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    var favouritesGroup = pageVm.PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+                    if (favouritesGroup != null)
                     {
-                        pageVm.UpdateEntry(dialog.EditedEntry);
-                        this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry updated");
+                        if (pageVm.AddEntryToGroup(ent, favouritesGroup))
+                            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Added to Favourites");
+                        else
+                            this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Already in Favourites");
                     }
+                }
+            }
+            else if (s.Name == "entryCtxMenuRemoveFromFavourites")
+            {
+                if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
+                {
+                    pageVm.RemoveEntryFromFavourites(ent);
+                    this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Removed from Favourites");
                 }
             }
             else if (s.Name == "entryCtxMenuDelete")
             {
                 if (DataContext is RepositoryWindowViewModel vm && vm.CurrentPage is UnlockedRepositoryViewModel pageVm)
                 {
-                    pageVm.DeleteEntry(pwd.Id);
+                    pageVm.DeleteEntry(ent.Id);
                     this.FindControlRecursive<ToastNotificationHost>("NotificationHost")?.Show("Entry deleted");
                 }
             }

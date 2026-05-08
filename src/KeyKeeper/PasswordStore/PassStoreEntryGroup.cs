@@ -2,15 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using static KeyKeeper.PasswordStore.FileFormatConstants;
 
 namespace KeyKeeper.PasswordStore;
 
-public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
+public class PassStoreEntryGroup : PassStoreEntry, IEnumerable<PassStoreEntry>
 {
     public byte GroupType { get; set; }
     public Guid? CustomGroupSubtype { get; set; }
     public List<PassStoreEntry> ChildEntries { get; set; }
+
+    public override string DisplayName => GroupType switch
+    {
+        GROUP_TYPE_DEFAULT => "All Passwords",
+        GROUP_TYPE_FAVOURITES => "Favourites",
+        GROUP_TYPE_ROOT => ":root:",
+        _ => Name
+    };
+
+    public IEnumerable<PassStoreEntryGroup> ChildGroups => ChildEntries.OfType<PassStoreEntryGroup>();
 
     public PassStoreEntryGroup(Guid id, DateTime createdAt, DateTime modifiedAt,
                                Guid iconType, string name, byte groupType,
@@ -61,42 +72,6 @@ public class PassStoreEntryGroup : PassStoreEntry, IPassStoreDirectory
         } catch (EndOfStreamException)
         {
             throw PassStoreFileException.UnexpectedEndOfFile;
-        }
-    }
-
-    public void AddEntry(PassStoreEntry entry)
-    {
-        entry.Parent = this;
-        ChildEntries.Add(entry);
-    }
-
-    public bool DeleteEntry(Guid id)
-    {
-        if (ChildEntries == null)
-            return false;
-        for (int i = 0; i < ChildEntries.Count; i++)
-        {
-            if (ChildEntries[i].Id == id)
-            {
-                ChildEntries.RemoveAt(i);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void UpdateEntry(Guid id, PassStoreEntry entry)
-    {
-        entry.Parent = this;
-        if (ChildEntries == null)
-            return;
-        for (int i = 0; i < ChildEntries.Count; i++)
-        {
-            if (ChildEntries[i].Id == id)
-            {
-                ChildEntries[i] = entry;
-                return;
-            }
         }
     }
 

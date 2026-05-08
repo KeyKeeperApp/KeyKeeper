@@ -15,6 +15,7 @@
 
     <Window.Resources>
         <converters:TotpCodeConverter x:Key="TotpCodeConverter" />
+        <converters:PasswordEntryConverter x:Key="PasswordEntryConverter" />
         <converters:StringPresenceToOpacityConverter x:Key="StringPresenceToOpacityConverter" />
     </Window.Resources>
 
@@ -57,22 +58,32 @@
                             </StackPanel>
                         </Border>
 
-                                    <!-- Рамочка  -->
-                        <!-- <Border BorderBrush="Gray"
-                                            BorderThickness="1"
-                                            CornerRadius="5"
-                                            Padding="20"
-                                            Background="#F5F5F5"
-                                            HorizontalAlignment="Left">
+                        <!-- Группы паролей  -->
+                        <TreeView x:Name="GroupTree"
+                                 ItemsSource="{Binding PasswordGroups}"
+                                 SelectedItem="{Binding SelectedPasswordGroup}"
+                                 Background="#FFFFFFFF"
+                                 SelectionMode="Single"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+                            <TreeView.ItemTemplate>
+                                <TreeDataTemplate ItemsSource="{Binding ChildGroups}">
+                                    <Border Background="Transparent"
+                                            DoubleTapped="Entry_DoubleTapped">
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   Foreground="Black"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   MaxWidth="180" />
+                                        <Border.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Name="groupCtxMenuEdit" Header="Edit" Click="GroupContextMenuItem_Click" />
+                                                <MenuItem Name="groupCtxMenuDelete" Header="Delete" Click="GroupContextMenuItem_Click" />
+                                            </ContextMenu>
+                                        </Border.ContextMenu>
+                                    </Border>
+                                </TreeDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
 
-                        <StackPanel HorizontalAlignment="Left">
-                            <Button Content="All Passwords"
-                                                Width="120"
-                                                Height="30"
-                                                HorizontalAlignment="Left"/>
-                        </StackPanel>
-
-                        </Border> -->
                         <!-- Save Passwords -->
                         <Button Content="Save Passwords"
                                 Classes="accentSidebarButton"
@@ -93,6 +104,14 @@
                         <Button Content="Edit Selected Entry"
                                         Classes="accentSidebarButton"
                                         Click="EditEntryButton_Click"
+                                        Height="30"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,20,0,0"/>
+
+                        <!-- New Group -->
+                        <Button Content="New Group"
+                                        Classes="accentSidebarButton"
+                                        Click="AddGroupButton_Click"
                                         Height="30"
                                         HorizontalAlignment="Left"
                                         Margin="0,20,0,0"/>
@@ -122,11 +141,11 @@
                                             Margin="10"
                                             HorizontalAlignment="Center">
 
-                                    <Svg Path="{Binding IconPath}" Width="48" Height="48"/>
-                                    <TextBlock Text="{Binding Name}"
+                                    <Svg Path="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=IconPath}" Width="48" Height="48"/>
+                                    <TextBlock Text="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=Name}"
                                                HorizontalAlignment="Center"
                                                Foreground="Black" />
-                                    <TextBlock Text="{Binding Username.Value}"
+                                    <TextBlock Text="{Binding ., Converter={StaticResource PasswordEntryConverter}, ConverterParameter=Username.Value}"
                                                Foreground="#666"
                                                HorizontalAlignment="Center" />
 
@@ -138,17 +157,21 @@
                                                Margin="0,4,0,0">
                                         <TextBlock.Text>
                                             <MultiBinding Converter="{StaticResource TotpCodeConverter}">
-                                                <Binding />
+                                                <Binding Converter="{StaticResource PasswordEntryConverter}" />
                                                 <Binding Path="DataContext" RelativeSource="{RelativeSource AncestorType=ListBox}" />
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
                                 </StackPanel>
                                 <Border.ContextMenu>
-                                    <ContextMenu>
+                                    <ContextMenu Opened="EntryContextMenu_Opening">
                                         <MenuItem Name="entryCtxMenuCopyUsername" Header="Copy username" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuCopyPassword" Header="Copy password" Click="EntryContextMenuItem_Click"/>
                                         <MenuItem Name="entryCtxMenuEdit" Header="Edit" Click="EntryContextMenuItem_Click"/>
+                                        <MenuItem Name="entryCtxMenuAddToGroup" Header="Add to group" />
+                                        <MenuItem Name="entryCtxMenuRemoveFromGroup" Header="Remove from this group" Click="EntryContextMenuItem_Click" />
+                                        <MenuItem Name="entryCtxMenuAddToFavourites" Header="Add to Favourites" Click="EntryContextMenuItem_Click" />
+                                        <MenuItem Name="entryCtxMenuRemoveFromFavourites" Header="Remove from Favourites" Click="EntryContextMenuItem_Click" />
                                         <MenuItem Name="entryCtxMenuDelete" Header="Delete" Click="EntryContextMenuItem_Click"/>
                                     </ContextMenu>
                                 </Border.ContextMenu>

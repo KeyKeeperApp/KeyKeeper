@@ -10,18 +10,43 @@ namespace KeyKeeper.ViewModels;
 public class UnlockedRepositoryViewModel : ViewModelBase
 {
     private IPassStore passStore;
-    private IPassStoreDirectory currentDirectory;
+    private PassStoreEntryGroup currentDirectory;
+    private PassStoreEntryGroup? rootDirectory;
     private bool hasUnsavedChanges;
     private DispatcherTimer? _totpRefreshTimer;
     private Dictionary<Guid, string> _totpCodes = new();
 
-    public IEnumerable<PassStoreEntryPassword> Passwords
+    public IEnumerable<PassStoreEntry> Passwords
     {
         get
         {
             return currentDirectory
-                .Where(entry => entry is PassStoreEntryPassword)
-                .Select(entry => (entry as PassStoreEntryPassword)!);
+                .Where(entry => entry is PassStoreEntryPassword || entry is PassStoreEntryLink lnk && lnk.LinkTarget is PassStoreEntryPassword);
+        }
+    }
+
+    public IEnumerable<PassStoreEntryGroup> PasswordGroups
+    {
+        get
+        {
+            if (rootDirectory == null) return [];
+            return rootDirectory
+                .Where(entry => entry is PassStoreEntryGroup)
+                .Select(entry => (entry as PassStoreEntryGroup)!);
+        }
+    }
+    public PassStoreEntryGroup SelectedPasswordGroup
+    {
+        get
+        {
+            return PasswordGroups.First(group => group == currentDirectory);
+        }
+        set
+        {
+            if (PasswordGroups.Any(group => group == value))
+            {
+                ChangeDirectory(value);
+            }
         }
     }
 
@@ -35,10 +60,11 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         }
     }
 
-    public UnlockedRepositoryViewModel(IPassStore store, IPassStoreDirectory directory)
+    public UnlockedRepositoryViewModel(IPassStore store, PassStoreEntryGroup group)
     {
         passStore = store;
-        currentDirectory = directory;
+        currentDirectory = group;
+        rootDirectory = group.Parent;
         HasUnsavedChanges = false;
         InitializeTotpCodes();
         StartTotpRefreshTimer();
@@ -62,24 +88,118 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     {
         if (entry is PassStoreEntryPassword)
         {
-            currentDirectory.AddEntry(entry);
+            if (currentDirectory.GroupType == FileFormatConstants.GROUP_TYPE_DEFAULT)
+            {
+                passStore.AddEntry(currentDirectory, entry);
+            } else
+            {
+                // добавляем в All Passwords, но оставляем ссылку в текущей папке
+                passStore.AddEntry(passStore.GetGroupByType(FileFormatConstants.GROUP_TYPE_DEFAULT)!, entry);
+                passStore.AddEntry(currentDirectory, new PassStoreEntryLink(Guid.NewGuid(), DateTime.Now, DateTime.Now, entry.Id, entry));
+            }
             HasUnsavedChanges = true;
             OnPropertyChanged(nameof(Passwords));
         }
     }
 
+    public void AddGroup(PassStoreEntryGroup group)
+    {
+        if (rootDirectory == null)
+            return;
+        passStore.AddEntry(rootDirectory, group);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
+    }
+
     public void DeleteEntry(Guid id)
     {
-        currentDirectory.DeleteEntry(id);
+        PassStoreEntry entry = passStore.GetEntryById(id);
+        if (entry is PassStoreEntryLink lnk)
+        {
+            passStore.DeleteEntry(lnk.LinkTarget!.Parent, lnk.LinkTargetId);
+            passStore.DeleteEntry(currentDirectory, id);
+        } else
+        {
+            passStore.DeleteEntry(currentDirectory, id);
+        }
         HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
     }
 
-    public void UpdateEntry(PassStoreEntryPassword updatedEntry)
+    public bool AddEntryToGroup(PassStoreEntry entry, PassStoreEntryGroup targetGroup)
     {
-        currentDirectory.UpdateEntry(updatedEntry.Id, updatedEntry);
+        PassStoreEntryPassword? pwd = FollowLinkIfNeeded(entry);
+        if (pwd == null) return false;
+
+        foreach (var bl in pwd.Backlinks)
+        {
+            if (bl is PassStoreEntryLink lnk && lnk.Parent == targetGroup)
+                return false;
+        }
+        passStore.AddEntry(targetGroup, new PassStoreEntryLink(Guid.NewGuid(), DateTime.Now, DateTime.Now, pwd.Id, pwd));
+
         HasUnsavedChanges = true;
         OnPropertyChanged(nameof(Passwords));
+        return true;
+    }
+
+    public void RemoveEntryFromGroup(PassStoreEntry entry)
+    {
+        if (currentDirectory.GroupType == FileFormatConstants.GROUP_TYPE_DEFAULT)
+            return;
+
+        passStore.DeleteEntry(currentDirectory, entry.Id);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(Passwords));
+    }
+
+    public void RemoveEntryFromFavourites(PassStoreEntry entry)
+    {
+        var favouritesGroup = PasswordGroups.FirstOrDefault(g => g.GroupType == FileFormatConstants.GROUP_TYPE_FAVOURITES);
+        if (favouritesGroup == null)
+            return;
+
+        PassStoreEntryPassword? pwd = FollowLinkIfNeeded(entry);
+        if (pwd == null)
+            return;
+
+        var linkToRemove = pwd.Backlinks.FirstOrDefault(bl => bl is PassStoreEntryLink lnk && lnk.Parent == favouritesGroup);
+        if (linkToRemove != null)
+        {
+            passStore.DeleteEntry(favouritesGroup, linkToRemove.Id);
+            HasUnsavedChanges = true;
+            OnPropertyChanged(nameof(Passwords));
+        }
+    }
+
+    public void UpdateEntry(PassStoreEntryPassword updatedEntry)
+    {
+        passStore.UpdateEntry(null, updatedEntry.Id, updatedEntry);
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(Passwords));
+    }
+
+    public void UpdateGroup(PassStoreEntryGroup group, string newName, Guid newIconType)
+    {
+        group.Name = newName;
+        group.IconType = newIconType;
+        group.ModificationDate = DateTime.UtcNow;
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
+    }
+
+    public void DeleteGroup(PassStoreEntryGroup group)
+    {
+        if (rootDirectory == null)
+            return;
+
+        passStore.DeleteEntry(rootDirectory, group.Id);
+        if (currentDirectory == group && rootDirectory != null)
+        {
+            ChangeDirectory(rootDirectory.ChildGroups.FirstOrDefault() ?? rootDirectory);
+        }
+        HasUnsavedChanges = true;
+        OnPropertyChanged(nameof(PasswordGroups));
     }
 
     public void Save()
@@ -88,10 +208,36 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         HasUnsavedChanges = false;
     }
 
+    public static PassStoreEntryPassword? FollowLinkIfNeeded(PassStoreEntry entry)
+    {
+        if (entry is PassStoreEntryPassword passwordEntry)
+        {
+            return passwordEntry;
+        }
+        else if (entry is PassStoreEntryLink link && link.LinkTarget is PassStoreEntryPassword t)
+        {
+            return t;
+        }
+        return null;
+    }
+
+    private void ChangeDirectory(PassStoreEntryGroup newDir)
+    {
+        if (newDir == currentDirectory)
+            return;
+
+        currentDirectory = newDir;
+        InitializeTotpCodes();
+        StartTotpRefreshTimer();
+
+        OnPropertyChanged(nameof(SelectedPasswordGroup));
+        OnPropertyChanged(nameof(Passwords));
+    }
+
     private void InitializeTotpCodes()
     {
         _totpCodes.Clear();
-        foreach (var entry in Passwords.Where(e => e.Totp != null))
+        foreach (var entry in Passwords.Select(FollowLinkIfNeeded).Where(e => e?.Totp != null))
         {
             _totpCodes[entry.Id] = TotpCodeGenerator.GenerateCode(entry.Totp!);
         }
@@ -102,6 +248,10 @@ public class UnlockedRepositoryViewModel : ViewModelBase
         // Calculate time until next TOTP period boundary
         int secondsUntilNextCode = CalculateSecondsUntilNextTotpRefresh();
 
+        if (_totpRefreshTimer != null)
+        {
+            _totpRefreshTimer.Stop();
+        }
         _totpRefreshTimer = new DispatcherTimer
         {
             Interval = TimeSpan.FromSeconds(secondsUntilNextCode)
@@ -129,7 +279,7 @@ public class UnlockedRepositoryViewModel : ViewModelBase
     private int CalculateSecondsUntilNextTotpRefresh()
     {
         // Find the minimum seconds until next code change across all TOTP entries
-        var totpEntries = Passwords.Where(e => e.Totp != null).ToList();
+        var totpEntries = Passwords.Select(FollowLinkIfNeeded).Where(e => e?.Totp != null).ToList();
         if (totpEntries.Count == 0)
             return 60; // Default to 60 seconds if no TOTP entries
 
