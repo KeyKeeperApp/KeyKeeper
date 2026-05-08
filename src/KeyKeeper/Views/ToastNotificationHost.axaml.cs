@@ -11,7 +11,7 @@ namespace KeyKeeper.Views
     public partial class ToastNotificationHost : UserControl
     {
         private CancellationTokenSource? _hideCancellation;
-        private Animation? _fadeOutAnimation;
+        private readonly Animation _fadeOutAnimation;
 
         public static readonly StyledProperty<string> MessageProperty =
             AvaloniaProperty.Register<ToastNotificationHost, string>(nameof(Message), string.Empty);
@@ -44,15 +44,16 @@ namespace KeyKeeper.Views
                     new KeyFrame
                     {
                         Cue = new Cue(0d),
-                        Setters = { new Setter(OpacityProperty, 1.0) },
+                        Setters = { new Setter(OpacityProperty, 1.0) }
                     },
                     new KeyFrame
                     {
                         Cue = new Cue(1d),
-                        Setters = { new Setter(OpacityProperty, 0.0) },
+                        Setters = { new Setter(OpacityProperty, 0.0) }
                     }
                 }
             };
+
             Opacity = 0;
         }
 
@@ -60,31 +61,21 @@ namespace KeyKeeper.Views
         {
             _hideCancellation?.Cancel();
             _hideCancellation = new CancellationTokenSource();
+
             Message = message;
             Opacity = 1;
-
             _ = HideAfterDelay(_hideCancellation.Token);
         }
 
-        private void FadeOut()
-        {
-            _fadeOutAnimation?.RunAsync(this);
-        }
-
-        private async Task HideAfterDelay(CancellationToken cancellationToken)
+        private async Task HideAfterDelay(CancellationToken token)
         {
             try
             {
-                await Task.Delay(Duration, cancellationToken);
-
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    FadeOut();
-                }
+                await Task.Delay(Duration, token);
+                await _fadeOutAnimation.RunAsync(this, token);
             }
             catch (TaskCanceledException)
             {
-                // caught
             }
         }
 
