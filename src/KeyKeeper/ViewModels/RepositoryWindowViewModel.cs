@@ -8,8 +8,6 @@ namespace KeyKeeper.ViewModels;
 
 public partial class RepositoryWindowViewModel : ViewModelBase
 {
-    private static readonly TimeSpan LockTimeout = TimeSpan.FromMinutes(5);
-
     private object currentPage;
     private IPassStore passStore;
     private DispatcherTimer? _lockTimer;
@@ -94,7 +92,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
     private void OnLockTimerTick(object? sender, EventArgs e)
     {
         var elapsed = DateTime.UtcNow - _timerStart;
-        var remaining = LockTimeout - elapsed;
+        var remaining = TimeSpan.FromMinutes(AppSettings.LockTimerMinutes) - elapsed;
 
         if (remaining <= TimeSpan.Zero)
         {
@@ -109,7 +107,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
 
     private void UpdateTimerDisplay(TimeSpan? remaining = null)
     {
-        var r = remaining ?? LockTimeout;
+        var r = remaining ?? TimeSpan.FromMinutes(AppSettings.LockTimerMinutes);
         LockTimerDisplay = $"{r:mm\\:ss}";
     }
 }
