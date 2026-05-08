@@ -9,6 +9,7 @@ public static class AppSettings
     private static readonly string FilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "KeyKeeper", "settings.json");
 
     public static bool ExitOnRepositoryClose { get; set; } = false;
+    public static int LockTimerMinutes { get; set; } = 5;
 
     // Сохранение в файл
     public static void Save()
@@ -17,7 +18,7 @@ public static class AppSettings
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
 
-        var data = new { ExitOnRepositoryClose };
+        var data = new { ExitOnRepositoryClose, LockTimerMinutes };
         string json = JsonSerializer.Serialize(data);
         File.WriteAllText(FilePath, json);
     }
@@ -34,6 +35,7 @@ public static class AppSettings
                 if (data != null)
                 {
                     ExitOnRepositoryClose = data.ExitOnRepositoryClose;
+                    LockTimerMinutes = data.LockTimerMinutes ?? 5;
                 }
             }
             catch { /* Если файл поврежден, просто используем значения по умолчанию */ }
@@ -43,5 +45,6 @@ public static class AppSettings
     private class SettingsData
     {
         public bool ExitOnRepositoryClose { get; set; }
+        public int? LockTimerMinutes { get; set; }
     }
 }
