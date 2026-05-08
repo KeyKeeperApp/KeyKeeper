@@ -89,6 +89,13 @@ public partial class RepositoryWindowViewModel : ViewModelBase
         LockTimerDisplay = string.Empty;
     }
 
+    public void Lock()
+    {
+        StopLockTimer();
+        passStore.Lock();
+        UpdateLockStatus();
+    }
+
     private void OnLockTimerTick(object? sender, EventArgs e)
     {
         var elapsed = DateTime.UtcNow - _timerStart;
@@ -96,9 +103,7 @@ public partial class RepositoryWindowViewModel : ViewModelBase
 
         if (remaining <= TimeSpan.Zero)
         {
-            StopLockTimer();
-            passStore.Lock();
-            UpdateLockStatus();
+            Lock();
             return;
         }
 

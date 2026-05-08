@@ -206,6 +206,14 @@ public partial class RepositoryWindow : Window
         }
     }
 
+    private void LockButton_Click(object sender, RoutedEventArgs args)
+    {
+        if (DataContext is RepositoryWindowViewModel vm)
+        {
+            vm.Lock();
+        }
+    }
+
     private void Entry_DoubleTapped(object sender, TappedEventArgs args)
     {
         if (args.Source is StyledElement s && s.DataContext is PassStoreEntry ent)

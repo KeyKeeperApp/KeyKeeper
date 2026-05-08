@@ -84,29 +84,13 @@
                             </TreeView.ItemTemplate>
                         </TreeView>
 
-                        <!-- Save Passwords -->
-                        <Button Content="Save"
+                        <!-- New Entry -->
+                        <Button Content="New Password"
                                 Classes="accentSidebarButton"
-                                Click="SaveButton_Click"
+                                Click="AddEntryButton_Click"
                                 Height="30"
                                 HorizontalAlignment="Left"
                                 Margin="0,20,0,0"/>
-
-                        <!-- New Entry -->
-                        <Button Content="New Password"
-                                        Classes="accentSidebarButton"
-                                        Click="AddEntryButton_Click"
-                                        Height="30"
-                                        HorizontalAlignment="Left"
-                                        Margin="0,20,0,0"/>
-
-                        <!-- Edit Selected Entry -->
-                        <Button Content="Edit Selected Password"
-                                        Classes="accentSidebarButton"
-                                        Click="EditEntryButton_Click"
-                                        Height="30"
-                                        HorizontalAlignment="Left"
-                                        Margin="0,20,0,0"/>
 
                         <!-- New Group -->
                         <Button Content="New Group"
@@ -115,6 +99,30 @@
                                         Height="30"
                                         HorizontalAlignment="Left"
                                         Margin="0,20,0,0"/>
+
+                        <!-- Edit Selected Entry -->
+                        <Button Content="Edit Selected Password"
+                                Classes="accentSidebarButton"
+                                Click="EditEntryButton_Click"
+                                Height="30"
+                                HorizontalAlignment="Left"
+                                Margin="0,20,0,0"/>
+
+                        <!-- Save Passwords -->
+                        <Button Content="Save Vault"
+                                Classes="accentSidebarButton"
+                                Click="SaveButton_Click"
+                                Height="30"
+                                HorizontalAlignment="Left"
+                                Margin="0,20,0,0"/>
+
+                        <!-- Lock -->
+                        <Button Content="Lock Vault"
+                                Classes="accentSidebarButton"
+                                Click="LockButton_Click"
+                                Height="30"
+                                HorizontalAlignment="Left"
+                                Margin="0,20,0,0" />
                     </StackPanel>
                 </Border>
 
